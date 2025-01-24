@@ -16,7 +16,7 @@ With BetterVersion, users can transform dreams into reality through intuitive or
 
 ### Vision Board
 
-Users can browse a gallery of images, save their favorites into themed boards, and organize them on their profile.
+- Users can browse a gallery of images, save their favorites into themed boards, and organize them on their profile.
 Vision boards can be set as private or public.
 
 
