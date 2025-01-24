@@ -5,7 +5,7 @@ Many people aspire to improve themselves and achieve their dreams but often lack
 
 This is where BetterVersion comes in—a web application designed to meet the growing need for a personalized platform that helps users visualize their aspirations through vision boards, organize their tasks, and establish habits for consistent progress toward their goals.
 
-BetterVersion combines the power of an effective task manager with an inspiring visual platform. By allowing users to save and categorize inspirational images, organize their goals into clear categories such as Daily Goals, Habits, and To-Do Tasks, the app becomes an essential ally for those striving to build a better version of themselves.
+BetterVersion combines the power of an effective task manager with an inspiring visual platform. By allowing users to save and categorize inspirational images, organize their goals into clear categories such as Daily, Weekly, Monthly and Yearly Goals, the app becomes an essential ally for those striving to build a better version of themselves.
 
 With BetterVersion, users can transform dreams into reality through intuitive organization and continuous inspiration.
 
@@ -20,10 +20,7 @@ Vision boards can be set as private or public.
 
 ### Task Management
 
-- Tools to create, organize, and track goals through task categories, including:
-Daily Goals: For recurring daily tasks.
-Habits: For actions to integrate into routines.
-To-Do: For one-time projects or actions.
+- Tools to create, organize, and track goals through task categories, including Daily, Weekly, Monthly and Yearly Goals.
 
 
 ### Mini-Games
