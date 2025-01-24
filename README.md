@@ -1,4 +1,6 @@
 # BetterVersion
+PFE Project by:
+Amal Fertoul, Khadija Ben Khadda & Yousra Hamdan
 
 ## Overview
 Many people aspire to improve themselves and achieve their dreams but often lack a concrete way to visualize their goals and turn them into daily actions.
