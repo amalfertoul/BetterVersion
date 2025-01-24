@@ -45,7 +45,9 @@ To-Do: For one-time projects or actions.
 
 1. Clone the repository.
 2. Run 
-   `npm install` to install the dependencies.
+   `cd frontend` to open React frontend project.
 3. Run 
+   `npm install` to install the dependencies.
+4. Run 
    `npm run dev` to start the development server.
-4. Open the app in your browser by clicking **`o + enter`** in Terminal.
+5. Open the app in your browser by clicking **`o + enter`** in Terminal.
