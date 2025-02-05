@@ -40,13 +40,3 @@ Vision boards can be set as private or public.
 - Integration of vision boards with task management tools for a holistic and seamless experience.
 
 
-## Getting Started
-
-1. Clone the repository.
-2. Run 
-   `cd frontend` to open React frontend project.
-3. Run 
-   `npm install` to install the dependencies.
-4. Run 
-   `npm run dev` to start the development server.
-5. Open the app in your browser by clicking **`o + enter`** in Terminal.
