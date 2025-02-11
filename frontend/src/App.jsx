@@ -7,6 +7,7 @@ import ImageGallery from "./containers/ImageGallery";
 import "./styles/app.css";
 
 import TasksPage from "./containers/TasksPage";
+import StarButton from "./components/StarButton";
 
 
 const App = () => {
@@ -15,11 +16,12 @@ const App = () => {
     <Provider store={store}>
       <Router>   
         <Navbar/>
-
+        <StarButton>Click Me</StarButton>
         <Routes>
           <Route path="/" element={<TasksPage />} />
           <Route path="/gallery" element={<ImageGallery />} />
           <Route path="/moodboard/:taskId" element={<MoodboardPage />} />
+         
             
         </Routes>
 
