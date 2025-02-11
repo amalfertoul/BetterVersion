@@ -8,6 +8,7 @@ import "./styles/app.css";
 
 import TasksPage from "./containers/TasksPage";
 import StarButton from "./components/StarButton";
+import Bookmark from "./components/Bookmark";
 
 
 const App = () => {
@@ -17,6 +18,7 @@ const App = () => {
       <Router>   
         <Navbar/>
         <StarButton>Click Me</StarButton>
+        <Bookmark />
         <Routes>
           <Route path="/" element={<TasksPage />} />
           <Route path="/gallery" element={<ImageGallery />} />

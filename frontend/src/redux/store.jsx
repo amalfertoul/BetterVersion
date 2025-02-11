@@ -1,6 +1,13 @@
-import { createStore } from "redux";
+import { createStore, combineReducers } from "redux";
+import bookmarkReducer from "./bookmarkReducer";
 import taskReducer from "./reducer";
 
-const store = createStore(taskReducer);
+
+const rootReducer = combineReducers({
+  bookmark: bookmarkReducer,
+  task: taskReducer,
+});
+
+const store = createStore(rootReducer);
 
 export default store;
