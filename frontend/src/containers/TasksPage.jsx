@@ -11,7 +11,8 @@ const TasksPage = () => {
     <div className="tasks-page">
       <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
       <AddTaskForm />
-      <TaskList activeTab={activeTab} />
+      <TaskList activeTab={activeTab}/>
+
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import { createStore, combineReducers } from "redux";
 import bookmarkReducer from "./bookmarkReducer";
-import taskReducer from "./reducer";
+import taskReducer from "./taskReducer";
 
 
 const rootReducer = combineReducers({

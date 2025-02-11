@@ -2,6 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import "../styles/bookmark.css";
 
+
 const Bookmark = ({ isBookmarked, toggleBookmark }) => {
   return (
     <label className="ui-bookmark">

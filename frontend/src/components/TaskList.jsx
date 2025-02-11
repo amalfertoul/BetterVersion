@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import TaskItem from "./TaskItem";
 
 const TaskList = ({ activeTab }) => {
-  const tasks = useSelector(state => state.tasks);
+  const tasks = useSelector(state => state.task.tasks);
   const filteredTasks = activeTab === "all" ? tasks : tasks.filter(task => task.category === activeTab);
 
   return (
