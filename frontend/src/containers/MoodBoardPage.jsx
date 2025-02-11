@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 
 const MoodboardPage = () => {
   const { taskId } = useParams();
-  const task = useSelector(state => state.tasks.find(t => t.id.toString() === taskId));
+  const task = useSelector(state => state.task.tasks.find(t => t.id.toString() === taskId));
 
   if (!task) return <p>Task not found.</p>;
 
