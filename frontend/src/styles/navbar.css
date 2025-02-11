@@ -1,3 +1,5 @@
+
+
 /* Full-width fixed navbar */
 .navbar {
     width: 100%;
@@ -8,6 +10,8 @@
     background: #ffffff; /* White background */
     padding: 12px 20px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    height: 70px;
+
 }
 
 /* Ensure content below the navbar is not hidden */

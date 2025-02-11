@@ -1,22 +1,32 @@
-import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import './App.css'
-import Home from './containers/Home'
 import Navbar from './components/Navbar';
+import { Provider } from "react-redux";
+import store from "./redux/store";
+import MoodboardPage from "./containers/MoodBoardPage";
+import ImageGallery from "./containers/ImageGallery";
+import "./styles/app.css";
 
-function App() {
+import TasksPage from "./containers/TasksPage";
+
+
+const App = () => {
 
   return (
-    <>
-
-      <Router>
+    <Provider store={store}>
+      <Router>   
         <Navbar/>
-            <Routes>
-                <Route path="/" element={<Home />} />
-            </Routes>
-        </Router>
-    </>
-  )
-}
 
-export default App
+        <Routes>
+          <Route path="/" element={<TasksPage />} />
+          <Route path="/gallery" element={<ImageGallery />} />
+          <Route path="/moodboard/:taskId" element={<MoodboardPage />} />
+            
+        </Routes>
+
+      </Router>
+      
+    </Provider>
+  );
+};
+
+export default App;
