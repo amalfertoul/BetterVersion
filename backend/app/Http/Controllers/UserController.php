@@ -48,5 +48,23 @@ class UserController extends Controller
         User::destroy($id);
         return response()->json(['message' => 'User deleted successfully']);
     }
+
+
+    public function uploadProfilePicture(Request $request)
+    {
+        $request->validate([
+            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        if ($request->hasFile('profile_picture')) {
+            $file = $request->file('profile_picture');
+            $path = $file->store('profile_pictures', 'public');
+
+            // Save the path to the user's profile_picture field
+            auth()->user()->update(['profile_picture' => $path]);
+        }
+
+    return redirect()->back()->with('success', 'Profile picture uploaded successfully.');
+}
 }
 
