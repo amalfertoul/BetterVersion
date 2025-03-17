@@ -2,7 +2,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\Message;  // Assure-toi que le modèle Message est créé
+use App\Models\Message; 
 use Illuminate\Http\Request;
 
 class MessageController extends Controller

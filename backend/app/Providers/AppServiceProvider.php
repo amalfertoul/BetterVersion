@@ -20,13 +20,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Schema::defaultStringLength(191);
+        Schema::defaultStringLength(191); // Pour éviter les erreurs avec MySQL
     }
-    public function map()
-{
-    $this->mapApiRoutes();  // Cette ligne est importante pour charger les routes de 'api.php'
-
-    // Autres méthodes de mappage des routes...
-}
-
 }

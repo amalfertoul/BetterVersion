@@ -1,4 +1,5 @@
 <?php
+namespace App\Http\Controllers\API;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\CategoryController;
@@ -15,10 +16,3 @@ Route::apiResource('images', ImageController::class);
 Route::apiResource('tasks', TaskController::class);
 Route::apiResource('messages', MessageController::class);
 
-Route::prefix('images')->group(function () {
-    Route::get('/', [ImageController::class, 'index']);
-    Route::post('/', [ImageController::class, 'store']);
-    Route::get('{id}', [ImageController::class, 'show']);
-    Route::put('{id}', [ImageController::class, 'update']);
-    Route::delete('{id}', [ImageController::class, 'destroy']); 
-});
