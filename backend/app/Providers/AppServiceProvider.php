@@ -22,4 +22,11 @@ class AppServiceProvider extends ServiceProvider
     {
         Schema::defaultStringLength(191);
     }
+    public function map()
+{
+    $this->mapApiRoutes();  // Cette ligne est importante pour charger les routes de 'api.php'
+
+    // Autres méthodes de mappage des routes...
+}
+
 }
