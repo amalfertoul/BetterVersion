@@ -12,6 +12,9 @@ class DatabaseSeeder extends Seeder
         $this->call([
             QuotesTableSeeder::class,
         ]);
+        $this->call([
+            AdminSeeder::class,
+        ]);
         
     }
 }
