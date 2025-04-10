@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id('board_id');
             $table->string('name');
             $table->boolean('visibility')->default(true); // assuming default visibility is true
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
