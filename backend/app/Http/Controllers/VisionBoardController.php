@@ -9,7 +9,7 @@ class VisionBoardController extends Controller
 {
     public function index()
     {
-        return VisionBoard::all();;
+        return VisionBoard::all();
     }
 
     public function store(Request $request)
@@ -17,6 +17,8 @@ class VisionBoardController extends Controller
         $request->validate([
             'name' => 'required|string',
             'visibility' => 'required|boolean',
+            'user_id' => 'required|exists:users,id',
+            'task_id' => 'nullable|exists:tasks,task_id',
         ]);
 
         return VisionBoard::create($request->all());
@@ -24,7 +26,7 @@ class VisionBoardController extends Controller
 
     public function show($id)
     {
-        return VisionBoard::findOrFail($id);
+        return VisionBoard::where('board_id', $id)->firstOrFail();
     }
 
     public function update(Request $request, $id)
@@ -32,9 +34,11 @@ class VisionBoardController extends Controller
         $request->validate([
             'name' => 'required|string',
             'visibility' => 'required|boolean',
+            'user_id' => 'required|exists:users,id',
+            'task_id' => 'nullable|exists:tasks,task_id',
         ]);
 
-        $board = VisionBoard::findOrFail($id);
+        $board = VisionBoard::where('board_id', $id)->firstOrFail();
         $board->update($request->all());
 
         return $board;
@@ -42,7 +46,9 @@ class VisionBoardController extends Controller
 
     public function destroy($id)
     {
-        VisionBoard::destroy($id);
+        $board = VisionBoard::where('board_id', $id)->firstOrFail();
+        $board->delete();
+
         return response()->json(['message' => 'Vision board deleted successfully']);
     }
 }
