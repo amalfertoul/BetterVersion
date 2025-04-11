@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('images', function (Blueprint $table) {
             $table->id('image_id');
             $table->string('url');
-            $table->foreignId('category')->constrained('categories'); // Foreign key reference to Category
             $table->text('description');
+            $table->foreignId('user_id')->constrained('users'); // Foreign key reference to User
+            $table->foreignId('category_id')->constrained('categories');
             $table->timestamps();
         });
     }
