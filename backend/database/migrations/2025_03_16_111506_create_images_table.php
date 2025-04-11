@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('image_id');
             $table->string('url');
             $table->text('description');
-            $table->foreignId('user_id')->constrained('users'); // Foreign key reference to User
+            $table->foreignId('user_id')->constrained('users'); 
             $table->foreignId('category_id')->constrained('categories');
             $table->timestamps();
         });

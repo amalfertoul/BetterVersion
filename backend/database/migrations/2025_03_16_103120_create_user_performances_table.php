@@ -14,10 +14,8 @@ return new class extends Migration
         Schema::create('user_performances', function (Blueprint $table) {
             $table->id('performance_id');
             $table->integer('score');
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('game_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('game_id')->references('id')->on('mini_games')->onDelete('cascade');
+            $table->unsignedBigInteger('task_id');
+            $table->foreign('task_id')->references('id')->on('tasks')->onDelete('cascade');
             $table->timestamp('timestamp')->useCurrent();
             $table->timestamps();
         });

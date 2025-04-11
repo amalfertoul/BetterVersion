@@ -16,6 +16,8 @@ class UserPerformanceController extends Controller
     {
         $request->validate([
             'score' => 'required|integer',
+            'user_id' => 'required|exists:users,id',
+            'game_id' => 'required|exists:mini_games,id',
             'timestamp' => 'required|date',
         ]);
 
@@ -31,6 +33,8 @@ class UserPerformanceController extends Controller
     {
         $request->validate([
             'score' => 'required|integer',
+            'user_id' => 'required|exists:users,id',
+            'game_id' => 'required|exists:mini_games,id',
             'timestamp' => 'required|date',
         ]);
 

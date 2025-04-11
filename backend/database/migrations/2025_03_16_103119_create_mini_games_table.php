@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id('game_id');
             $table->string('name');
             $table->text('description');
-            $table->integer('high_score')->default(0); // default high score
             $table->timestamps();
         });
     }
