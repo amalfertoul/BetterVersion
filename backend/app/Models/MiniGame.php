@@ -16,6 +16,5 @@ class MiniGame extends Model
     protected $fillable = [
         'name',
         'description',
-        'high_score',
     ];
 }

@@ -21,8 +21,11 @@ class Quote extends Model
     ];
 
     /**
-     * Additional configuration for the model (if needed).
+     * The attributes that should have default values.
+     *
+     * @var array
      */
-    // For example, if you need to customize the table name:
-    // protected $table = 'quotes';
+    protected $attributes = [
+        'category' => 'general',
+    ];
 }

@@ -17,6 +17,21 @@ class Task extends Model
         'title',
         'status',
         'description',
+        'user_id',
         'due_date',
     ];
+
+    /**
+     * Define the relationship with the User model.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    //has many relationship with vision board
+    public function visionBoards()
+    {
+        return $this->hasMany(VisionBoard::class, 'task_id', 'task_id');
+    }
 }
