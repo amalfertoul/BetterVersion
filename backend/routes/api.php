@@ -27,3 +27,5 @@ Route::apiResource('user-performance', UserPerformanceController::class);
 Route::apiResource('mini-games', MiniGameController::class);
 
 Route::apiResource('friend-requests', FriendRequestController::class);
+
+//quotes routes should be added here please 
