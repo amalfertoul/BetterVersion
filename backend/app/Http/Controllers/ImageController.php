@@ -16,11 +16,12 @@ class ImageController extends Controller
     {
         $request->validate([
             'url' => 'required|string',
-            'category' => 'required|exists:categories,id',
+            'category_id' => 'required|exists:categories,category_id',
             'description' => 'nullable|string',
         ]);
 
-        return Image::create($request->all());
+        $data = $request->only(['url', 'description', 'user_id', 'category_id']);
+        return Image::create($data);
     }
 
     public function show($id)
@@ -36,7 +37,8 @@ class ImageController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        $image = Image::findOrFail($id);
+        $data = $request->only(['url', 'description', 'user_id', 'category_id']);
+        $image->update($data);
         $image->update($request->all());
 
         return $image;
