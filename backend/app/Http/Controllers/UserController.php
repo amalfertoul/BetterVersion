@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
 use App\Models\User;
@@ -16,12 +15,18 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string',
+            'username' => 'required|string|unique:users,username',
+            'fullname' => 'required|string',
+            'email' => 'required|string|email|unique:users,email',
             'profile_picture' => 'nullable|string',
             'password' => 'required|string',
+            'role' => 'required|in:user,admin',
         ]);
 
-        return User::create($request->all());
+        $data = $request->all();
+        $data['password'] = bcrypt($data['password']); // Hash the password
+
+        return User::create($data);
     }
 
     public function show($id)
@@ -32,13 +37,24 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'name' => 'required|string',
+            'username' => 'required|string|unique:users,username,' . $id . ',id',
+            'fullname' => 'required|string',
+            'email' => 'required|string|email|unique:users,email,' . $id . ',id',
             'profile_picture' => 'nullable|string',
-            'password' => 'required|string',
+            'password' => 'nullable|string',
+            'role' => 'required|in:user,admin',
         ]);
 
         $user = User::findOrFail($id);
-        $user->update($request->all());
+        $data = $request->all();
+
+        if (!empty($data['password'])) {
+            $data['password'] = bcrypt($data['password']); // Hash the password
+        } else {
+            unset($data['password']); // Do not update password if not provided
+        }
+
+        $user->update($data);
 
         return $user;
     }
@@ -48,7 +64,6 @@ class UserController extends Controller
         User::destroy($id);
         return response()->json(['message' => 'User deleted successfully']);
     }
-
 
     public function uploadProfilePicture(Request $request)
     {
@@ -62,9 +77,10 @@ class UserController extends Controller
 
             // Save the path to the user's profile_picture field
             auth()->user()->update(['profile_picture' => $path]);
+
+            return response()->json(['message' => 'Profile picture uploaded successfully', 'path' => $path]);
         }
 
-    return redirect()->back()->with('success', 'Profile picture uploaded successfully.');
+        return response()->json(['message' => 'No profile picture uploaded'], 400);
+    }
 }
-}
-
