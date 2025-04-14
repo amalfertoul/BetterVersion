@@ -9,44 +9,58 @@ class TaskController extends Controller
 {
     public function index()
     {
-        return Task::all();
+        // Fetch all tasks with their associated user
+        return Task::with('user')->get();
     }
 
     public function store(Request $request)
     {
+        // Validate the incoming request
         $request->validate([
             'title' => 'required|string',
             'status' => 'required|in:pending,in_progress,completed',
             'description' => 'required|string',
+            'user_id' => 'required|exists:users,id',
             'due_date' => 'required|date',
         ]);
 
-        return Task::create($request->all());
+        // Create a new task
+        $task = Task::create($request->all());
+
+        return response()->json($task, 201);
     }
 
     public function show($id)
     {
-        return Task::findOrFail($id);
+        // Fetch a single task by its ID
+        $task = Task::with('user')->findOrFail($id);
+
+        return response()->json($task);
     }
 
     public function update(Request $request, $id)
     {
+        // Validate the incoming request
         $request->validate([
             'title' => 'required|string',
             'status' => 'required|in:pending,in_progress,completed',
             'description' => 'required|string',
+            'user_id' => 'required|exists:users,id',
             'due_date' => 'required|date',
         ]);
 
+        // Find the task and update it
         $task = Task::findOrFail($id);
         $task->update($request->all());
 
-        return $task;
+        return response()->json($task);
     }
 
     public function destroy($id)
     {
+        // Delete the task by its ID
         Task::destroy($id);
+
         return response()->json(['message' => 'Task deleted successfully']);
     }
 }

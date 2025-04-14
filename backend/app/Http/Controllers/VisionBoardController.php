@@ -21,7 +21,9 @@ class VisionBoardController extends Controller
             'task_id' => 'nullable|exists:tasks,task_id',
         ]);
 
-        return VisionBoard::create($request->all());
+        $visionBoard = VisionBoard::create($request->only(['name', 'visibility', 'user_id', 'task_id']));
+
+        return response()->json($visionBoard, 201);
     }
 
     public function show($id)
@@ -39,9 +41,9 @@ class VisionBoardController extends Controller
         ]);
 
         $board = VisionBoard::where('board_id', $id)->firstOrFail();
-        $board->update($request->all());
+        $board->update($request->only(['name', 'visibility', 'user_id', 'task_id']));
 
-        return $board;
+        return response()->json($board);
     }
 
     public function destroy($id)
