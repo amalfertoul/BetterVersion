@@ -27,5 +27,6 @@ class UserPerformance extends Model
         return $this->belongsTo(Task::class, 'task_id');
     }
 
+
     
 }
