@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('performance_id');
             $table->integer('score');
             $table->unsignedBigInteger('task_id');
-            $table->foreign('task_id')->references('id')->on('tasks')->onDelete('cascade');
+            $table->foreign('task_id')->references('task_id')->on('tasks')->onDelete('cascade');
             $table->timestamp('timestamp')->useCurrent();
             $table->timestamps();
         });
