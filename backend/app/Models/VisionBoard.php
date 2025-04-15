@@ -11,7 +11,7 @@ class VisionBoard extends Model
 
     protected $table = 'vision_boards';
 
-    protected $primaryKey = 'board_id';
+    protected $primaryKey = 'id'; // Matches the primary key in the migration
 
     protected $fillable = [
         'name',
@@ -33,12 +33,14 @@ class VisionBoard extends Model
      */
     public function task()
     {
-        return $this->belongsTo(Task::class, 'task_id', 'task_id');
+        return $this->belongsTo(Task::class, 'task_id', 'id');
     }
 
-    // has many relationship with tasks
+    /**
+     * Get all tasks associated with the vision board.
+     */
     public function tasks()
     {
-        return $this->hasMany(Task::class, 'task_id', 'task_id');
+        return $this->hasMany(Task::class, 'id', 'task_id'); // Adjusted to match the foreign key relationship
     }
 }

@@ -20,28 +20,27 @@ class User extends Model
         'profile_picture',
         'password',
         'isAdmin',
-        'name'
     ];
+
     protected $table = 'users';
 
-    protected $primaryKey = 'user_id';
+    protected $primaryKey = 'id';
 
-    //has many relationship with tasks
+    // has many relationship with tasks
     public function tasks()
     {
-        return $this->hasMany(Task::class, 'user_id', 'user_id');
+        return $this->hasMany(Task::class, 'user_id', 'id');
     }
 
-    //has many relationship with images
+    // has many relationship with images
     public function images()
     {
-        return $this->hasMany(Image::class, 'user_id', 'user_id');
-    }
-    
-    //has many relationship with messages
-    public function messages()
-    {
-        return $this->hasMany(Message::class, 'sender_id', 'user_id');
+        return $this->hasMany(Image::class, 'user_id', 'id');
     }
 
+    // has many relationship with messages
+    public function messages()
+    {
+        return $this->hasMany(Message::class, 'sender_id', 'id');
+    }
 }

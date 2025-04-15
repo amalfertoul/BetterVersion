@@ -11,7 +11,14 @@ class UserPerformance extends Model
 
     protected $table = 'user_performances';
 
-    protected $primaryKey = 'performance_id';
+    // Update the primary key to match the migration
+    protected $primaryKey = 'id';
+
+    // If the primary key is not an incrementing integer, set this to false
+    public $incrementing = true;
+
+    // Specify the key type
+    protected $keyType = 'int';
 
     protected $fillable = [
         'score',
@@ -26,7 +33,4 @@ class UserPerformance extends Model
     {
         return $this->belongsTo(Task::class, 'task_id');
     }
-
-
-    
 }

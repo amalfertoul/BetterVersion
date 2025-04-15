@@ -11,7 +11,7 @@ class Message extends Model
 
     protected $table = 'messages';
 
-    protected $primaryKey = 'message_id';
+    protected $primaryKey = 'id'; // Matches the migration's primary key
 
     protected $fillable = [
         'type',
