@@ -17,34 +17,32 @@ class MiniGameController extends Controller
         $request->validate([
             'name' => 'required|string',
             'description' => 'required|string',
-            'high_score' => 'required|integer',
         ]);
 
         return MiniGame::create($request->all());
     }
 
-    public function show($id)
+    public function show($game_id)
     {
-        return MiniGame::findOrFail($id);
+        return MiniGame::findOrFail($game_id);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $game_id)
     {
         $request->validate([
             'name' => 'required|string',
             'description' => 'required|string',
-            'high_score' => 'required|integer',
         ]);
 
-        $game = MiniGame::findOrFail($id);
+        $game = MiniGame::findOrFail($game_id);
         $game->update($request->all());
 
         return $game;
     }
 
-    public function destroy($id)
+    public function destroy($game_id)
     {
-        MiniGame::destroy($id);
+        MiniGame::destroy($game_id);
         return response()->json(['message' => 'Mini game deleted successfully']);
     }
 }
