@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('profile_picture')->nullable();
             $table->string('password');
-            $table->enum('role', ['user', 'admin'])->default('user');
+            $table->boolean('isAdmin')->default(false);
             $table->timestamps();
         });
     }

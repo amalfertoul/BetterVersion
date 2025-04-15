@@ -20,7 +20,7 @@ class UsersSeeder extends Seeder
                 'email' => 'DEVOWFS201@gmail.com',
                 'profile_picture' => null,
                 'password' => Hash::make('DEVOWFS201'),
-                'role' => 'admin',
+                'isAdmin' => true,  
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

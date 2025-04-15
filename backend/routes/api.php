@@ -10,22 +10,31 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserPerformanceController;
 use App\Http\Controllers\MiniGameController;
 use App\Http\Controllers\FriendRequestController;
+use App\Http\Controllers\QuoteController;
 
 
-Route::apiResource('images', ImageController::class);
+Route::post('login', [UserController::class, 'login']);
+Route::post('register', [UserController::class, 'store']);
+Route::post('logout', [UserController::class, 'logout']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('images', ImageController::class);
 
-Route::apiResource('categories', CategoryController::class);
+    Route::apiResource('categories', CategoryController::class);
 
-Route::apiResource('tasks', TaskController::class);
+    Route::apiResource('tasks', TaskController::class);
 
-Route::apiResource('messages', MessageController::class);
+    Route::apiResource('messages', MessageController::class);
 
-Route::apiResource('users', UserController::class);
+    Route::apiResource('users', UserController::class);
 
-Route::apiResource('user-performance', UserPerformanceController::class);
+    Route::apiResource('user-performance', UserPerformanceController::class);
 
-Route::apiResource('mini-games', MiniGameController::class);
+    Route::apiResource('mini-games', MiniGameController::class);
 
-Route::apiResource('friend-requests', FriendRequestController::class);
+    Route::apiResource('friend-requests', FriendRequestController::class);
 
-//quotes routes should be added here please 
+    //quotes routes should be added here please 
+    Route::apiResource('quotes', QuoteController::class);
+
+
+});
