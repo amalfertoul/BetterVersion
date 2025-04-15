@@ -11,7 +11,7 @@ class Task extends Model
 
     protected $table = 'tasks';
 
-    protected $primaryKey = 'task_id';
+    protected $primaryKey = 'id'; // Update to match the migration
 
     protected $fillable = [
         'title',
@@ -29,9 +29,11 @@ class Task extends Model
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    //has many relationship with vision board
+    /**
+     * Define the hasMany relationship with the VisionBoard model.
+     */
     public function visionBoards()
     {
-        return $this->hasMany(VisionBoard::class, 'task_id', 'task_id');
+        return $this->hasMany(VisionBoard::class, 'task_id', 'id'); // Ensure 'task_id' matches the foreign key in VisionBoard
     }
 }

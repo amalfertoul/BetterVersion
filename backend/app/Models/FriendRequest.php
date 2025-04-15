@@ -11,7 +11,7 @@ class FriendRequest extends Model
 
     protected $table = 'friend_requests';
 
-    protected $primaryKey = 'request_id';
+    protected $primaryKey = 'id';
 
     public $incrementing = true;
 
