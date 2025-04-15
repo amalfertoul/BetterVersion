@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('images', function (Blueprint $table) {
-            $table->id('image_id');
+            $table->id('id');
             $table->string('url');
             $table->text('description');
             $table->foreignId('user_id')->constrained('users'); 

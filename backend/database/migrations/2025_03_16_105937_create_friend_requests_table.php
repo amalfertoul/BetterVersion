@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('friend_requests', function (Blueprint $table) {
-            $table->id('request_id');
+            $table->id('id');
             $table->enum('status', ['pending', 'accepted', 'rejected'])->default('pending');
             $table->unsignedBigInteger('sender_id');
             $table->unsignedBigInteger('receiver_id');

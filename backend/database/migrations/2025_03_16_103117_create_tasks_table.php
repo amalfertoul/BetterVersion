@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tasks', function (Blueprint $table) {
-            $table->id('task_id');
+            $table->id('id');
             $table->string('title');
             $table->enum('status', ['pending', 'in_progress', 'completed'])->default('pending');
             $table->text('description');

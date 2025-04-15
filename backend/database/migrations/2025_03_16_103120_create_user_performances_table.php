@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('user_performances', function (Blueprint $table) {
-            $table->id('performance_id');
+            $table->id('id');
             $table->integer('score');
             $table->unsignedBigInteger('task_id');
-            $table->foreign('task_id')->references('task_id')->on('tasks')->onDelete('cascade');
+            $table->foreign('task_id')->references('id')->on('tasks')->onDelete('cascade');
             $table->timestamp('timestamp')->useCurrent();
             $table->timestamps();
         });

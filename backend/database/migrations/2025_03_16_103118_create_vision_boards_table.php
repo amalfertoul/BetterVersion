@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('vision_boards', function (Blueprint $table) {
-            $table->id('board_id');
+            $table->id('id');
             $table->string('name');
             $table->boolean('visibility')->default(true); 
             //user_id is the foreign key referencing the users table
@@ -22,7 +22,7 @@ return new class extends Migration
 
             //task_id is the foreign key referencing the tasks table
             $table->unsignedBigInteger('task_id')->nullable();
-            $table->foreign('task_id')->references('task_id')->on('tasks')->onDelete('set null');
+            $table->foreign('task_id')->references('id')->on('tasks')->onDelete('set null');
             $table->timestamps();
         });
     }
