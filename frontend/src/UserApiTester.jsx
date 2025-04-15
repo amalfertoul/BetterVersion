@@ -32,7 +32,9 @@ const UserApiTester = () => {
   // Create a new user
   const handleCreate = async () => {
     try {
-      await axios.post(API_BASE, form);
+      const data = { ...form };
+      if (!data.profile_picture) delete data.profile_picture; // Remove empty profile_picture
+      await axios.post(API_BASE, data);
       fetchUsers();
       alert('User created successfully!');
       setForm({
@@ -55,7 +57,10 @@ const UserApiTester = () => {
       return;
     }
     try {
-      await axios.put(`${API_BASE}/${selectedUserId}`, form);
+      const data = { ...form };
+      if (!data.profile_picture) delete data.profile_picture; // Remove empty profile_picture
+      if (!data.password) delete data.password; // Do not send empty password
+      await axios.put(`${API_BASE}/${selectedUserId}`, data);
       fetchUsers();
       alert('User updated successfully!');
       setSelectedUserId(null);
