@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\MiniGame;
+use App\Models\User;
 
 class MiniGameUser extends Model
 {
@@ -28,6 +30,6 @@ class MiniGameUser extends Model
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
+use App\Models\Category;
 
 class Image extends Model
 {
@@ -11,7 +13,10 @@ class Image extends Model
 
     protected $table = 'images';
 
-    protected $primaryKey = 'image_id';
+    // Update the primary key to match the migration
+    protected $primaryKey = 'id';
+
+    // Remove $primaryKey if you're using the default 'id'
 
     protected $fillable = [
         'url',

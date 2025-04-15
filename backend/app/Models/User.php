@@ -6,6 +6,10 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Models\Task;
+use App\Models\Image;
+use App\Models\Message;
+use App\Models\MiniGameUser;
 
 
 class User extends Authenticatable{
@@ -41,4 +45,10 @@ class User extends Authenticatable{
     {
         return $this->hasMany(Message::class, 'sender_id', 'id');
     }
-}
+
+    // has many relationship with miniGame users
+    public function miniGameUsers()
+    {
+        return $this->hasMany(MiniGameUser::class, 'user_id', 'id');
+    }
+}   
