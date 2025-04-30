@@ -1,10 +1,10 @@
 import React from 'react';
-import UserApiTester from './UserApiTester';
+import Quotes from './sections/Quotes'; // Assuming Quotes is in the same directory
 
 function App() {
   return (
-    <div className="App">
-      <UserApiTester />
+    <div>
+      <Quotes />
     </div>
   );
 }
