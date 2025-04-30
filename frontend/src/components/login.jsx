@@ -15,7 +15,7 @@ const Login = () => {
         const result = await dispatch(loginUser({ email, password }));
         if (result?.payload?.id) {
             alert('Login successful!');
-            navigate(`/dashboard/${result.payload.id}`);
+            navigate(`/profile/${result.payload.id}`);
         } else {
             alert('Login failed. Please check your credentials.');
         }
