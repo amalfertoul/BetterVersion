@@ -6,17 +6,10 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
-
 class UserController extends Controller
 {
     public function index()
     {
-        $user = auth()->user();
-    
-        if (!$user || !$user->isAdmin) {
-            return response()->json(['message' => 'Access denied'], 403);
-        }
-    
         return response()->json(
             User::where('isAdmin', false)
                 ->get([
@@ -68,12 +61,9 @@ class UserController extends Controller
             'profile_picture' => $request->profile_picture ?? $user->profile_picture,
             'password' => $request->password ? Hash::make($request->password) : $user->password,
             'isAdmin' => $request->isAdmin ?? $user->isAdmin,
-
         ]);
 
-
         return response()->json($user);
-
     }
 
     public function destroy($id)
@@ -82,71 +72,32 @@ class UserController extends Controller
         return response()->json(['message' => 'User deleted']);
     }
 
-    // public function uploadProfilePicture(Request $request)
-    // {
-    //     $request->validate([
-    //         'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-    //     ]);
-
-    //     if ($request->hasFile('profile_picture')) {
-    //         $file = $request->file('profile_picture');
-    //         $path = $file->store('profile_pictures', 'public');
-
-    //         // Save the path to the user's profile_picture field
-    //         auth()->user()->update(['profile_picture' => $path]);
-
-    //         return response()->json(['message' => 'Profile picture uploaded successfully', 'path' => $path]);
-    //     }
-
-    //     return response()->json(['message' => 'No profile picture uploaded'], 400);
-    // }
-
-
     public function login(Request $request)
-{
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required',
-    ]);
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
 
-    $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->first();
 
-    if (!$user || !Hash::check($request->password, $user->password)) {
-        return response()->json(['message' => 'Unauthorized'], 401);
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        return response()->json([
+            'user' => [
+                'id' => $user->id,
+                'username' => $user->username,
+                'fullname' => $user->fullname, 
+                'email' => $user->email,
+                'isAdmin' => $user->isAdmin,
+            ]
+        ]);
     }
 
-    $token = $user->createToken('Better Version')->plainTextToken;
-
-    return response()->json([
-        'user' => [
-            'id' => $user->id,
-            'username' => $user->username,
-            'fullname' => $user->fullname, 
-            'email' => $user->email,
-            'isAdmin' => $user->isAdmin,
-        ],
-        'token' => $token
-    ]);
-}
-
-    public function logout(Request $request)
+    public function logout()
     {
-    $user = auth()->user();
-
-    if ($user) {
-        $user->tokens()->delete();
         return response()->json(['message' => 'Logged out successfully']);
     }
-
-    return response()->json(['message' => 'No user logged in'], 401);
-
-
-
-
-    }
-
-
 }
-
-
-
