@@ -84,6 +84,18 @@ const initialState = {
     loading: false,
     error: null,
 };
+// Update user profile (new function)
+export const updateUserProfile = createAsyncThunk(
+    'users/updateUserProfile',
+    async ({ id, profileData }, { rejectWithValue }) => {
+        try {
+            const response = await axios.put(`${API_URL}/users/${id}`, profileData);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
 
 // Slice
 const userSlice = createSlice({
