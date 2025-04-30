@@ -6,16 +6,34 @@ import { useNavigate } from 'react-router-dom';
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [emailError, setEmailError] = useState('');
+    const [passwordError, setPasswordError] = useState('');
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { loading, error, user, isAuthenticated } = useSelector((state) => state.users);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Client-side validation
+        if (!email) {
+            setEmailError('Email is required');
+            return;
+        } else {
+            setEmailError('');
+        }
+
+        if (!password) {
+            setPasswordError('Password is required');
+            return;
+        } else {
+            setPasswordError('');
+        }
+
         const result = await dispatch(loginUser({ email, password }));
         if (result?.payload?.id) {
             alert('Login successful!');
-            navigate(`/dashboard/${result.payload.id}`);
+            navigate(`/profile/${result.payload.id}`);
         } else {
             alert('Login failed. Please check your credentials.');
         }
@@ -45,6 +63,7 @@ const Login = () => {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                     />
+                    {emailError && <p className="error">{emailError}</p>}
                 </div>
                 <div>
                     <label>Password:</label>
@@ -54,6 +73,7 @@ const Login = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
+                    {passwordError && <p className="error">{passwordError}</p>}
                 </div>
                 {error && <p className="error">{error.message || error}</p>}
                 <button type="submit" disabled={loading}>
