@@ -13,7 +13,7 @@ const Register = () => {
     });
 
     const dispatch = useDispatch();
-    //const navigate = useNavigate();
+    const navigate = useNavigate();
     const { loading, error } = useSelector((state) => state.users);
 
     const handleChange = (e) => {
@@ -29,7 +29,7 @@ const Register = () => {
         if (result.meta.requestStatus === 'fulfilled') {
             const userId = result.payload.id; // Assuming the payload contains the user ID
             alert('Registration successful! Please log in.');
-            // navigate(`/login?id=${userId}`);
+            navigate(`/profile/${userId}`); // Redirect to the profile page after registration
         } else {
             alert('Registration failed. Please check your details and try again.');
         }
