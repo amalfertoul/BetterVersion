@@ -11,10 +11,9 @@ use App\Models\Image;
 use App\Models\Message;
 use App\Models\MiniGameUser;
 
-
-class User extends Authenticatable{
+class User extends Authenticatable
+{
     use HasFactory, HasApiTokens;
-
     protected $fillable = [
         'username',
         'fullname',
@@ -43,7 +42,7 @@ class User extends Authenticatable{
     // has many relationship with messages
     public function messages()
     {
-        return $this->hasMany(Message::class, 'sender_id', 'id');
+        return $this->hasMany(Message::class, 'user_id', 'id');
     }
 
     // has many relationship with miniGame users
@@ -51,4 +50,4 @@ class User extends Authenticatable{
     {
         return $this->hasMany(MiniGameUser::class, 'user_id', 'id');
     }
-}   
+}

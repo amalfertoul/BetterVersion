@@ -10,9 +10,9 @@ use App\Http\Controllers\UserPerformanceController;
 use App\Http\Controllers\MiniGameController;
 use App\Http\Controllers\FriendRequestController;
 use App\Http\Controllers\QuoteController;
+use App\Http\Controllers\VisionBoardController;
 
-
-// Route::middleware('auth:sanctum')->group(function () {   
+// Route::middleware('auth:sanctum')->group(function () {
 // });
 
 Route::post('login', [UserController::class, 'login']);
@@ -27,3 +27,4 @@ Route::apiResource('messages', MessageController::class);
 Route::apiResource('user-performance', UserPerformanceController::class);
 Route::apiResource('mini-games', MiniGameController::class);
 Route::apiResource('friend-requests', FriendRequestController::class);
+Route::apiResource('visionboards', VisionBoardController::class);

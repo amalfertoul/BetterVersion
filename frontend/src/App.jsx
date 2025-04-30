@@ -1,12 +1,13 @@
 import React from 'react';
-import Quotes from './sections/Quotes'; // Assuming Quotes is in the same directory
+import Quotes from './sections/Quotes'; 
 import Register from './components/register';
+import Profile from './components/profile';
 function App() {
   return (
     <div>
-      <Quotes />
+     <Quotes/> 
       <Register />
-      {/* Other components can be added here */}
+      <Profile />
     </div>
   );
 }
