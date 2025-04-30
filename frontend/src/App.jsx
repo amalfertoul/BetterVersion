@@ -1,17 +1,32 @@
 import React from 'react';
-import Quotes from './sections/Quotes'; 
+import { Routes, Route } from 'react-router-dom';
+import Navbar from './sections/Navbar';
 import Register from './components/register';
-//import Profile from './components/profile';
-//import Footer from './components/Footer';
-//import Navbar from './components/Navbar';
+import Login from './components/login';
+import Explore from './components/explore';
+import Chats from './components/chats';
+import Games from './components/games';
+import Profile from './components/profile';
+import Home from './components/Home';
+import FirstPage from './components/firstPage';
+
 function App() {
+  const userId = null; // Replace with actual logic to get userId
+
   return (
-    <div>
-        <Register />        
-          <Quotes/>
-        {/* <Route path="/profile/:userId" element={<Profile />} />*/}
-             
-    </div>
+    <>
+      <Navbar userId={userId} />
+      <Routes>
+        <Route path="/" element={<FirstPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/explore" element={<Explore />} />
+        <Route path="/chats" element={<Chats />} />
+        <Route path="/games" element={<Games />} />
+        <Route path="/profile/:userId" element={<Profile userId={userId} />} />
+      </Routes>
+    </>
   );
 }
 
