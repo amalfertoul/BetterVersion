@@ -9,7 +9,7 @@ const Register = () => {
         fullname: '',
         email: '',
         password: '',
-        profile_picture: '',
+        // profile_picture: '',
     });
 
     const dispatch = useDispatch();
@@ -61,10 +61,10 @@ const Register = () => {
                     <label>Password:</label>
                     <input type="password" name="password" value={formData.password} onChange={handleChange} required />
                 </div>
-                <div>
+                {/* <div>
                     <label>Profile Picture URL (optional):</label>
                     <input name="profile_picture" value={formData.profile_picture} onChange={handleChange} />
-                </div>
+                </div> */}
                 {error && <p className="error">{error.message || error}</p>}
                 <button type="submit" disabled={loading}>
                     {loading ? 'Registering...' : 'Register'}
