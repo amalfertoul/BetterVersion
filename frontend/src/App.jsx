@@ -6,7 +6,7 @@ import Login from './components/login';
 import Explore from './components/explore';
 import Chats from './components/chats';
 import Games from './components/games';
-import Profile from './components/profile';
+import UserProfile from './components/profile';
 import Home from './components/Home';
 import FirstPage from './components/firstPage';
 
@@ -24,7 +24,7 @@ function App() {
         <Route path="/explore" element={<Explore />} />
         <Route path="/chats" element={<Chats />} />
         <Route path="/games" element={<Games />} />
-        <Route path="/profile/:userId" element={<Profile userId={userId} />} />
+        <Route path="/profile/:userId" element={<UserProfile userId={userId} />} />
       </Routes>
     </>
   );
