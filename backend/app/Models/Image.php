@@ -40,4 +40,11 @@ class Image extends Model
     {
         return $this->belongsTo(Category::class);
     }
+    /**
+     * Get the vision board that the image belongs to.
+     */
+    public function visionBoard()
+    {
+        return $this->belongsToMany(VisionBoard::class, 'vision_board_id', 'id');
+    }
 }
