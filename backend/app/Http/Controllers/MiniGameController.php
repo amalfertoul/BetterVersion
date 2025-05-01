@@ -85,4 +85,10 @@ class MiniGameController extends Controller
 
         return response()->json(['message' => 'Mini game deleted successfully']);
     }
+    public function incrementPlayCount($game_id)
+{
+    $game = MiniGame::findOrFail($game_id);
+    $game->increment('play_count');
+    return response()->json($game);
+}
 }

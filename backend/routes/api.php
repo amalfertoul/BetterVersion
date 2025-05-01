@@ -11,7 +11,7 @@ use App\Http\Controllers\MiniGameController;
 use App\Http\Controllers\FriendRequestController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\VisionBoardController;
-
+Route::post('/mini-games/{id}/play', [MiniGameController::class, 'incrementPlayCount']);
 // Route::middleware('auth:sanctum')->group(function () {
 // });
 
