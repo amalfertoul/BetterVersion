@@ -28,7 +28,9 @@ class VisionBoardController extends Controller
 
     public function show($id)
     {
-        return VisionBoard::where('board_id', $id)->firstOrFail();
+        $visionBoard = VisionBoard::with('images')->where('vision_board_id', $id)->firstOrFail();
+
+        return response()->json($visionBoard);
     }
 
     public function update(Request $request, $id)

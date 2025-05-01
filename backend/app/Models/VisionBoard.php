@@ -31,18 +31,17 @@ class VisionBoard extends Model
     }
 
     /**
-     * Get the task associated with the vision board.
-     */
-    public function task()
-    {
-        return $this->belongsTo(Task::class, 'task_id', 'id');
-    }
-
-    /**
      * Get all tasks associated with the vision board.
      */
     public function tasks()
     {
         return $this->hasMany(Task::class, 'id', 'task_id'); // Adjusted to match the foreign key relationship
+    }
+    /**
+     * Get all images associated with the vision board.
+     */
+    public function images()
+    {
+        return $this->hasMany(Image::class, 'vision_board_id', 'id'); // Adjusted to match the foreign key relationship
     }
 }
