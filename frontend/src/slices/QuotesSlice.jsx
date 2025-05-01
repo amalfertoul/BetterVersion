@@ -48,6 +48,8 @@ const quotesSlice = createSlice({
     extraReducers: (builder) => {
         builder
             // Fetch quotes
+            // === hadi stakhdmta bach ntalae wahda kola 24 saea 
+            // === anstakhdmoha bach ytleo quotes kamlin n admin hta huaa ===
             .addCase(fetchQuotes.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -61,6 +63,7 @@ const quotesSlice = createSlice({
                 state.error = action.error.message;
             })
             // Create quote
+            // == ghir admin li yqdar ycriyi ymodifyi wla ysupprimi chi quote ===
             .addCase(createQuote.fulfilled, (state, action) => {
                 state.quotes.push(action.payload); // Add the full quote information
             })
