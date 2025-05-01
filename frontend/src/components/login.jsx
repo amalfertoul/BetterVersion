@@ -8,46 +8,55 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');
+    
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
     const { loading, error, user, isAuthenticated } = useSelector((state) => state.users);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Client-side validation
+        // Basic validation
+        let valid = true;
+
         if (!email) {
             setEmailError('Email is required');
-            return;
+            valid = false;
         } else {
             setEmailError('');
         }
 
         if (!password) {
             setPasswordError('Password is required');
-            return;
+            valid = false;
         } else {
             setPasswordError('');
         }
 
+        if (!valid) return;
+
         const result = await dispatch(loginUser({ email, password }));
-        if (result?.payload?.id) {
+
+        if (result?.payload?.user?.id) {
             alert('Login successful!');
-            navigate(`/profile/${result.payload.id}`);
+            navigate(`/profile/${result.payload.user.id}`);
         } else {
             alert('Login failed. Please check your credentials.');
         }
     };
 
+    // Redirect if already authenticated
     useEffect(() => {
         if (isAuthenticated && user?.id) {
             navigate(`/profile/${user.id}`);
         }
     }, [isAuthenticated, user, navigate]);
 
+    // Reset error on unmount
     useEffect(() => {
         return () => {
-            dispatch(resetError()); // Clear error on unmount
+            dispatch(resetError());
         };
     }, [dispatch]);
 
