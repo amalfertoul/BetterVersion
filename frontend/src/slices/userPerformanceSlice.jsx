@@ -30,6 +30,8 @@ const userPerformanceSlice = createSlice({
       .addCase(fetchUserPerformance.pending, (state) => {
         state.status = 'loading';
       })
+      
+      // === had part hadi ateaytola gha f profile kolchi kithsb automaticcally ===
       .addCase(fetchUserPerformance.fulfilled, (state, action) => {
         state.status = 'succeeded';
         const tasks = action.payload;
