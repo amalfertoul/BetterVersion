@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './sections/Navbar';
 import Register from './components/register';
@@ -11,7 +12,7 @@ import Home from './components/Home';
 import FirstPage from './components/firstPage';
 
 function App() {
-  const userId = null; // Replace with actual logic to get userId
+  const userId = useSelector((state) => state.users.userId); // Replace with actual logic to get userId
 
   return (
     <>
