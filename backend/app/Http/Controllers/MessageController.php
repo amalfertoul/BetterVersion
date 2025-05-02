@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Message;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class MessageController extends Controller
 {
@@ -19,9 +18,20 @@ class MessageController extends Controller
             'type' => 'required|string',
             'content' => 'required|string',
             'active_scope' => 'required|string',
+            'sender_id' => 'required|exists:users,id',
+            'receiver_id' => 'required|exists:users,id',
         ]);
 
-        return Message::create($request->all());
+        $message = Message::create([
+            'type' => $request->type,
+            'content' => $request->content,
+            'active_scope' => $request->active_scope,
+            'sender_id' => $request->sender_id,
+            'receiver_id' => $request->receiver_id,
+            'timestamp' => now(),
+        ]);
+
+        return response()->json($message, 201);
     }
 
     public function show($id)
@@ -35,12 +45,20 @@ class MessageController extends Controller
             'type' => 'required|string',
             'content' => 'required|string',
             'active_scope' => 'required|string',
+            'sender_id' => 'required|exists:users,id',
+            'receiver_id' => 'required|exists:users,id',
         ]);
 
         $message = Message::findOrFail($id);
-        $message->update($request->all());
+        $message->update([
+            'type' => $request->type,
+            'content' => $request->content,
+            'active_scope' => $request->active_scope,
+            'sender_id' => $request->sender_id,
+            'receiver_id' => $request->receiver_id,
+        ]);
 
-        return $message;
+        return response()->json($message);
     }
 
     public function destroy($id)
