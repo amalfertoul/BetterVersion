@@ -2,8 +2,6 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { fetchMessages} from '../slices/messageSlice';
-import { setUserId } from '../slices/UserSlice'; // Importer l'action pour définir l'utilisateur connecté
-
 const Chats = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
