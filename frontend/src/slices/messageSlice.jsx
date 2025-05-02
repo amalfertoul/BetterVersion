@@ -43,54 +43,29 @@ export const deleteMessage = createAsyncThunk(
         }
     }
 );
-
 const messagesSlice = createSlice({
     name: 'messages',
     initialState: {
-        messages: [],
-        status: 'idle',
-        error: null,
+      messages: [], // Assurez-vous que l'état initial est un tableau vide
+      status: 'idle',
+      error: null,
     },
     reducers: {},
     extraReducers: (builder) => {
-        builder
-            // Fetch messages
-            // == hnaya khsna nemlo filter b userId as a receiver w aytleolna gae msjs dialo mea gae senders ===
-            // == dksaea f kola conversation khsna nfiltriw ela hsab kola friend [sender] netiwlo convo d msjt dialo bohdo ===
-            .addCase(fetchMessages.pending, (state) => {
-                state.status = 'loading';
-            })
-            .addCase(fetchMessages.fulfilled, (state, action) => {
-                state.status = 'succeeded';
-                state.messages = action.payload;
-            })
-            .addCase(fetchMessages.rejected, (state, action) => {
-                state.status = 'failed';
-                state.error = action.payload;
-            })
-            // Send message
-            // == kaneaytola mn mor makiktb chi message w ytki f sent dksaea kattlae f convo automatiquement 
-            // == hit kankono deja mfetchyin f convo ===
-            // == mhm mli tkono khadamin ela interface t2akdo ==
-            .addCase(sendMessage.fulfilled, (state, action) => {
-                state.messages.push(action.payload);
-            })
-            .addCase(sendMessage.rejected, (state, action) => {
-                state.error = action.payload;
-            })
-            // Delete message
-            // == emlo chihaja li nqdro nmsho biha msj fost convo w sf ==
-            .addCase(deleteMessage.fulfilled, (state, action) => {
-                state.messages = state.messages.filter((message) => message.id !== action.payload);
-            })
-            .addCase(deleteMessage.rejected, (state, action) => {
-                state.error = action.payload;
-            });
-
-            // == b nsba n msjt li kimsho mn mora 24 hour wla ay modda bghinaha 
-            // khsna ncriyiw wahd commande f backend php artisan make:command DeleteOldMessages dksaea nstakhdmoh
-            // bon ftcho eliha hia w qdia d notifications mea msjt ===
+      builder
+        .addCase(fetchMessages.pending, (state) => {
+          state.status = 'loading';
+        })
+        .addCase(fetchMessages.fulfilled, (state, action) => {
+          console.log('Payload:', action.payload); // Vérifiez si les données sont reçues
+          state.status = 'succeeded';
+          state.messages = Array.isArray(action.payload) ? action.payload : []; // Vérifiez que c'est un tableau
+        })
+        .addCase(fetchMessages.rejected, (state, action) => {
+          state.status = 'failed';
+          state.error = action.payload;
+        });
     },
-});
+  });
 
 export default messagesSlice.reducer;

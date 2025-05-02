@@ -5,6 +5,7 @@ import { createMiniGameUser } from '../slices/gameUserSlice';
 
 const JeuxSanteCalme = () => {
   const dispatch = useDispatch();
+  const { userId: selectedUserId } = useParams(); // Récupérer l'ID de l'utilisateur sélectionné depuis l'URL
 
   // Récupérer les jeux depuis le state Redux
   const { games, loading, error } = useSelector((state) => state.games);
@@ -18,7 +19,7 @@ const JeuxSanteCalme = () => {
 
   const handlePlay = (gameId, link) => {
     // Enregistrer l'action de jouer dans la table mini-game-users
-    dispatch(createMiniGameUser({ userId, gameId }));
+    dispatch(createMiniGameUser({ userId: selectedUserId, gameId }));
     window.open(link, '_blank');
   };
 
