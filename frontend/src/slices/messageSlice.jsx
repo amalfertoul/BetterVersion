@@ -9,14 +9,18 @@ const API_BASE_URL = '/api/messages';
 export const fetchMessages = createAsyncThunk(
     'messages/fetchMessages',
     async (_, { rejectWithValue }) => {
-        try {
-            const response = await axios.get(`${API_BASE_URL}`);
-            return response.data.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-        } catch (error) {
-            return rejectWithValue(error.response?.data || error.message);
+      try {
+        const response = await axios.get('http://localhost:8000/api/messages');
+        console.log('API Response:', response.data); // Inspectez la structure ici
+        if (!Array.isArray(response.data)) {
+          throw new Error('La réponse de l\'API n\'est pas un tableau');
         }
+        return response.data.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+      } catch (error) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
     }
-);
+  );
 
 // Send a new message
 export const sendMessage = createAsyncThunk(

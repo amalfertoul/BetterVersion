@@ -2,10 +2,11 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchGames } from '../slices/gamesSlice';
 import { createMiniGameUser } from '../slices/gameUserSlice';
+import { useParams } from 'react-router-dom';
 
 const Games = () => {
   const dispatch = useDispatch();
-
+  const { userId: paramUserId } = useParams();
   // Récupérer les jeux depuis le state Redux
   const { games, loading, error } = useSelector((state) => state.games);
 
@@ -18,7 +19,7 @@ const Games = () => {
 
   const handlePlay = (gameId, link) => {
     // Enregistrer l'action de jouer dans la table mini-game-users
-    dispatch(createMiniGameUser({ userId, gameId }));
+    dispatch(createMiniGameUser({ userId: paramUserId, gameId }));
     window.open(link, '_blank');
   };
 

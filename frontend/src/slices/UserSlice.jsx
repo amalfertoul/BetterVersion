@@ -116,6 +116,10 @@ const userSlice = createSlice({
         resetUser: (state) => {
             state.user = null;
         },
+        // ajouter pour les messages
+        setUserId: (state, action) => {
+            state.userId = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -222,5 +226,5 @@ const userSlice = createSlice({
 });
 
 // Export actions and reducer
-export const { resetError, resetUser } = userSlice.actions;
+export const { resetError, resetUser, setUserId } = userSlice.actions;
 export default userSlice.reducer;
