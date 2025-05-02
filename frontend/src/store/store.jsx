@@ -8,7 +8,7 @@ import visionBoardSlice from '../slices/visionBoardSlice';
 import gamesReducer from '../slices/gamesSlice';
 import gameUserSlice from '../slices/gameUserSlice';
 import categorySlice from '../slices/categorySlice';
-
+import friendRequestsSlice from '../slices/friendRequestSlice'; 
 const store = configureStore({
     reducer: {
         quotes: quotesReducer,
@@ -20,7 +20,7 @@ const store = configureStore({
         games: gamesReducer,
         gameUser: gameUserSlice,
         categories: categorySlice,
-        
+        friendRequests: friendRequestsSlice, 
 
     },
 });
