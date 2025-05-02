@@ -1,26 +1,56 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// Base URL de l'API
-const API_URL = 'http://localhost:8000/api';
+// Base URL of the API
+const API_URL = 'http://localhost:8000/api/mini-games';
 
-// Thunk pour récupérer les jeux
+// Thunks for CRUD operations and incrementing play count
+
+// Fetch all games
 export const fetchGames = createAsyncThunk('games/fetchGames', async (_, { rejectWithValue }) => {
   try {
-    const response = await axios.get(`${API_URL}/mini-games`);
+    const response = await axios.get(API_URL);
     return response.data;
   } catch (error) {
-    return rejectWithValue(error.response?.data || 'Erreur lors de la récupération des jeux');
+    return rejectWithValue(error.response?.data || 'Error fetching games');
   }
 });
 
-// Thunk pour incrémenter le compteur de jeux joués
-export const incrementPlayCount = createAsyncThunk('games/incrementPlayCount', async (gameId, { rejectWithValue }) => {
+// Create a new game
+export const createGame = createAsyncThunk('games/createGame', async (gameData, { rejectWithValue }) => {
   try {
-    const response = await axios.post(`${API_URL}/mini-games/${gameId}/play`);
+    const formData = new FormData();
+    Object.keys(gameData).forEach((key) => formData.append(key, gameData[key]));
+    const response = await axios.post(API_URL, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
     return response.data;
   } catch (error) {
-    return rejectWithValue(error.response?.data || 'Erreur lors de l\'incrémentation du compteur');
+    return rejectWithValue(error.response?.data || 'Error creating game');
+  }
+});
+
+// Update an existing game
+export const updateGame = createAsyncThunk('games/updateGame', async ({ gameId, gameData }, { rejectWithValue }) => {
+  try {
+    const formData = new FormData();
+    Object.keys(gameData).forEach((key) => formData.append(key, gameData[key]));
+    const response = await axios.post(`${API_URL}/${gameId}?_method=PUT`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || 'Error updating game');
+  }
+});
+
+// Delete a game
+export const deleteGame = createAsyncThunk('games/deleteGame', async (gameId, { rejectWithValue }) => {
+  try {
+    await axios.delete(`${API_URL}/${gameId}`);
+    return gameId;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || 'Error deleting game');
   }
 });
 
@@ -38,7 +68,8 @@ const gamesSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // Gestion de fetchGames
+      // Fetch games
+      // === hado aytleo n l user b les images b links etc===
       .addCase(fetchGames.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -51,17 +82,34 @@ const gamesSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // Gestion de incrementPlayCount
-      .addCase(incrementPlayCount.fulfilled, (state, action) => {
+      // Create game
+      // === anetiw possibility n admin ydakhal chi game jdida b link etc n database ====
+      .addCase(createGame.fulfilled, (state, action) => {
+        state.games.push(action.payload);
+      })
+      .addCase(createGame.rejected, (state, action) => {
+        state.error = action.payload;
+      })
+      // Update game
+      //=== ghir admin li yqdar ybdl matalan ism wla images wla link ===
+      .addCase(updateGame.fulfilled, (state, action) => {
         const updatedGame = action.payload;
         const index = state.games.findIndex((game) => game.id === updatedGame.id);
         if (index !== -1) {
           state.games[index] = updatedGame;
         }
       })
-      .addCase(incrementPlayCount.rejected, (state, action) => {
+      .addCase(updateGame.rejected, (state, action) => {
         state.error = action.payload;
-      });
+      })
+      // Delete game
+      // === hadi f halat ma ida l game kant makattl3bchi bzaf yqdar admin ymsha ===
+      .addCase(deleteGame.fulfilled, (state, action) => {
+        state.games = state.games.filter((game) => game.id !== action.payload);
+      })
+      .addCase(deleteGame.rejected, (state, action) => {
+        state.error = action.payload;
+      })
   },
 });
 
