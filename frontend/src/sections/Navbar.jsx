@@ -18,7 +18,7 @@ const Navbar = ({ userId }) => {
             <li><Link to="/explore">Explore</Link></li>
             <li><Link to="/chats">Chats</Link></li>
             <li><Link to="/games">Games</Link></li>
-            <li><Link to={`/profile/${userId}`}>Profile</Link></li>
+            <li><Link to='/profile'>Profile</Link></li>
           </>
         )}
       </ul>

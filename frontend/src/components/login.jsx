@@ -40,7 +40,7 @@ const Login = () => {
 
         if (result?.payload?.user?.id) {
             alert('Login successful!');
-            navigate(`/profile/${result.payload.user.id}`);
+            navigate('/profile'); // Redirect to the profile page after registration
         } else {
             alert('Login failed. Please check your credentials.');
         }
