@@ -6,6 +6,8 @@ import userPerformanceSlice from '../slices/userPerformanceSlice';
 import imagesSlice from '../slices/imagesSlice';
 import visionBoardSlice from '../slices/visionBoardSlice';
 import gamesReducer from '../slices/gamesSlice';
+import gameUserSlice from '../slices/gameUserSlice';
+import categorySlice from '../slices/categorySlice';
 
 const store = configureStore({
     reducer: {
@@ -16,6 +18,9 @@ const store = configureStore({
         images: imagesSlice,
         visionBoard: visionBoardSlice,
         games: gamesReducer,
+        gameUser: gameUserSlice,
+        categories: categorySlice,
+        
 
     },
 });
