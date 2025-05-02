@@ -1,18 +1,24 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchGames, incrementPlayCount } from '../slices/gamesSlice';
-import '../style/games.css';
+import { fetchGames } from '../slices/gamesSlice';
+import { createMiniGameUser } from '../slices/gameUserSlice';
 
 const JeuxSanteCalme = () => {
   const dispatch = useDispatch();
+
+  // Récupérer les jeux depuis le state Redux
   const { games, loading, error } = useSelector((state) => state.games);
+
+  // Récupérer l'id de l'utilisateur connecté depuis le state Redux
+  const userId = useSelector((state) => state.users.userId);
 
   useEffect(() => {
     dispatch(fetchGames());
   }, [dispatch]);
 
   const handlePlay = (gameId, link) => {
-    dispatch(incrementPlayCount(gameId));
+    // Enregistrer l'action de jouer dans la table mini-game-users
+    dispatch(createMiniGameUser({ userId, gameId }));
     window.open(link, '_blank');
   };
 
@@ -42,7 +48,6 @@ const JeuxSanteCalme = () => {
             />
             <h3 className="game-title">{game.name}</h3>
             <p className="game-description">{game.description}</p>
-            <p className="play-count">Joué : {game.play_count || 0} fois</p>
             <button 
               className="play-button"
               onClick={() => handlePlay(game.id, game.link)}
