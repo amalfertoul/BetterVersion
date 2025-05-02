@@ -12,7 +12,7 @@ import Home from './components/Home';
 import FirstPage from './components/firstPage';
 
 function App() {
-  const userId = useSelector((state) => state.users.userId); // Replace with actual logic to get userId
+  const userId = useSelector((state) => state.users.userId);
 
   return (
     <>
@@ -25,7 +25,7 @@ function App() {
         <Route path="/explore" element={<Explore />} />
         <Route path="/chats" element={<Chats />} />
         <Route path="/games" element={<Games />} />
-        <Route path="/profile/:userId" element={<UserProfile userId={userId} />} />
+        <Route path="/profile" element={<UserProfile />} />
       </Routes>
     </>
   );
