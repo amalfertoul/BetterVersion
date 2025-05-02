@@ -1,13 +1,11 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { fetchMessages } from '../slices/messageSlice';
 import { setUserId } from '../slices/UserSlice';
 const Chats = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { userId: paramUserId } = useParams();
-
     // Récupérer les messages depuis le state Redux
     const { messages, status, error } = useSelector((state) => state.messages);
 

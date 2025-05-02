@@ -108,11 +108,19 @@
 // };
 
 // export default UserProfile;
+import React from 'react';
+import { useSelector } from 'react-redux';
 
 const UserProfile = () => {
+    const userId = useSelector((state) => state.users.userId);
     return (
-        <div>
-            <p>This is a simple user profile component.</p>
+        <div style={{ padding: '20px', fontSize: '18px' }}>
+            <h2>User ID Page</h2>
+            {userId ? (
+                <p><strong>User ID:</strong> {userId}</p>
+            ) : (
+                <p>No user is currently logged in.</p>
+            )}
         </div>
     );
 };
