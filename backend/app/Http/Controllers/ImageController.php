@@ -9,7 +9,7 @@ class ImageController extends Controller
 {
     public function index()
     {
-        return Image::with(['category', 'visionBoard'])->get();
+        return Image::with(['category'])->get();
     }
 
     public function store(Request $request)
@@ -17,17 +17,17 @@ class ImageController extends Controller
         $request->validate([
             'url' => 'required|string',
             'category_id' => 'required|exists:categories,id',
-            'description' => 'nullable|string',
-            'vision_board_id' => 'nullable|exists:vision_boards,id',
+            'description' => 'nullable|string', 
+            'user_id' => 'required|exists:users,id', // Ensure 'user_id' is provided and valid
         ]);
 
-        $data = $request->only(['url', 'description', 'user_id', 'category_id', 'vision_board_id']);
+        $data = $request->only(['url', 'description', 'user_id', 'category_id']);
         return Image::create($data);
     }
 
     public function show($id)
     {
-        return Image::with(['category', 'visionBoard'])->findOrFail($id);
+        return Image::with(['category'])->findOrFail($id);
     }
 
     public function update(Request $request, $id)
@@ -35,12 +35,12 @@ class ImageController extends Controller
         $request->validate([
             'url' => 'required|string',
             'category_id' => 'required|exists:categories,id',
-            'description' => 'nullable|string',
-            'vision_board_id' => 'nullable|exists:vision_boards,id',
+            'description' => 'nullable|string', 
+            'user_id' => 'required|exists:users,id', 
         ]);
 
         $image = Image::findOrFail($id);
-        $data = $request->only(['url', 'description', 'user_id', 'category_id', 'vision_board_id']);
+        $data = $request->only(['url', 'description', 'user_id', 'category_id']);
         $image->update($data);
 
         return $image;
