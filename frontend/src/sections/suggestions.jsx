@@ -47,17 +47,17 @@ const Suggestions = () => {
 
     return (
         <div>
-            // nas li deja msardinlom hnaya gaema aybqaw ytleo f suggestions mea had lfilter
+            {/* nas li deja msardinlom hnaya gaema aybqaw ytleo f suggestions mea had lfilter */}
             {filteredUsers
                 .filter(user => 
                     !pendingRequests.some(request => 
                         request.receiver_id === user.id && request.sender_id === currentUserId
                     )
                 )
-                // hadi bach mantleochi n rasna f suggestions
+                // gha bach mantleochi n rasna hnaya
                 .map((user, index) => (
                     <div key={`${user.id}-${index}`}>
-                        // had leiba d image maeraftchi kfch ntalea meawt
+                        {/*had leiba d image maeraftchi kfch ntalea meawt*/}
                         <img 
                             src={user.profile_picture || '/default-profile.png'} 
                             alt={user.username}
