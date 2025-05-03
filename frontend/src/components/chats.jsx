@@ -1,71 +1,70 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { fetchMessages } from '../slices/messageSlice';
+import { fetchMessages } from '../slices/messageSlice'; // Assure-toi que tu importes bien la bonne action
 import { setUserId } from '../slices/UserSlice';
+import { Link } from 'react-router-dom';
+
 const Chats = () => {
     const dispatch = useDispatch();
-    const navigate = useNavigate();
-    // Récupérer les messages depuis le state Redux
+    // Récupérer les messages et l'état depuis Redux
     const { messages, status, error } = useSelector((state) => state.messages);
-
-    // Récupérer l'ID de l'utilisateur connecté
     const userId = useSelector((state) => state.users.userId);
 
     // Charger l'ID utilisateur depuis le localStorage
     useEffect(() => {
-        const storedUserId = localStorage.getItem('userId');
-        if (storedUserId) {
+        try {
+            let storedUserId = localStorage.getItem('userId');
+            if (!storedUserId) {
+                storedUserId = '0'; // Valeur par défaut
+                localStorage.setItem('userId', storedUserId);
+            }
             dispatch(setUserId(Number(storedUserId)));
+
+            if (userId) {
+                console.log('Fetching messages for userId:', userId);
+                dispatch(fetchMessages(userId)).catch((error) => {
+                    console.error('Error fetching messages:', error);
+                });
+            }
+        } catch (error) {
+            console.error('Error in useEffect:', error);
         }
-        dispatch(fetchMessages());
-    }, [dispatch]);
+    }, [dispatch, userId]);
 
+    console.log('Messages:', messages);
     console.log('User ID:', userId);
-
-    // Filtrer les utilisateurs uniques ayant envoyé un message à l'utilisateur connecté
-    const uniqueSenders = Array.isArray(messages)
-        ? messages
-              .filter((message) => message.receiverId === userId)
-              .reduce((acc, message) => {
-                  if (!acc.some((sender) => sender.senderId === message.senderId)) {
-                      acc.push({
-                          senderId: message.senderId,
-                          senderName: message.senderName,
-                          senderImage: message.senderImage,
-                          lastMessage: message.content,
-                          timestamp: message.timestamp,
-                      });
-                  }
-                  return acc;
-              }, [])
-        : [];
-
+    //fonction lizadet bach  nfilter ela les messgae dyal user connecter
+    const filteredMessages = Array.isArray(messages)
+    ? messages.filter((message) => message.receiverId === userId)
+    : [];
     return (
-        <div className="users-list">
-            {uniqueSenders.length > 0 ? (
-                uniqueSenders.map((sender) => (
-                    <div
-                        key={sender.senderId}
-                        className="user-card"
-                        onClick={() => navigate(`/conversation/${sender.senderId}`)}
-                    >
-                        <img
-                            src={sender.senderImage || 'https://via.placeholder.com/50'}
-                            alt={sender.senderName}
-                            className="user-image"
-                        />
-                        <div className="user-info">
-                            <h3>{sender.senderName}</h3>
-                            <p className="last-message">{sender.lastMessage}</p>
-                            <small className="timestamp">
-                                {new Date(sender.timestamp).toLocaleString()}
-                            </small>
-                        </div>
+        <div>
+            <h1>User ID:</h1>
+            <p>{userId}</p>
+            <h2>Messages Sent to You:</h2>
+            {filteredMessages.length > 0 ? (
+                filteredMessages.map((message) => (
+                    <div key={message.id} className="message-card">
+                        <Link to={`/conversation/${message.senderId}`} className="message-link">
+                            <div className="profile">
+                                <img
+                                    src={message.senderImage || 'https://via.placeholder.com/50'}
+                                    alt={message.senderName}
+                                    className="profile-image"
+                                />
+                                <div className="profile-info">
+                                    <h3>{message.senderName}</h3>
+                                    <p className="message-content">{message.content}</p>
+                                    <small className="timestamp">
+                                        {new Date(message.timestamp).toLocaleString()}
+                                    </small>
+                                    </div>
+                            </div>
+                        </Link>
                     </div>
                 ))
             ) : (
-                <div>Aucun utilisateur trouvé.</div>
+                <p>No messages available</p>
             )}
         </div>
     );
