@@ -3,16 +3,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { fetchMessages } from '../slices/messageSlice';
 import { setUserId } from '../slices/UserSlice';
+
 const Chats = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    // Récupérer les messages depuis le state Redux
     const { messages, status, error } = useSelector((state) => state.messages);
-
-    // Récupérer l'ID de l'utilisateur connecté
     const userId = useSelector((state) => state.users.userId);
 
-    // Charger l'ID utilisateur depuis le localStorage
     useEffect(() => {
         const storedUserId = localStorage.getItem('userId');
         if (storedUserId) {
@@ -23,7 +20,6 @@ const Chats = () => {
 
     console.log('User ID:', userId);
 
-    // Filtrer les utilisateurs uniques ayant envoyé un message à l'utilisateur connecté
     const uniqueSenders = Array.isArray(messages)
         ? messages
               .filter((message) => message.receiverId === userId)
@@ -43,7 +39,9 @@ const Chats = () => {
 
     return (
         <div className="users-list">
-            {uniqueSenders.length > 0 ? (
+            {status === 'loading' && <div>Loading messages...</div>}
+            {status === 'failed' && <div>Error: {error}</div>}
+            {status === 'succeeded' && uniqueSenders.length > 0 ? (
                 uniqueSenders.map((sender) => (
                     <div
                         key={sender.senderId}
@@ -65,7 +63,7 @@ const Chats = () => {
                     </div>
                 ))
             ) : (
-                <div>Aucun utilisateur trouvé.</div>
+                status === 'succeeded' && <div>Aucun utilisateur trouvé.</div>
             )}
         </div>
     );
