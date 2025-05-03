@@ -13,6 +13,7 @@ class UserController extends Controller
         return response()->json(
             User::where('isAdmin', false)
                 ->get([
+                    'id',
                     'username',
                     'fullname',
                     'email',
