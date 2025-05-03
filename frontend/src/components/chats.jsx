@@ -22,8 +22,7 @@ const Chats = () => {
     }, [dispatch]);
 
     console.log('User ID:', userId);
-
-    // Filtrer les utilisateurs uniques ayant envoyé un message à l'utilisateur connecté
+// kanfiltriw 
     const uniqueSenders = Array.isArray(messages)
         ? messages
               .filter((message) => message.receiverId === userId)
