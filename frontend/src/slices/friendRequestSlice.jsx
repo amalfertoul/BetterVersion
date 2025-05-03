@@ -119,6 +119,7 @@ const friendRequestsSlice = createSlice({
             // === hadi kaneaytola f button d decline eadi w sf ===
             .addCase(deleteFriendRequest.fulfilled, (state, action) => {
                 state.pending = state.pending.filter(req => req.id !== action.payload);
+                state.accepted = state.accepted.filter(req => req.id !== action.payload);
             })
             .addCase(deleteFriendRequest.rejected, (state, action) => {
                 state.error = action.payload;
