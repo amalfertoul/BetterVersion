@@ -10,12 +10,11 @@ const Chats = () => {
     const { messages, status, error } = useSelector((state) => state.messages);
     const userId = useSelector((state) => state.users.userId);
 
-    // Charger l'ID utilisateur depuis le localStorage
     useEffect(() => {
         try {
             let storedUserId = localStorage.getItem('userId');
             if (!storedUserId) {
-                storedUserId = '0'; // Valeur par défaut
+                storedUserId = '0'; 
                 localStorage.setItem('userId', storedUserId);
             }
             dispatch(setUserId(Number(storedUserId)));
