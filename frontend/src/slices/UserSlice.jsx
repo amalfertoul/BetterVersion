@@ -36,6 +36,9 @@ export const loginUser = createAsyncThunk('users/loginUser', async (credentials,
               'Accept': 'application/json'
             }
           });
+          state.userId = action.payload.user.id;
+          localStorage.setItem('userId', action.payload.user.id);
+
         return response.data;
     } catch (error) {
         console.error('Login error:', error.response?.data || error.message);
@@ -116,7 +119,7 @@ const userSlice = createSlice({
         resetUser: (state) => {
             state.user = null;
         },
-        // ajouter pour les messages
+        // zadeta 3la  9bel les messages
         setUserId: (state, action) => {
             state.userId = action.payload;
         },
