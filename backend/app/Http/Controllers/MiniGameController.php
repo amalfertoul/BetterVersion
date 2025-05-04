@@ -18,18 +18,21 @@ class MiniGameController extends Controller
         $request->validate([
             'name' => 'required|string',
             'description' => 'required|string',
-            'link' => 'required|url',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'link' => 'required|file|mimes:swf|max:2048', // SWF file validation
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Image validation
         ]);
 
-        // Gérer le téléchargement de l'image
+        // Handle SWF file upload
+        $swfPath = $request->file('link')->store('swf', 'public');
+        
+        // Handle image upload
         $imagePath = $request->file('image')->store('images', 'public');
 
         $game = MiniGame::create([
             'name' => $request->name,
             'description' => $request->description,
-            'link' => $request->link,
-            'image' => $imagePath,
+            'link' => asset('storage/' . $swfPath), // Link to the SWF file
+            'image' => asset('storage/' . $imagePath), // Link to the image
         ]);
 
         return response()->json($game, 201);
@@ -45,28 +48,40 @@ class MiniGameController extends Controller
         $request->validate([
             'name' => 'required|string',
             'description' => 'required|string',
-            'link' => 'required|url',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'link' => 'nullable|file|mimes:swf|max:2048', // SWF file validation
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Image validation
         ]);
 
         $game = MiniGame::findOrFail($game_id);
 
-        // Gérer la mise à jour de l'image si une nouvelle image est fournie
-        if ($request->hasFile('image')) {
-            // Supprimer l'ancienne image
-            if ($game->image) {
-                Storage::disk('public')->delete($game->image);
+        // Handle SWF file update if a new file is provided
+        if ($request->hasFile('link')) {
+            // Delete the old SWF file
+            $swfPath = $game->link;
+            if ($swfPath) {
+                Storage::disk('public')->delete(str_replace(asset('storage/'), '', $swfPath));
             }
 
-            // Télécharger la nouvelle image
-            $imagePath = $request->file('image')->store('images', 'public');
-            $game->image = $imagePath;
+            // Store new SWF file
+            $newSwfPath = $request->file('link')->store('swf', 'public');
+            $game->link = asset('storage/' . $newSwfPath);
+        }
+
+        // Handle image update if a new image is provided
+        if ($request->hasFile('image')) {
+            // Delete the old image
+            if ($game->image) {
+                Storage::disk('public')->delete(str_replace(asset('storage/'), '', $game->image));
+            }
+
+            // Store new image
+            $newImagePath = $request->file('image')->store('images', 'public');
+            $game->image = asset('storage/' . $newImagePath);
         }
 
         $game->update([
             'name' => $request->name,
             'description' => $request->description,
-            'link' => $request->link,
         ]);
 
         return $game;
@@ -76,9 +91,14 @@ class MiniGameController extends Controller
     {
         $game = MiniGame::findOrFail($game_id);
 
-        // Supprimer l'image associée
+        // Delete the SWF file
+        if ($game->link) {
+            Storage::disk('public')->delete(str_replace(asset('storage/'), '', $game->link));
+        }
+
+        // Delete the image file
         if ($game->image) {
-            Storage::disk('public')->delete($game->image);
+            Storage::disk('public')->delete(str_replace(asset('storage/'), '', $game->image));
         }
 
         $game->delete();
