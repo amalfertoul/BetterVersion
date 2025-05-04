@@ -5,7 +5,6 @@ import Navbar from './sections/Navbar';
 import Register from './components/register';
 import Login from './components/login';
 import Explore from './components/explore';
-import Chats from './components/chats';
 import Games from './components/games';
 import UserProfile from './components/profile';
 import Home from './components/Home';
@@ -23,9 +22,9 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/home" element={<Home />} />
         <Route path="/explore" element={<Explore />} />
-        <Route path="/chats" element={<Chats />} />
         <Route path="/games" element={<Games />} />
         <Route path="/profile" element={<UserProfile />} />
+        {/* Add other routes here */}
 
       </Routes>
     </>
