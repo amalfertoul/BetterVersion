@@ -110,7 +110,7 @@
 // export default UserProfile;
 import React from 'react';
 import { useSelector } from 'react-redux';
-import FriendsList from '../sections/friendsList';
+import ChatsTesting from '../sections/chatstesting';
 const UserProfile = () => {
     const userId = useSelector((state) => state.users.userId);
     return (
@@ -121,7 +121,8 @@ const UserProfile = () => {
             ) : (
                 <p>No user is currently logged in.</p>
             )}
-            <FriendsList/>
+            <h2>Chat Messages</h2>
+            <ChatsTesting />
         </div>
     );
 };
