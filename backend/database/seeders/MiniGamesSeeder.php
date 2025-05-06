@@ -14,46 +14,93 @@ class MiniGamesSeeder extends Seeder
     {
         DB::table('mini_games')->insert([
             [
-                'name' => 'Tetris',
-                'description' => 'Un jeu classique de puzzle où vous empilez des blocs.',
-                'link' => 'https://tetris.com/play-tetris', // Lien direct vers Tetris
-                'image' => 'https://example.com/images/tetris.jpg', // Image pour Tetris
+                'name' => 'Bloons Tower Defense 4',
+                'description' => 'Defend your tower with strategically placed monkeys!',
+                'link' => '/storage/swf/BloonsTowerDefense4.swf',
+                'image' => '/storage/images/bloons-tower-defense-4.jpg',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Breaking the Bank',
+                'description' => 'Choose your way to break into the bank!',
+                'link' => '/storage/swf/BreakingTheBank.swf',
+                'image' => '/storage/images/breaking-the-bank.jpg',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Escaping the Prison',
+                'description' => 'Use clever tools to escape the prison.',
+                'link' => '/storage/swf/EscapingThePrison.swf',
+                'image' => '/storage/images/escaping-the-prison.jpg',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Papas Freezeria',
+                'description' => 'Manage your ice cream shop and satisfy customers.',
+                'link' => '/storage/swf/PapasFreezeria.swf',
+                'image' => '/storage/images/papas-freezeria.jpg',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Stealing the Diamond',
+                'description' => 'Choose your path to steal the diamond.',
+                'link' => '/storage/swf/StealingTheDiamond.swf',
+                'image' => '/storage/images/stealing-the-diamond.jpg',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'The Impossible Quiz',
+                'description' => 'A quiz game with absurd questions and answers.',
+                'link' => '/storage/swf/TheImpossibleQuiz.swf',
+                'image' => '/storage/images/the-impossible-quiz.jpg',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Duck Life 4',
+                'description' => 'Train your duck to compete in races.',
+                'link' => '/storage/swf/duck-life-4.swf',
+                'image' => '/storage/images/duck-life-4.jpg',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'name' => 'Pac-Man',
-                'description' => 'Mangez des pac-gommes tout en évitant les fantômes.',
-                'link' => 'https://www.google.com/doodles/30th-anniversary-of-pac-man', // Lien direct vers Pac-Man
-                'image' => 'https://example.com/images/pacman.jpg', // Image pour Pac-Man
+                'description' => 'Eat pellets and avoid ghosts in this classic game.',
+                'link' => '/storage/swf/pacman.swf',
+                'image' => '/storage/images/pacman.jpg',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'name' => 'Snake',
-                'description' => 'Contrôlez un serpent qui grandit en mangeant des fruits.',
-                'link' => 'https://playsnake.org/', // Lien direct vers Snake
-                'image' => 'https://example.com/images/snake.jpg', // Image pour Snake
+                'name' => 'Sonic the Hedgehog',
+                'description' => 'Run and jump through levels with Sonic!',
+                'link' => '/storage/swf/sonichedgehog.swf',
+                'image' => '/storage/images/sonic-the-hedgehog.jpg',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'name' => '2048',
-                'description' => 'Combinez les tuiles pour atteindre le nombre 2048.',
-                'link' => 'https://play2048.co/', // Lien direct vers 2048
-                'image' => 'https://example.com/images/2048.jpg', // Image pour 2048
+                'name' => 'Space Invaders',
+                'description' => 'Defend the planet by shooting down invading aliens.',
+                'link' => '/storage/swf/spaceinvaders.swf',
+                'image' => '/storage/images/space-invaders.jpg',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'name' => 'Flappy Bird',
-                'description' => 'Faites voler un oiseau en évitant les obstacles.',
-                'link' => 'https://flappybird.io/', // Lien direct vers Flappy Bird
-                'image' => 'https://example.com/images/flappybird.jpg', // Image pour Flappy Bird
+                'name' => 'Tetris',
+                'description' => 'A classic block puzzle game.',
+                'link' => '/storage/swf/tetris.swf',
+                'image' => '/storage/images/tetris.jpg',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
         ]);
     }
 }
-  

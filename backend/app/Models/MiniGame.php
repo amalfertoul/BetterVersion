@@ -11,15 +11,15 @@ class MiniGame extends Model
 
     protected $table = 'mini_games';
 
-    // Update the primary key to match the migration
     protected $primaryKey = 'id';
 
-    // Ensure the primary key is auto-incrementing and of type integer
     public $incrementing = true;
     protected $keyType = 'int';
 
     protected $fillable = [
         'name',
         'description',
+        'link', // SWF link
+        'image', // Image link
     ];
 }

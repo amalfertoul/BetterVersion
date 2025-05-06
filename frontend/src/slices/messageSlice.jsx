@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 // Define the API base URL
-const API_BASE_URL = '/api/messages';
+const API_BASE_URL = 'http://127.0.0.1:8000/api/messages';
 
 // Fetch all messages sorted by timestamp
 // == hadi emlta bach automatiquement ytafichaw mrtbin ela hsab date mayhtajchi hnaya neawtohom b ydna f interface ===
@@ -69,7 +69,41 @@ const messagesSlice = createSlice({
           state.status = 'failed';
           state.error = action.payload;
         });
-    },
+        builder
+        .addCase(sendMessage.pending, (state) => {
+          state.status = 'loading';
+        })
+        .addCase(sendMessage.fulfilled, (state, action) => {
+          state.status = 'succeeded';
+        
+          const newMessage = {
+            ...action.payload,
+            timestamp: action.payload.timestamp
+              ? new Date(action.payload.timestamp).toISOString()
+              : new Date().toISOString(), // fallback to client timestamp if none
+          };
+        
+          // Optional: prevent adding duplicate messages by ID (if ID exists)
+          const exists = state.messages.some(msg => msg.id === newMessage.id);
+          if (!exists) {
+            state.messages.push(newMessage);
+          }
+        })
+        .addCase(sendMessage.rejected, (state, action) => {
+          state.status = 'failed';
+          state.error = action.payload || action.error.message;
+        })
+        
+          .addCase(deleteMessage.pending, (state) => {
+            state.status = 'loading';
+          })
+          .addCase(deleteMessage.fulfilled, (state, action) => {
+            state.status = 'succeeded';
+            state.messages = state.messages.filter(
+              (message) => message.id !== action.payload
+            ); // Remove the deleted message from the state
+        });
+    }
   });
 
 export default messagesSlice.reducer;
