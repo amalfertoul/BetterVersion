@@ -9,6 +9,7 @@ import Games from './components/games';
 import UserProfile from './components/profile';
 import Home from './components/Home';
 import FirstPage from './components/firstPage';
+import VisionBoard from './components/VisionBoard';
 
 function App() {
   const userId = useSelector((state) => state.users.userId);
@@ -24,6 +25,7 @@ function App() {
         <Route path="/explore" element={<Explore />} />
         <Route path="/games" element={<Games />} />
         <Route path="/profile" element={<UserProfile />} />
+        <Route path="/VisionBoard" element={<VisionBoard />} />
         {/* Add other routes here */}
 
       </Routes>
