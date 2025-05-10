@@ -29,3 +29,22 @@ Route::apiResource('mini-games', MiniGameController::class);
 Route::apiResource('friend-requests', FriendRequestController::class);
 Route::apiResource('visionboards', VisionBoardController::class);
 Route::apiResource('mini-game-users', MiniGameUserController::class);
+
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
+
+// Vision Boards Routes
+Route::prefix('vision-boards')->group(function () {
+    Route::get('/', [VisionBoardController::class, 'index']);
+    Route::post('/', [VisionBoardController::class, 'store']);
+    Route::get('/{id}', [VisionBoardController::class, 'show']);
+    Route::put('/{id}', [VisionBoardController::class, 'update']);
+    Route::delete('/{id}', [VisionBoardController::class, 'destroy']);
+});

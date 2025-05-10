@@ -10,7 +10,9 @@ class TaskController extends Controller
     public function index()
     {
         // Fetch all tasks with their associated user
-        return Task::with('user')->get();
+        $tasks = Task::with('user')->get();
+        return response()->json($tasks);
+
     }
 
     public function store(Request $request)

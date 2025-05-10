@@ -4,55 +4,105 @@ namespace App\Http\Controllers;
 
 use App\Models\VisionBoard;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class VisionBoardController extends Controller
 {
     public function index()
     {
-        return VisionBoard::all();
+        $visionBoards = VisionBoard::all();
+        return response()->json($visionBoards);
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string',
-            'visibility' => 'required|boolean',
-            'user_id' => 'required|exists:users,id',
-            'task_id' => 'nullable|exists:tasks,task_id',
-        ]);
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'visibility' => 'required|boolean',
+                'user_id' => 'required|exists:users,id'
+            ]);
 
-        $visionBoard = VisionBoard::create($request->only(['name', 'visibility', 'user_id', 'task_id']));
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
 
-        return response()->json($visionBoard, 201);
+            // Convert string 'true'/'false' to boolean if needed
+            $data = $request->all();
+            if (is_string($data['visibility'])) {
+                $data['visibility'] = $data['visibility'] === 'true';
+            }
+
+            $visionBoard = VisionBoard::create($data);
+
+            return response()->json($visionBoard, 201);
+        } catch (\Exception $e) {
+            \Log::error('Vision Board Creation Error: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Failed to create vision board',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function show($id)
     {
-        $visionBoard = VisionBoard::with('images')->where('vision_board_id', $id)->firstOrFail();
-
+        $visionBoard = VisionBoard::findOrFail($id);
         return response()->json($visionBoard);
     }
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name' => 'required|string',
-            'visibility' => 'required|boolean',
-            'user_id' => 'required|exists:users,id',
-            'task_id' => 'nullable|exists:tasks,task_id',
-        ]);
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'sometimes|required|string|max:255',
+                'visibility' => 'sometimes|required|boolean',
+                'user_id' => 'sometimes|required|exists:users,id'
+            ]);
 
-        $board = VisionBoard::where('board_id', $id)->firstOrFail();
-        $board->update($request->only(['name', 'visibility', 'user_id', 'task_id']));
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
 
-        return response()->json($board);
+            $visionBoard = VisionBoard::findOrFail($id);
+            $data = $request->all();
+            
+            // Convert string 'true'/'false' to boolean if needed
+            if (isset($data['visibility']) && is_string($data['visibility'])) {
+                $data['visibility'] = $data['visibility'] === 'true';
+            }
+
+            $visionBoard->update($data);
+
+            return response()->json($visionBoard);
+        } catch (\Exception $e) {
+            \Log::error('Vision Board Update Error: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Failed to update vision board',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function destroy($id)
     {
-        $board = VisionBoard::where('board_id', $id)->firstOrFail();
-        $board->delete();
+        try {
+            $visionBoard = VisionBoard::findOrFail($id);
+            $visionBoard->delete();
 
-        return response()->json(['message' => 'Vision board deleted successfully']);
+            return response()->json(null, 204);
+        } catch (\Exception $e) {
+            \Log::error('Vision Board Deletion Error: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Failed to delete vision board',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

@@ -6,10 +6,9 @@ import Register from './components/register';
 import Login from './components/login';
 import Explore from './components/explore';
 import Games from './components/games';
-import UserProfile from './components/profile';
 import Home from './components/Home';
+import Profile from './components/profile';
 import FirstPage from './components/firstPage';
-
 function App() {
   const userId = useSelector((state) => state.users.userId);
 
@@ -23,7 +22,7 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/explore" element={<Explore />} />
         <Route path="/games" element={<Games />} />
-        <Route path="/profile" element={<UserProfile />} />
+        <Route path="/profile" element={<Profile />} />
         {/* Add other routes here */}
 
       </Routes>
