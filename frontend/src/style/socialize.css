@@ -1,0 +1,153 @@
+/* ../styles/socialize.css */
+
+.socialize-container {
+    width: 100%;
+    max-width: 1200px; /* or whatever maximum width you prefer */
+    height: auto;
+    max-height: 80vh; /* prevents it from taking full viewport height */
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin: 20px auto;
+    overflow: hidden;
+}
+
+.socialize-tabs {
+    display: flex;
+    border-bottom: 1px solid #e1e1e1;
+    background: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    min-height: 50px;
+    flex-shrink: 0;
+}
+
+.socialize-tab {
+    flex: 1;
+    text-align: center;
+    padding: 15px 0;
+    font-weight: 600;
+    color: #767676;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    font-size: clamp(14px, 2vw, 16px);
+}
+
+.socialize-tab.active {
+    color: #90051a; /* Pinterest red color */
+}
+
+.socialize-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 25%;
+    width: 50%;
+    height: 3px;
+    background: #90051a;
+    border-radius: 3px 3px 0 0;
+}
+
+.socialize-pages {
+    display: flex;
+    width: 100%;
+    flex: 1;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+.socialize-page {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    padding: 15px;
+    overflow-y: auto;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+/* Responsive friend item styles */
+.socialize-friend-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    width: 100%;
+}
+
+.socialize-friend-avatar {
+    width: clamp(40px, 10vw, 50px);
+    height: clamp(40px, 10vw, 50px);
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 12px;
+}
+
+.socialize-friend-name {
+    font-weight: 600;
+    margin-bottom: 4px;
+    font-size: clamp(14px, 3vw, 16px);
+}
+
+.socialize-friend-mutual {
+    color: #767676;
+    font-size: clamp(12px, 2.5vw, 13px);
+}
+
+.socialize-follow-btn {
+    margin-left: auto;
+    background: #90051a;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: clamp(12px, 2.5vw, 14px);
+}
+
+/* Responsive card styles */
+.socialize-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 15px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.socialize-card-img {
+    width: 100%;
+    height: clamp(150px, 30vw, 200px);
+    object-fit: cover;
+}
+
+.socialize-card-content {
+    padding: 12px;
+}
+
+.socialize-card-title {
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: clamp(14px, 3vw, 16px);
+}
+
+.socialize-card-desc {
+    color: #767676;
+    font-size: clamp(12px, 2.5vw, 14px);
+}
+
+/* Hide scrollbar but keep functionality */
+.socialize-pages::-webkit-scrollbar {
+    display: none;
+}
+
+.socialize-pages {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
