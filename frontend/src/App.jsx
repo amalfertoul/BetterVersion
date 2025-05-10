@@ -9,6 +9,7 @@ import Games from './components/games';
 import Home from './components/Home';
 import Profile from './components/profile';
 import FirstPage from './components/firstPage';
+import Socialize from './components/socialize';
 function App() {
   const userId = useSelector((state) => state.users.userId);
 
@@ -23,6 +24,7 @@ function App() {
         <Route path="/explore" element={<Explore />} />
         <Route path="/games" element={<Games />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/socialize" element={<Socialize />} />
         {/* Add other routes here */}
 
       </Routes>
