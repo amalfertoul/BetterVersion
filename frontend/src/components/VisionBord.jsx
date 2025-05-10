@@ -5,6 +5,7 @@ import {
 } from '../slices/visionBoardSlice';
 import { fetchImages } from '../slices/imagesSlice';
 import { fetchCategories } from '../slices/categorySlice';
+import { Link } from 'react-router-dom';
 
 const VisionBoard = () => {
     const dispatch = useDispatch();
@@ -12,6 +13,7 @@ const VisionBoard = () => {
     const { visionBoards, loading, error } = useSelector((state) => state.visionBoard);
     const images = useSelector((state) => state.images.images);
     const categories = useSelector((state) => state.categories.categories);
+    const isAuthenticated = useSelector((state) => state.users.isAuthenticated);
     
     const [showForm, setShowForm] = useState(false);
     const [name, setName] = useState('');
@@ -83,10 +85,14 @@ const VisionBoard = () => {
     if (error) return <div>Error: {error}</div>;
 
     return (
-        <div className="container">
-            <div className="header">
-                <h2>Vision Boards</h2>
-               
+        <div className="vision-board-container">
+            <div className="vision-board-header">
+                <h1>Vision Board</h1>
+                {isAuthenticated && (
+                    <Link to="/todolist" className="todo-link">
+                        Go to Todo List
+                    </Link>
+                )}
             </div>
 
             <div className="search-section">
@@ -113,7 +119,47 @@ const VisionBoard = () => {
                 ))}
             </div>
 
-        
+            <style>{`
+                .vision-board-container {
+                    padding: 20px;
+                    max-width: 1200px;
+                    margin: 0 auto;
+                }
+
+                .vision-board-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 30px;
+                }
+
+                .vision-board-header h1 {
+                    color: #333;
+                    margin: 0;
+                }
+
+                .todo-link {
+                    display: inline-block;
+                    padding: 10px 20px;
+                    background-color: #4CAF50;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 5px;
+                    transition: background-color 0.3s ease;
+                }
+
+                .todo-link:hover {
+                    background-color: #45a049;
+                }
+
+                @media (max-width: 768px) {
+                    .vision-board-header {
+                        flex-direction: column;
+                        gap: 15px;
+                        text-align: center;
+                    }
+                }
+            `}</style>
         </div>
     );
 };
