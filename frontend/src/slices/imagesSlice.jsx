@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const API_URL = 'http://127.0.0.1:8000/api/images'; 
+const API_URL = 'http://localhost:8000/api/images'; 
 
 // Async thunks for CRUD operations
 export const fetchImages = createAsyncThunk('images/fetchImages', async () => {

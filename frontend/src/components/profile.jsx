@@ -99,9 +99,9 @@ const Profile = () => {
             console.log('Upload Data:', {
                 description: imageDescription.trim(),
                 userId: currentUserId,
-                fileType: selectedFile.type,
+                url: selectedFile.type,
                 fileSize: selectedFile.size,
-                categoryId: selectedCategory
+                category_id: selectedCategory
             });
 
             // Envoyer la requête avec les bons headers
@@ -172,7 +172,7 @@ const Profile = () => {
             <div className="profile-card">
                 <div className="profile-header">
                     <h2>My Profile</h2>
-                    <Link to="/friends" className="friends-link">
+                    <Link to="/friendsList" className="friends-link">
                         My Friends List
                     </Link>
                 </div>

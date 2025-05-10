@@ -85,8 +85,8 @@ const VisionBoard = () => {
     if (error) return <div>Error: {error}</div>;
 
     return (
-        <div className="vision-board-container">
-            <div className="vision-board-header">
+        <div>
+            <div >
                 <h1>Vision Board</h1>
                 {isAuthenticated && (
                     <Link to="/todolist" className="todo-link">
@@ -95,8 +95,8 @@ const VisionBoard = () => {
                 )}
             </div>
 
-            <div className="search-section">
-                <div className="search-box">
+            <div >
+                <div >
                     <input
                         type="text"
                         placeholder="Search by category name..."
@@ -106,7 +106,7 @@ const VisionBoard = () => {
                 </div>
             </div>
 
-            <div className="image-grid">
+            <div >
                 {filteredImages.map(image => (
                     <div key={image.id} className="image-card">
                         <img src={image.image_url} alt={image.title || 'vision'} />
@@ -119,47 +119,6 @@ const VisionBoard = () => {
                 ))}
             </div>
 
-            <style>{`
-                .vision-board-container {
-                    padding: 20px;
-                    max-width: 1200px;
-                    margin: 0 auto;
-                }
-
-                .vision-board-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 30px;
-                }
-
-                .vision-board-header h1 {
-                    color: #333;
-                    margin: 0;
-                }
-
-                .todo-link {
-                    display: inline-block;
-                    padding: 10px 20px;
-                    background-color: #4CAF50;
-                    color: white;
-                    text-decoration: none;
-                    border-radius: 5px;
-                    transition: background-color 0.3s ease;
-                }
-
-                .todo-link:hover {
-                    background-color: #45a049;
-                }
-
-                @media (max-width: 768px) {
-                    .vision-board-header {
-                        flex-direction: column;
-                        gap: 15px;
-                        text-align: center;
-                    }
-                }
-            `}</style>
         </div>
     );
 };
