@@ -9,7 +9,6 @@ import Games from './components/games';
 import Home from './components/Home';
 import Profile from './components/profile';
 import FirstPage from './components/firstPage';
-import TodoList from './sections/todolist';
 function App() {
   const userId = useSelector((state) => state.users.userId);
 
@@ -24,7 +23,6 @@ function App() {
         <Route path="/explore" element={<Explore />} />
         <Route path="/games" element={<Games />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/todolist" element={<TodoList />} />
         {/* Add other routes here */}
 
       </Routes>
