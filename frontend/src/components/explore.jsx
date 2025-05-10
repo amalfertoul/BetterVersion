@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createVisionBoard, fetchVisionBoards } from '../slices/visionBoardSlice';
 import { fetchImages } from '../slices/imagesSlice';
-import axios from 'axios';
+
 
 const CreateVisionBoard = () => {
   const dispatch = useDispatch();
