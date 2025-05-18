@@ -59,7 +59,7 @@ export const fetchImageById = createAsyncThunk('images/fetchImageById', async (i
 
 export const updateImage = createAsyncThunk('images/updateImage', async ({ id, imageData }, { rejectWithValue }) => {
     try {
-        const response = await axios.put(`${API_URL}/${id}`, imageData, {
+        const response = await axios.post(`${API_URL}/${id}?_method=PUT`, imageData, {
             headers: {
                 ...getAuthHeaders(),
                 'Content-Type': 'multipart/form-data',

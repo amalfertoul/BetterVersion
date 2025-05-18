@@ -42,8 +42,11 @@ class ImageController extends Controller
 
     public function update(Request $request, $id)
     {
+        // Log the incoming request data
+        \Log::info('Update request received:', $request->all());
+
         $request->validate([
-            'image' => 'sometimes|file|image|max:2048', // Validate the uploaded image if provided
+            'image' => 'sometimes|file|image|max:2048', // Optional image file
             'category_id' => 'required|exists:categories,id',
             'description' => 'nullable|string',
             'user_id' => 'required|exists:users,id',

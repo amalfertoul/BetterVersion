@@ -111,22 +111,33 @@ const Profile = () => {
 
         try {
             const formData = new FormData();
-            formData.append('description', imageDescription.trim());
-            formData.append('user_id', currentUser.id);
-            formData.append('category_id', selectedCategory);
 
-            // If a new image file is selected, include it in the request
+            // Append fields to FormData
+            if (imageDescription.trim()) {
+                formData.append('description', imageDescription.trim());
+            }
+            if (selectedCategory) {
+                formData.append('category_id', selectedCategory);
+            }
+            if (currentUser?.id) {
+                formData.append('user_id', currentUser.id);
+            }
             if (selectedFile) {
                 formData.append('image', selectedFile);
             }
 
-            await dispatch(
+            // Dispatch the updateImage thunk
+            const updatedImage = await dispatch(
                 updateImage({
                     id: imageId,
                     imageData: formData,
                 })
             ).unwrap();
 
+            // Update the local state to reflect the updated image
+            dispatch(fetchImages()); // Re-fetch all images to update the gallery
+
+            // Reset state after successful update
             setEditingImage(null);
             setImageDescription('');
             setSelectedFile(null);
@@ -134,6 +145,7 @@ const Profile = () => {
         } catch (error) {
             setUploadError('Failed to update image. Please try again.');
         }
+        
     };
 
     const handleDelete = async (imageId) => {
