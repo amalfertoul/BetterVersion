@@ -100,14 +100,26 @@ const Profile = () => {
         }
 
         try {
+            const formData = new FormData();
+            formData.append('description', imageDescription.trim());
+            formData.append('category_id', selectedCategory);
+            formData.append('user_id', currentUser.id);
+
+            // If a new image file is selected, include it in the request
+            if (selectedFile) {
+                formData.append('image', selectedFile);
+            }
+
             await dispatch(
                 updateImage({
                     id: imageId,
-                    imageData: { description: imageDescription.trim() },
+                    imageData: formData,
                 })
             ).unwrap();
+
             setEditingImage(null);
             setImageDescription('');
+            setSelectedFile(null);
             setUploadError('');
         } catch (error) {
             setUploadError('Failed to update image. Please try again.');

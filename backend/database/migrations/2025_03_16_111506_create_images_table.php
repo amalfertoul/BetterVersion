@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('images', function (Blueprint $table) {
             $table->id('id');
-            $table->string('url');
+            $table->string('url')->nullable();
             $table->text('description');
             $table->foreignId('user_id')->constrained('users'); 
             $table->foreignId('category_id')->constrained('categories');
