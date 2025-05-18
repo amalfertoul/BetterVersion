@@ -15,13 +15,22 @@ class ImageController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'url' => 'required|string',
+            'image' => 'required|file|image|max:2048', // Validate the uploaded image
             'category_id' => 'required|exists:categories,id',
-            'description' => 'nullable|string', 
-            'user_id' => 'required|exists:users,id', // Ensure 'user_id' is provided and valid
+            'description' => 'nullable|string',
+            'user_id' => 'required|exists:users,id',
         ]);
-
-        $data = $request->only(['url', 'description', 'user_id', 'category_id']);
+    
+        // Store the uploaded image
+        $imagePath = $request->file('image')->store('images', 'public');
+    
+        $data = [
+            'url' => $imagePath, // Save the image path as the URL
+            'description' => $request->description,
+            'user_id' => $request->user_id,
+            'category_id' => $request->category_id,
+        ];
+    
         return Image::create($data);
     }
 
