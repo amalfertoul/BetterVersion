@@ -28,6 +28,7 @@ const Profile = () => {
     const [showUploadForm, setShowUploadForm] = useState(false);
     const [uploadError, setUploadError] = useState('');
     const [isUploading, setIsUploading] = useState(false);
+    
 
     useEffect(() => {
         if (!currentUser) {
@@ -93,6 +94,15 @@ const Profile = () => {
         }
     };
 
+    const startEditing = (image) => {
+        setEditingImage(image.id);
+        setImageDescription(image.description);
+        setSelectedCategory(image.category_id); 
+        setShowUploadForm(true); 
+
+    };
+    
+
     const handleUpdate = async (imageId) => {
         if (!imageDescription.trim()) {
             setUploadError('Please provide a description');
@@ -102,8 +112,8 @@ const Profile = () => {
         try {
             const formData = new FormData();
             formData.append('description', imageDescription.trim());
-            formData.append('category_id', selectedCategory);
             formData.append('user_id', currentUser.id);
+            formData.append('category_id', selectedCategory);
 
             // If a new image file is selected, include it in the request
             if (selectedFile) {
@@ -305,6 +315,27 @@ const Profile = () => {
                                                 onChange={(e) => setImageDescription(e.target.value)}
                                                 placeholder="New description"
                                             />
+
+                                    <div className="form-group">
+                                        <label htmlFor="imageCategory">Category</label>
+                                        <select
+                                            id="imageCategory"
+                                            value={selectedCategory}
+                                            onChange={(e) => setSelectedCategory(e.target.value)}
+                                            disabled={isUploading}
+                                        >
+                                            <option value="">Select a category</option>
+                                            {categories.map((category) => (
+                                                <option key={category.id} value={category.id}>
+                                                    {category.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+
+
+                                            
                                             <div className="edit-buttons">
                                                 <button
                                                     className="save-btn"
@@ -330,11 +361,7 @@ const Profile = () => {
                                             <div className="action-buttons">
                                                 <button
                                                     className="edit-btn"
-                                                    onClick={() => {
-                                                        setEditingImage(image.id);
-                                                        setImageDescription(image.description);
-                                                        setUploadError('');
-                                                    }}
+                                                    onClick={() => startEditing(image)}
                                                 >
                                                     Edit
                                                 </button>
