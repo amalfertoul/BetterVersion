@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class UsersSeeder extends Seeder
 {
@@ -15,12 +15,32 @@ class UsersSeeder extends Seeder
     {
         DB::table('users')->insert([
             [
-                'username' => 'admin',
-                'fullname' => 'DEVOWFS201',
-                'email' => 'DEVOWFS201@gmail.com',
-                'profile_picture' => null,
-                'password' => Hash::make('DEVOWFS201'),
-                'isAdmin' => true,  
+                'username' => 'lupus',
+                'fullname' => 'Lupus Maximus',
+                'email' => 'lupus@example.com',
+                'profile_picture' => 'pfp/lupus.jfif',
+                'password' => Hash::make('1234'),
+                'isAdmin' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'username' => 'caesar',
+                'fullname' => 'Caesar Augustus',
+                'email' => 'caesar@example.com',
+                'profile_picture' => 'pfp/caesar.jfif',
+                'password' => Hash::make('1234'),
+                'isAdmin' => false,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'username' => 'marcus',
+                'fullname' => 'Marcus Aurelius',
+                'email' => 'marcus@example.com',
+                'profile_picture' => 'pfp/marcus.jfif',
+                'password' => Hash::make('1234'),
+                'isAdmin' => false,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

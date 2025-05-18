@@ -16,7 +16,6 @@ use App\Http\Controllers\MiniGameUserController;
 // });
 
 Route::post('login', [UserController::class, 'login']);
-Route::post('register', [UserController::class, 'store']);
 Route::post('logout', [UserController::class, 'logout']);
 Route::apiResource('users', UserController::class);
 Route::apiResource('images', ImageController::class);
