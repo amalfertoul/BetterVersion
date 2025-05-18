@@ -1,32 +1,91 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const API_URL = 'http://127.0.0.1:8000/api/images'; 
+const API_URL = 'http://127.0.0.1:8000/api/images';
+
+// Helper function to get the token from localStorage
+const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    return {
+        Authorization: `Bearer ${token}`,
+    };
+};
 
 // Async thunks for CRUD operations
-export const fetchImages = createAsyncThunk('images/fetchImages', async () => {
-    const response = await axios.get(API_URL);
-    return response.data;
+export const fetchImages = createAsyncThunk('images/fetchImages', async (_, { rejectWithValue }) => {
+    try {
+        const response = await axios.get(API_URL, {
+            headers: getAuthHeaders(),
+        });
+        return response.data;
+    } catch (error) {
+        if (error.response?.status === 401) {
+            return rejectWithValue('Unauthorized: Please log in.');
+        }
+        return rejectWithValue(error.response?.data || 'Failed to fetch images.');
+    }
 });
 
-export const createImage = createAsyncThunk('images/createImage', async (imageData) => {
-    const response = await axios.post(API_URL, imageData);
-    return response.data;
+export const createImage = createAsyncThunk('images/createImage', async (imageData, { rejectWithValue }) => {
+    try {
+        const response = await axios.post(API_URL, imageData, {
+            headers: {
+                ...getAuthHeaders(),
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        if (error.response?.status === 401) {
+            return rejectWithValue('Unauthorized: Please log in.');
+        }
+        return rejectWithValue(error.response?.data || 'Failed to create image.');
+    }
 });
 
-export const fetchImageById = createAsyncThunk('images/fetchImageById', async (id) => {
-    const response = await axios.get(`${API_URL}/${id}`);
-    return response.data;
+export const fetchImageById = createAsyncThunk('images/fetchImageById', async (id, { rejectWithValue }) => {
+    try {
+        const response = await axios.get(`${API_URL}/${id}`, {
+            headers: getAuthHeaders(),
+        });
+        return response.data;
+    } catch (error) {
+        if (error.response?.status === 401) {
+            return rejectWithValue('Unauthorized: Please log in.');
+        }
+        return rejectWithValue(error.response?.data || 'Failed to fetch image.');
+    }
 });
 
-export const updateImage = createAsyncThunk('images/updateImage', async ({ id, imageData }) => {
-    const response = await axios.put(`${API_URL}/${id}`, imageData);
-    return response.data;
+export const updateImage = createAsyncThunk('images/updateImage', async ({ id, imageData }, { rejectWithValue }) => {
+    try {
+        const response = await axios.put(`${API_URL}/${id}`, imageData, {
+            headers: {
+                ...getAuthHeaders(),
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        if (error.response?.status === 401) {
+            return rejectWithValue('Unauthorized: Please log in.');
+        }
+        return rejectWithValue(error.response?.data || 'Failed to update image.');
+    }
 });
 
-export const deleteImage = createAsyncThunk('images/deleteImage', async (id) => {
-    const response = await axios.delete(`${API_URL}/${id}`);
-    return id;
+export const deleteImage = createAsyncThunk('images/deleteImage', async (id, { rejectWithValue }) => {
+    try {
+        const response = await axios.delete(`${API_URL}/${id}`, {
+            headers: getAuthHeaders(),
+        });
+        return id;
+    } catch (error) {
+        if (error.response?.status === 401) {
+            return rejectWithValue('Unauthorized: Please log in.');
+        }
+        return rejectWithValue(error.response?.data || 'Failed to delete image.');
+    }
 });
 
 // Initial state
@@ -45,9 +104,6 @@ const imagesSlice = createSlice({
     extraReducers: (builder) => {
         builder
             // Fetch all images
-            //===== hadi anhtajoha f explore page fain aytleolkom gae images fhal pintress =====
-            // === anhtajoha aussi f lvision board fach ghatcliki fih ghaytleolk gae les images {li anfiltriwhom b id d vision board}
-            // don anhtajo neayto n had fetch ms nfiltriw eliha f interface ===
             .addCase(fetchImages.pending, (state) => {
                 state.status = 'loading';
             })
@@ -57,32 +113,38 @@ const imagesSlice = createSlice({
             })
             .addCase(fetchImages.rejected, (state, action) => {
                 state.status = 'failed';
-                state.error = action.error.message;
+                state.error = action.payload;
             })
             // Create image
-            // === hadi anhtajoha f page profile fain anb9aw npubliyiw images li ghaykon id d user dialom hua li msjl f userSlic===
             .addCase(createImage.fulfilled, (state, action) => {
                 state.images.push(action.payload);
             })
+            .addCase(createImage.rejected, (state, action) => {
+                state.error = action.payload;
+            })
             // Fetch image by ID
-            // === hadi anhtajoha f vision board i guess hit knhtajo mhm khaliwha hnaya hhhh ===
             .addCase(fetchImageById.fulfilled, (state, action) => {
                 state.image = action.payload;
             })
+            .addCase(fetchImageById.rejected, (state, action) => {
+                state.error = action.payload;
+            })
             // Update image
-            // ==== hadi hta hia aneatola f profile bach n updatiw image li hnaya mpostyin ===
-            // === b had update hadi kan9dro nbdlo l id d vision board mn null n vision board li bghina ===
-            // === bach anbqaw n ajoutiw les images n vision board dialna ===
             .addCase(updateImage.fulfilled, (state, action) => {
                 const index = state.images.findIndex((img) => img.id === action.payload.id);
                 if (index !== -1) {
                     state.images[index] = action.payload;
                 }
             })
+            .addCase(updateImage.rejected, (state, action) => {
+                state.error = action.payload;
+            })
             // Delete image
-            // === f profile fach atbghi tmsah pic ===
             .addCase(deleteImage.fulfilled, (state, action) => {
                 state.images = state.images.filter((img) => img.id !== action.payload);
+            })
+            .addCase(deleteImage.rejected, (state, action) => {
+                state.error = action.payload;
             });
     },
 });
