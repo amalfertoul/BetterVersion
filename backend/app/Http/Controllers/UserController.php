@@ -136,6 +136,8 @@ class UserController extends Controller
             ? Storage::url($user->profile_picture) 
             : null;
     
+        $token = $user->createToken('auth_token')->plainTextToken;
+    
         return response()->json([
             'user' => [
                 'id' => $user->id,
@@ -144,13 +146,18 @@ class UserController extends Controller
                 'email' => $user->email,
                 'profile_picture_url' => $user->profile_picture_url,
                 'isAdmin' => $user->isAdmin,
-            ]
+            ],
+            'access_token' => $token,
+            'token_type' => 'Bearer',
         ]);
-    }
+    }    
     
 
-    public function logout()
+    public function logout(Request $request)
     {
+        $request->user()->currentAccessToken()->delete();
+    
         return response()->json(['message' => 'Logged out successfully']);
     }
+    
 }

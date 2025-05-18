@@ -12,8 +12,10 @@ use App\Http\Controllers\FriendRequestController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\VisionBoardController;
 use App\Http\Controllers\MiniGameUserController;
-// Route::middleware('auth:sanctum')->group(function () {
-// });
+Route::middleware('auth:sanctum')->group(function () {
+    
+Route::apiResource('users', UserController::class);
+});
 
 Route::post('login', [UserController::class, 'login']);
 Route::post('logout', [UserController::class, 'logout']);
