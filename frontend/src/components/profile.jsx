@@ -284,7 +284,7 @@ const Profile = () => {
                         <div className="image-gallery">
                             {userImages.map((image) => (
                                 <div key={image.id} className="image-card">
-                                    <img src={image.url} alt={image.description} />
+                                    <img src={`http://127.0.0.1:8000/storage/${image.url}`} alt={image.description} />
                                     {editingImage === image.id ? (
                                         <div className="edit-form">
                                             <input
