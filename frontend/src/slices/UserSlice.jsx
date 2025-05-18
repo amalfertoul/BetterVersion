@@ -6,23 +6,20 @@ const API_URL = 'http://localhost:8000/api';
 
 // Async Thunks for CRUD operations
 
-// Fetch all users
-export const fetchUsers = createAsyncThunk('users/fetchUsers', async (_, { rejectWithValue }) => {
-    try {
-        const response = await axios.get(`${API_URL}/users`);
-        return response.data;
-    } catch (error) {
-        return rejectWithValue(error.response.data);
-    }
-});
-
-// Register a new user
+// Register user
 export const registerUser = createAsyncThunk('users/registerUser', async (userData, { rejectWithValue }) => {
     try {
-        const response = await axios.post(`${API_URL}/register`, userData);
+        const response = await axios.post(`${API_URL}/register`, userData, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+        });
+
         return response.data;
     } catch (error) {
-        return rejectWithValue(error.response.data);
+        console.error('Register error:', error.response?.data || error.message);
+        return rejectWithValue(error.response?.data || 'Registration failed');
     }
 });
 
@@ -30,14 +27,16 @@ export const registerUser = createAsyncThunk('users/registerUser', async (userDa
 export const loginUser = createAsyncThunk('users/loginUser', async (credentials, { rejectWithValue }) => {
     try {
         const response = await axios.post(`${API_URL}/login`, credentials, {
-            withCredentials: true,
             headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json'
-            }
-          });
-          state.userId = action.payload.user.id;
-          localStorage.setItem('userId', action.payload.user.id);
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+        });
+
+        // Store token in localStorage
+        const { access_token, user } = response.data;
+        localStorage.setItem('token', access_token);
+        localStorage.setItem('user', JSON.stringify(user));
 
         return response.data;
     } catch (error) {
@@ -49,64 +48,80 @@ export const loginUser = createAsyncThunk('users/loginUser', async (credentials,
 // Logout user
 export const logoutUser = createAsyncThunk('users/logoutUser', async (_, { rejectWithValue }) => {
     try {
-        const response = await axios.post(`${API_URL}/logout`);
+        const token = localStorage.getItem('token');
+        const response = await axios.post(`${API_URL}/logout`, {}, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        // Clear token and user data from localStorage
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+
         return response.data;
     } catch (error) {
-        return rejectWithValue(error.response.data);
+        return rejectWithValue(error.response?.data || 'Logout failed');
     }
 });
 
-// Fetch a single user by ID
-export const fetchUserById = createAsyncThunk('users/fetchUserById', async (id, { rejectWithValue }) => {
+// Fetch current user details
+export const fetchCurrentUser = createAsyncThunk('users/fetchCurrentUser', async (_, { rejectWithValue }) => {
     try {
-        const response = await axios.get(`${API_URL}/users/${id}`);
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${API_URL}/user`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
         return response.data;
     } catch (error) {
-        return rejectWithValue(error.response.data);
+        return rejectWithValue(error.response?.data || 'Failed to fetch user');
     }
 });
 
-// Update a user
-export const updateUser = createAsyncThunk('users/updateUser', async ({ id, userData }, { rejectWithValue }) => {
+// Fetch all users
+export const fetchUsers = createAsyncThunk('users/fetchUsers', async (_, { rejectWithValue }) => {
     try {
-        const response = await axios.put(`${API_URL}/users/${id}`, userData);
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${API_URL}/users`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
         return response.data;
     } catch (error) {
-        return rejectWithValue(error.response.data);
+        return rejectWithValue(error.response?.data || 'Failed to fetch users');
     }
 });
 
-// Delete a user
+// Delete user
 export const deleteUser = createAsyncThunk('users/deleteUser', async (id, { rejectWithValue }) => {
     try {
-        const response = await axios.delete(`${API_URL}/users/${id}`);
+        const token = localStorage.getItem('token');
+        const response = await axios.delete(`${API_URL}/users/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
         return response.data;
     } catch (error) {
-        return rejectWithValue(error.response.data);
+        return rejectWithValue(error.response?.data || 'Failed to delete user');
     }
 });
 
 // Initial state
 const initialState = {
+    user: JSON.parse(localStorage.getItem('user')) || null,
+    token: localStorage.getItem('token') || null,
+    isAuthenticated: !!localStorage.getItem('token'),
     users: [],
-    user: null,
-    userId: null,
-    isAuthenticated: false,
     loading: false,
     error: null,
 };
-// Update user profile (new function)
-export const updateUserProfile = createAsyncThunk(
-    'users/updateUserProfile',
-    async ({ id, profileData }, { rejectWithValue }) => {
-        try {
-            const response = await axios.put(`${API_URL}/users/${id}`, profileData);
-            return response.data;
-        } catch (error) {
-            return rejectWithValue(error.response.data);
-        }
-    }
-);
 
 // Slice
 const userSlice = createSlice({
@@ -118,27 +133,14 @@ const userSlice = createSlice({
         },
         resetUser: (state) => {
             state.user = null;
-        },
-        // zadeta 3la  9bel les messages
-        setUserId: (state, action) => {
-            state.userId = action.payload;
+            state.token = null;
+            state.isAuthenticated = false;
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
         },
     },
     extraReducers: (builder) => {
         builder
-            // Fetch all users
-            .addCase(fetchUsers.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(fetchUsers.fulfilled, (state, action) => {
-                state.loading = false;
-                state.users = action.payload;
-            })
-            .addCase(fetchUsers.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            })
             // Register user
             .addCase(registerUser.pending, (state) => {
                 state.loading = true;
@@ -146,8 +148,7 @@ const userSlice = createSlice({
             })
             .addCase(registerUser.fulfilled, (state, action) => {
                 state.loading = false;
-                state.users.push(action.payload);
-                state.userId = action.payload.id;
+                state.user = action.payload;
             })
             .addCase(registerUser.rejected, (state, action) => {
                 state.loading = false;
@@ -161,8 +162,8 @@ const userSlice = createSlice({
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.loading = false;
                 state.user = action.payload.user;
+                state.token = action.payload.access_token;
                 state.isAuthenticated = true;
-                state.userId = action.payload.user.id; 
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false;
@@ -176,39 +177,36 @@ const userSlice = createSlice({
             .addCase(logoutUser.fulfilled, (state) => {
                 state.loading = false;
                 state.user = null;
+                state.token = null;
                 state.isAuthenticated = false;
-                state.userId = null;
             })
             .addCase(logoutUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })
-            // Fetch user by ID
-            .addCase(fetchUserById.pending, (state) => {
+            // Fetch current user
+            .addCase(fetchCurrentUser.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(fetchUserById.fulfilled, (state, action) => {
+            .addCase(fetchCurrentUser.fulfilled, (state, action) => {
                 state.loading = false;
                 state.user = action.payload;
             })
-            .addCase(fetchUserById.rejected, (state, action) => {
+            .addCase(fetchCurrentUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })
-            // Update user
-            .addCase(updateUser.pending, (state) => {
+            // Fetch all users
+            .addCase(fetchUsers.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(updateUser.fulfilled, (state, action) => {
+            .addCase(fetchUsers.fulfilled, (state, action) => {
                 state.loading = false;
-                const index = state.users.findIndex((user) => user.id === action.payload.id);
-                if (index !== -1) {
-                    state.users[index] = action.payload;
-                }
+                state.users = action.payload;
             })
-            .addCase(updateUser.rejected, (state, action) => {
+            .addCase(fetchUsers.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })
@@ -229,5 +227,5 @@ const userSlice = createSlice({
 });
 
 // Export actions and reducer
-export const { resetError, resetUser, setUserId } = userSlice.actions;
+export const { resetError, resetUser } = userSlice.actions;
 export default userSlice.reducer;

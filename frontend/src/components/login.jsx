@@ -4,11 +4,11 @@ import { loginUser, resetError } from '../slices/UserSlice';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [emailError, setEmailError] = useState('');
+    const [usernameError, setUsernameError] = useState('');
     const [passwordError, setPasswordError] = useState('');
-    
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -20,11 +20,11 @@ const Login = () => {
         // Basic validation
         let valid = true;
 
-        if (!email) {
-            setEmailError('Email is required');
+        if (!username) {
+            setUsernameError('Username is required');
             valid = false;
         } else {
-            setEmailError('');
+            setUsernameError('');
         }
 
         if (!password) {
@@ -36,11 +36,11 @@ const Login = () => {
 
         if (!valid) return;
 
-        const result = await dispatch(loginUser({ email, password }));
+        const result = await dispatch(loginUser({ username, password }));
 
         if (result?.payload?.user?.id) {
             alert('Login successful!');
-            navigate('/profile'); // Redirect to the profile page after registration
+            navigate('/profile'); // Redirect to the profile page after login
         } else {
             alert('Login failed. Please check your credentials.');
         }
@@ -65,14 +65,14 @@ const Login = () => {
             <h2>Login</h2>
             <form onSubmit={handleSubmit}>
                 <div>
-                    <label>Email:</label>
+                    <label>Username:</label>
                     <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        type="text"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
                         required
                     />
-                    {emailError && <p className="error">{emailError}</p>}
+                    {usernameError && <p className="error">{usernameError}</p>}
                 </div>
                 <div>
                     <label>Password:</label>
