@@ -9,8 +9,7 @@ import '../style/profile.css';
 
 const Profile = () => {
     const dispatch = useDispatch();
-    const currentUser = useSelector((state) => state.users.user); // Get the logged-in user
-    const users = useSelector((state) => state.users.users);
+    const currentUser = useSelector((state) => state.users.user);
     const { images } = useSelector((state) => state.images);
     const { categories } = useSelector((state) => state.categories);
     const {
@@ -143,7 +142,7 @@ const Profile = () => {
                 <div className="profile-content">
                     <div className="profile-avatar">
                         {currentUser.profile_picture_url ? (
-                            <img src={currentUser.profile_picture_url} alt="Profile" />
+                            <img src={`http://127.0.0.1:8000${currentUser.profile_picture_url}`} alt="Profile" />
                         ) : (
                             <div className="default-avatar">
                                 {currentUser.username?.charAt(0) || 'U'}
