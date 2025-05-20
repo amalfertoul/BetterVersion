@@ -160,6 +160,44 @@ const Profile = () => {
         }
     };
 
+    const [pfpFile, setPfpFile] = useState(null);
+
+    const handlePfpChange = async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Image must be under 5MB');
+                return;
+            }
+
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('Only JPG, PNG, or WEBP images allowed');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('profile_picture', file);
+            formData.append('user_id', currentUser.id);
+
+            try {
+                // Send request to update profile picture
+                const response = await fetch(`http://127.0.0.1:8000/api/users/${currentUser.id}/update-profile-picture`, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) throw new Error('Failed to upload');
+
+                // Re-fetch user data to update the picture
+                dispatch(fetchUsers());
+            } catch (err) {
+                alert('Error updating profile picture.');
+            }
+        }
+    };
+
+
     const handleLogout = async () => {
         try {
             await dispatch(logoutUser()).unwrap(); // Dispatch the logout action
@@ -192,12 +230,27 @@ const Profile = () => {
                 <div className="profile-content">
                     <div className="profile-avatar">
                         {currentUser.profile_picture_url ? (
-                            <img src={`http://127.0.0.1:8000${currentUser.profile_picture_url}`} alt="Profile" />
+                            <img
+                                src={`http://127.0.0.1:8000${currentUser.profile_picture_url}`}
+                                alt="Profile"
+                            />
                         ) : (
                             <div className="default-avatar">
                                 {currentUser.username?.charAt(0) || 'U'}
                             </div>
                         )}
+
+                        {/* Change Profile Picture Button */}
+                        <input
+                            type="file"
+                            id="pfp-upload"
+                            accept="image/*"
+                            style={{ display: 'none' }}
+                            onChange={handlePfpChange}
+                        />
+                        <button className="change-pfp-btn" onClick={() => document.getElementById('pfp-upload').click()}>
+                            Change Profile Picture
+                        </button>
                     </div>
 
                     <div className="profile-info">

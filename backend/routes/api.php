@@ -33,6 +33,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('visionboards', VisionBoardController::class);
     Route::apiResource('mini-game-users', MiniGameUserController::class);
 
+    Route::post('/users/{id}/update-profile-picture', [UserController::class, 'updateProfilePicture']);
+
+    
     // Vision Boards Routes
     Route::prefix('vision-boards')->group(function () {
         Route::get('/', [VisionBoardController::class, 'index']);

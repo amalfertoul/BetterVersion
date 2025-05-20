@@ -159,5 +159,24 @@ class UserController extends Controller
     
         return response()->json(['message' => 'Logged out successfully']);
     }
+
+
+    public function updateProfilePicture(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        if ($request->hasFile('profile_picture')) {
+            $file = $request->file('profile_picture');
+            $path = $file->store('profile_pictures', 'public');
+
+            $user->profile_picture_url = '/storage/' . $path;
+            $user->save();
+
+            return response()->json(['message' => 'Profile picture updated', 'path' => $path], 200);
+        }
+
+        return response()->json(['error' => 'No image uploaded'], 400);
+    }
+
     
 }
