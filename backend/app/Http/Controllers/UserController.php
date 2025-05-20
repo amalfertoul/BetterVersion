@@ -163,20 +163,26 @@ class UserController extends Controller
 
     public function updateProfilePicture(Request $request, $id)
     {
+        $request->validate([
+            'profile_picture' => 'required|image|mimes:jpeg,png,webp|max:5120',
+        ]);
+
         $user = User::findOrFail($id);
 
         if ($request->hasFile('profile_picture')) {
             $file = $request->file('profile_picture');
-            $path = $file->store('profile_pictures', 'public');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('pfp', $filename, 'public');
 
-            $user->profile_picture_url = '/storage/' . $path;
+            $user->profile_picture = $path;
             $user->save();
 
             return response()->json(['message' => 'Profile picture updated', 'path' => $path], 200);
         }
 
-        return response()->json(['error' => 'No image uploaded'], 400);
+        return response()->json(['message' => 'No image uploaded'], 400);
     }
+
 
     
 }

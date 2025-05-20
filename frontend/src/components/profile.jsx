@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import axios from 'axios';
 import { fetchUsers, logoutUser } from '../slices/UserSlice';
 import { fetchImages, createImage, updateImage, deleteImage } from '../slices/imagesSlice';
 import { fetchCategories } from '../slices/categorySlice';
@@ -30,6 +31,8 @@ const Profile = () => {
     const [uploadError, setUploadError] = useState('');
     const [isUploading, setIsUploading] = useState(false);
     
+    const token = localStorage.getItem('token');
+
 
     useEffect(() => {
         if (!currentUser) {
@@ -164,38 +167,48 @@ const Profile = () => {
 
     const handlePfpChange = async (e) => {
         const file = e.target.files[0];
-        if (file) {
-            if (file.size > 5 * 1024 * 1024) {
-                alert('Image must be under 5MB');
-                return;
+        if (!file) return;
+    
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Image must be under 5MB');
+            return;
+        }
+    
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+            alert('Only JPG, PNG, or WEBP images allowed');
+            return;
+        }
+    
+        const formData = new FormData();
+        formData.append('profile_picture', file);
+        formData.append('user_id', currentUser.id);
+    
+        try {
+            const response = await axios.post(
+                `http://127.0.0.1:8000/api/users/${currentUser.id}/update-profile-picture`,
+                formData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
+            );
+    
+            // Optional: check if Laravel responded with success
+            if (response.status !== 200) {
+                throw new Error('Failed to upload');
             }
-
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-            if (!allowedTypes.includes(file.type)) {
-                alert('Only JPG, PNG, or WEBP images allowed');
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('profile_picture', file);
-            formData.append('user_id', currentUser.id);
-
-            try {
-                // Send request to update profile picture
-                const response = await fetch(`http://127.0.0.1:8000/api/users/${currentUser.id}/update-profile-picture`, {
-                    method: 'POST',
-                    body: formData,
-                });
-
-                if (!response.ok) throw new Error('Failed to upload');
-
-                // Re-fetch user data to update the picture
-                dispatch(fetchUsers());
-            } catch (err) {
-                alert('Error updating profile picture.');
-            }
+    
+            // Re-fetch user data to update the picture
+            dispatch(fetchUsers());
+        } catch (err) {
+            console.error(err);
+            alert('Error updating profile picture.');
         }
     };
+    
 
 
     const handleLogout = async () => {
