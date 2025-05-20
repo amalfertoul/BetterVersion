@@ -42,7 +42,7 @@ class UserController extends Controller
 
         $profilePicturePath = $request->file('profile_picture') 
             ? $request->file('profile_picture')->store('pfe', 'public') 
-            : 'defaultpfp.jpg'; // Default profile picture
+            : 'pfp/defaultpfp.jpg'; // Default profile picture
 
         $user = User::create([
             'username' => $request->username,
