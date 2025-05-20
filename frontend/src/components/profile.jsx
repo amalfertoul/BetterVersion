@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchUsers } from '../slices/UserSlice';
+import { fetchUsers, logoutUser } from '../slices/UserSlice';
 import { fetchImages, createImage, updateImage, deleteImage } from '../slices/imagesSlice';
 import { fetchCategories } from '../slices/categorySlice';
 import { fetchUserPerformance } from '../slices/userPerformanceSlice';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../style/profile.css';
 
 const Profile = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const currentUser = useSelector((state) => state.users.user);
     const { images } = useSelector((state) => state.images);
     const { categories } = useSelector((state) => state.categories);
@@ -159,6 +160,15 @@ const Profile = () => {
         }
     };
 
+    const handleLogout = async () => {
+        try {
+            await dispatch(logoutUser()).unwrap(); // Dispatch the logout action
+            navigate('/login'); // Redirect to the login page after logout
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
+    };
+
     if (!currentUser) {
         return <div className="loading">Loading profile...</div>;
     }
@@ -168,9 +178,15 @@ const Profile = () => {
             <div className="profile-card">
                 <div className="profile-header">
                     <h2>My Profile</h2>
-                    <Link to="/friends" className="friends-link">
-                        My Friends List
-                    </Link>
+                    {currentUser ? (
+                        <button className="logout-btn" onClick={handleLogout}>
+                            Logout
+                        </button>
+                    ) : (
+                        <Link to="/register" className="register-link">
+                            Register
+                        </Link>
+                    )}
                 </div>
 
                 <div className="profile-content">

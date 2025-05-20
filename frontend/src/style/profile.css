@@ -143,3 +143,27 @@
     padding: 20px;
     color: #666;
 }
+
+.logout-btn {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.logout-btn:hover {
+    background-color: #ff1a1a;
+}
+
+.register-link {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.register-link:hover {
+    text-decoration: underline;
+}
