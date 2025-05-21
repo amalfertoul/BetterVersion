@@ -1,0 +1,76 @@
+[33mf283db6[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/main[m[33m)[m HEAD@{0}: pull origin main: Fast-forward
+[33m84c97f9[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/NoErrors[m[33m, [m[1;32mNoErrors[m[33m, [m[1;32mNoErreurs[m[33m)[m HEAD@{1}: checkout: moving from NoErrors to master
+[33m84c97f9[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/NoErrors[m[33m, [m[1;32mNoErrors[m[33m, [m[1;32mNoErreurs[m[33m)[m HEAD@{2}: checkout: moving from master to NoErrors
+[33m84c97f9[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/NoErrors[m[33m, [m[1;32mNoErrors[m[33m, [m[1;32mNoErreurs[m[33m)[m HEAD@{3}: checkout: moving from NoErreurs to master
+[33m84c97f9[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/NoErrors[m[33m, [m[1;32mNoErrors[m[33m, [m[1;32mNoErreurs[m[33m)[m HEAD@{4}: checkout: moving from master to NoErreurs
+[33m84c97f9[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/NoErrors[m[33m, [m[1;32mNoErrors[m[33m, [m[1;32mNoErreurs[m[33m)[m HEAD@{5}: commit: socialize style
+[33me5a17a3[m HEAD@{6}: reset: moving to HEAD
+[33me5a17a3[m HEAD@{7}: commit: socialize page
+[33m8a92de5[m HEAD@{8}: commit: restructuring
+[33mf0ae36f[m HEAD@{9}: pull origin main: Fast-forward
+[33m60cf1f8[m HEAD@{10}: commit: conversation first version / succesfull test
+[33m8677530[m HEAD@{11}: reset: moving to origin/main
+[33mbbbedce[m HEAD@{12}: commit: fixing chats section functions
+[33mb11f891[m HEAD@{13}: commit: fixing a little problem in images backend
+[33mce03789[m HEAD@{14}: pull origin main: Fast-forward
+[33mb03623d[m HEAD@{15}: reset: moving to HEAD
+[33mb03623d[m HEAD@{16}: commit: friends list
+[33m28915b0[m HEAD@{17}: commit: friend request section testing
+[33m7f40026[m HEAD@{18}: commit: friend suggestions explanaition
+[33m2ecae98[m HEAD@{19}: commit: suggestions done
+[33m938560f[m HEAD@{20}: commit: gameuser test done properly + id
+[33m11c5b17[m HEAD@{21}: reset: moving to origin/main
+[33m2695824[m HEAD@{22}: commit: redirect to profile after login or register
+[33md183aba[m HEAD@{23}: commit: work with register pls ch7fttt wana kneawt les erreur gha d navbar pls man
+[33md6ac8a6[m HEAD@{24}: pull origin main: Fast-forward
+[33m8c92533[m HEAD@{25}: reset: moving to HEAD
+[33m8c92533[m HEAD@{26}: pull origin main: Fast-forward
+[33m8bfc2b7[m HEAD@{27}: commit: last slice
+[33m60ee8a1[m HEAD@{28}: commit: make sure to call all the slices in the store
+[33md6bd0b5[m HEAD@{29}: commit: friend Request slice first version / if not last
+[33m22bd22c[m HEAD@{30}: commit: fixing game and game user slices
+[33m2cbbab3[m HEAD@{31}: commit: final touches , only messages and friend request slices lasts
+[33m632bf9f[m HEAD@{32}: pull origin main: Fast-forward
+[33m7ebbd34[m HEAD@{33}: commit: first collection of explained slices
+[33m3ce6418[m HEAD@{34}: pull origin main: Fast-forward
+[33mbaa4f26[m HEAD@{35}: pull origin main: Fast-forward
+[33mb123892[m HEAD@{36}: commit: user performance slice
+[33mba00779[m HEAD@{37}: commit: taskSlice
+[33m9d32f78[m HEAD@{38}: commit: userId stored in the userSlice
+[33mb6ca9ff[m HEAD@{39}: pull origin main: Fast-forward
+[33m118ec32[m HEAD@{40}: commit: last test
+[33m7a02b8a[m HEAD@{41}: commit: login testing 2
+[33mc496494[m HEAD@{42}: commit: login testing
+[33m4e6a825[m HEAD@{43}: commit: fixing the main jsx
+[33mf2888a6[m HEAD@{44}: reset: moving to HEAD
+[33mf2888a6[m HEAD@{45}: pull origin main: Fast-forward
+[33m85a3ed2[m HEAD@{46}: commit: i don t know what in the actual hell
+[33m3bfe0c0[m HEAD@{47}: reset: moving to origin/main
+[33me5fcce7[m HEAD@{48}: commit: register worked yey
+[33m2416067[m HEAD@{49}: reset: moving to origin/main
+[33m2416067[m HEAD@{50}: pull origin main: Fast-forward
+[33mf0cbf74[m HEAD@{51}: commit: adding user slice , login and register pages ; its need navbar to work
+[33md2b17ea[m HEAD@{52}: commit: removing authentification middle ware to make work easier ,
+[33m81caf8a[m HEAD@{53}: pull origin main: Fast-forward
+[33m0c940e9[m HEAD@{54}: commit: fixing imports
+[33md7a24f2[m HEAD@{55}: commit: fixing model to work properly with migration
+[33m0e760f8[m HEAD@{56}: pull origin main: Fast-forward
+[33m4ae9a3e[m HEAD@{57}: commit: ..
+[33mfaf2f2b[m HEAD@{58}: pull origin main: Fast-forward
+[33m6db87ac[m HEAD@{59}: commit: defining admins
+[33mfc0ef29[m HEAD@{60}: pull origin main: Fast-forward
+[33m63c0af6[m HEAD@{61}: commit: deleting unwanted folders from frontend
+[33md749ad6[m HEAD@{62}: pull origin main: Fast-forward
+[33mf7a979c[m HEAD@{63}: pull origin main: Fast-forward
+[33mb6b9678[m HEAD@{64}: pull origin main: Fast-forward
+[33m4a1e888[m HEAD@{65}: commit: adding mini game user association table
+[33me510a63[m HEAD@{66}: commit: comments in controller and api
+[33mb5a9e73[m HEAD@{67}: commit: deleting admin and stratistics controllers
+[33m79cc006[m HEAD@{68}: commit: fiximg all models according to the new migrations
+[33mbb54c63[m HEAD@{69}: commit: fresh new seeders
+[33mc5ce3cc[m HEAD@{70}: commit: changing in the nmigration , deleting admin anmd statistics , modifying in all relations
+[33m5fcd245[m HEAD@{71}: commit: adding task_is to vision board migration
+[33m43b30d1[m HEAD@{72}: pull origin master: Fast-forward
+[33m3505ede[m HEAD@{73}: reset: moving to origin/main
+[33m43b30d1[m HEAD@{74}: commit: fixing foreign keys between migration tables
+[33m3505ede[m HEAD@{75}: initial pull
