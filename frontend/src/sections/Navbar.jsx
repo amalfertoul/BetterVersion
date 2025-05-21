@@ -6,7 +6,7 @@ const Navbar = ({ userId }) => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
+
   const handleLogout = async () => {
     await dispatch(logoutUser());
     navigate('/login');
@@ -20,6 +20,7 @@ const Navbar = ({ userId }) => {
           <>
             <li><Link to="/login">Login</Link></li>
             <li><Link to="/register">Register</Link></li>
+            <li><Link to="/AdminOnly">AdminOnly</Link></li>
           </>
         ) : (
           // If userId exists, show navigation links for authenticated users

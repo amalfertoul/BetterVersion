@@ -11,6 +11,7 @@ import Profile from './components/profile';
 import FirstPage from './components/firstPage';
 import Socialize from './components/socialize';
 import RenderMessages from './sections/conversation';
+import AdminOnly from './components/AdminOnly';
 function App() {
   const userId = useSelector((state) => state.users.userId);
 
@@ -21,6 +22,8 @@ function App() {
         <Route path="/" element={<FirstPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/AdminOnly" element={<AdminOnly />} />
+        {/* Add other routes here */}
         <Route path="/home" element={<Home />} />
         <Route path="/explore" element={<Explore />} />
         <Route path="/games" element={<Games />} />
