@@ -9,6 +9,13 @@ export const fetchUserPerformance = createAsyncThunk(
     return response.data;
   }
 );
+ 
+const API_URL = 'http://localhost:8000/api/tasks'; 
+// Async thunks for CRUD operations
+export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async () => {
+    const response = await axios.get(API_URL);
+    return response.data;
+});
 
 const initialState = {
   completedTasks: [],
