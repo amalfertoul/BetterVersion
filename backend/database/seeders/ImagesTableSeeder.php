@@ -14,7 +14,8 @@ class ImagesTableSeeder extends Seeder
     {
         DB::table('images')->insert([
             [
-                'url' => 'https://example.com/image1.jpg',
+                'url' => 'https://images.unsplash.com/photo-1601758123927-196c7b3bdf57
+',
                 'description' => 'A scenic mountain landscape.',
                 'user_id' => 1,
                 'category_id' => 2,
@@ -22,7 +23,8 @@ class ImagesTableSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'url' => 'https://example.com/image2.jpg',
+                'url' => 'https://images.unsplash.com/photo-1518770660439-4636190af475
+',
                 'description' => 'A beautiful beach during sunset.',
                 'user_id' => 2,
                 'category_id' => 1,
@@ -30,7 +32,8 @@ class ImagesTableSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'url' => 'https://example.com/image3.jpg',
+                'url' => 'https://images.unsplash.com/photo-1494526585095-c41746248156
+',
                 'description' => 'Urban cityscape at night.',
                 'user_id' => 1,
                 'category_id' => 3,

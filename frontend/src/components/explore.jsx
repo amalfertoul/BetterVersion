@@ -1,53 +1,154 @@
-import React, { useEffect } from 'react'; 
+import React, { useEffect, useState } from 'react'; 
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchImages, createImage } from '../slices/imagesSlice';
+import { fetchImages, createImage, deleteImage, updateImage } from '../slices/imagesSlice';
 
 const Explore = () => {
   const dispatch = useDispatch();
   const images = useSelector((state) => state.images.images);
   const loading = useSelector((state) => state.images.loading);
   const error = useSelector((state) => state.images.error);
-  
-  // Récupération du userId depuis le state global
   const userId = useSelector((state) => state.users.userId);
+
+  // Pour le filtre
+  const [filter, setFilter] = useState('');
+  // Pour l'ajout
+  const [showAdd, setShowAdd] = useState(false);
+  const [newUrl, setNewUrl] = useState('');
+  const [newDesc, setNewDesc] = useState('');
+  // Pour l'édition
+  const [editId, setEditId] = useState(null);
+  const [editUrl, setEditUrl] = useState('');
+  const [editDesc, setEditDesc] = useState('');
 
   useEffect(() => {
     dispatch(fetchImages());
   }, [dispatch]);
 
-  const handleSave = (image) => {
- 
-    
+  // Ajout d'image
+  const handleAddImage = (e) => {
+    e.preventDefault();
     if (!userId) {
-      alert("Vous devez être connecté pour sauvegarder une image.");
+      alert("Vous devez être connecté pour ajouter une image.");
       return;
     }
-
-    const imageData = {
-      description: image.description,
-      url: image.url,
+    dispatch(createImage({
+      url: newUrl,
+      description: newDesc,
       user_id: userId,
-    category_id:1  };
-    // hada gha bach kay3awni nchof dikchi f console
-   // console.log("Image envoyée :", imageData); // 🔍 debug
-
-    dispatch(createImage(imageData));
+      category_id: 1
+    }));
+    setShowAdd(false);
+    setNewUrl('');
+    setNewDesc('');
   };
 
-  if (loading) {
-    return <div className="loading-message">Chargement des images...</div>;
-  }
+  // Suppression d'image
+  const handleDelete = (id) => {
+    if (window.confirm('Supprimer cette image ?')) {
+      dispatch(deleteImage(id));
+    }
+  };
 
-  if (error) {
-    return <div className="error-message">{error}</div>;
-  }
+  // Préparation édition
+  const handleEdit = (img) => {
+    setEditId(img.id);
+    setEditUrl(img.url);
+    setEditDesc(img.description);
+  };
+
+  // Validation édition
+  const handleUpdateImage = (e) => {
+    e.preventDefault();
+    dispatch(updateImage({
+      id: editId,
+      imageData: {
+        url: editUrl,
+        description: editDesc,
+        user_id: userId,
+        category_id: 1
+      }
+    }));
+    setEditId(null);
+    setEditUrl('');
+    setEditDesc('');
+  };
+
+  // Filtrage
+  const filteredImages = images.filter(img =>
+    img.description?.toLowerCase().includes(filter.toLowerCase())
+  );
+
+  if (loading) return <div className="loading-message">Chargement des images...</div>;
+  if (error) return <div className="error-message">{error}</div>;
 
   return (
     <div className="explore-container">
       <h1 className="explore-title">Galerie d'Images</h1>
-      
+
+      {/* Filtre */}
+      <input
+        type="text"
+        placeholder="Filtrer par description..."
+        value={filter}
+        onChange={e => setFilter(e.target.value)}
+        style={{ marginBottom: 20, padding: 6, width: 250 }}
+      />
+
+      {/* Bouton d'ajout */}
+      <button onClick={() => setShowAdd(true)} style={{ marginLeft: 10, marginBottom: 20 }}>
+        Ajouter une image
+      </button>
+
+      {/* Modal ajout */}
+      {showAdd && (
+        <div className="modal">
+          <form onSubmit={handleAddImage} className="modal-form">
+            <h3>Ajouter une image</h3>
+            <input
+              type="text"
+              placeholder="URL de l'image"
+              value={newUrl}
+              onChange={e => setNewUrl(e.target.value)}
+              required
+            />
+            <textarea
+              placeholder="Description"
+              value={newDesc}
+              onChange={e => setNewDesc(e.target.value)}
+              required
+            />
+            <button type="submit">Ajouter</button>
+            <button type="button" onClick={() => setShowAdd(false)}>Annuler</button>
+          </form>
+        </div>
+      )}
+
+      {/* Modal édition */}
+      {editId && (
+        <div className="modal">
+          <form onSubmit={handleUpdateImage} className="modal-form">
+            <h3>Modifier l'image</h3>
+            <input
+              type="text"
+              placeholder="URL de l'image"
+              value={editUrl}
+              onChange={e => setEditUrl(e.target.value)}
+              required
+            />
+            <textarea
+              placeholder="Description"
+              value={editDesc}
+              onChange={e => setEditDesc(e.target.value)}
+              required
+            />
+            <button type="submit">Enregistrer</button>
+            <button type="button" onClick={() => setEditId(null)}>Annuler</button>
+          </form>
+        </div>
+      )}
+
       <div className="images-grid">
-        {images.map((image, index) => (
+        {filteredImages.map((image, index) => (
           <div 
             key={image.id} 
             className="image-card"
@@ -57,6 +158,7 @@ const Explore = () => {
               className="image"
               src={image.url}
               alt={image.title || 'Image'}
+              style={{ width: '10%', height: 'auto' }}
             />
             <div className="image-info">
               <p className="image-description">{image.description}</p>
@@ -66,10 +168,37 @@ const Explore = () => {
               >
                 Save
               </button>
+              <button
+                className="edit-button"
+                onClick={() => handleEdit(image)}
+                style={{ marginLeft: 5 }}
+              >
+                Edit
+              </button>
+              <button
+                className="delete-button"
+                onClick={() => handleDelete(image.id)}
+                style={{ marginLeft: 5, color: 'red' }}
+              >
+                Delete
+              </button>
             </div>
           </div>
         ))}
       </div>
+
+      {/* Styles modaux simples */}
+      <style>{`
+        .modal {
+          position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+          background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;
+          z-index: 1000;
+        }
+        .modal-form {
+          background: #fff; padding: 20px; border-radius: 8px; min-width: 300px;
+          display: flex; flex-direction: column; gap: 10px;
+        }
+      `}</style>
     </div>
   );
 };
