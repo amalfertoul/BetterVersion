@@ -1,7 +1,17 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-
+import { Link , useNavigate} from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { logoutUser } from '../slices/UserSlice';
 const Navbar = ({ userId }) => {
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  
+  const handleLogout = async () => {
+    await dispatch(logoutUser());
+    navigate('/login');
+  };
+
   return (
     <nav>
       <ul>
@@ -19,6 +29,7 @@ const Navbar = ({ userId }) => {
             <li><Link to="/games">Games</Link></li>
             <li><Link to="/profile">Profile</Link></li>
             <li><Link to="/socialize">socialize</Link></li>
+            <li><button onClick={handleLogout}>Logout</button></li>
           </>
         )}
       </ul>
