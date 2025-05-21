@@ -4,30 +4,68 @@ import axios from 'axios';
 // Base API URL
 const API_URL = 'http://127.0.0.1:8000/api/quotes';
 
+// Helper function to get the token from localStorage
+const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    return {
+        Authorization: `Bearer ${token}`,
+    };
+};
+
 // Async thunks for CRUD operations
 
 // Fetch all quotes
-export const fetchQuotes = createAsyncThunk('quotes/fetchQuotes', async () => {
-    const response = await axios.get(API_URL);
-    return response.data;
+export const fetchQuotes = createAsyncThunk('quotes/fetchQuotes', async (_, { rejectWithValue }) => {
+    try {
+        const response = await axios.get(API_URL, {
+            headers: getAuthHeaders(),
+        });
+        return response.data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data || 'Failed to fetch quotes');
+    }
 });
 
 // Create a new quote
-export const createQuote = createAsyncThunk('quotes/createQuote', async (quoteData) => {
-    const response = await axios.post(API_URL, quoteData);
-    return response.data; // Return the full quote information
+export const createQuote = createAsyncThunk('quotes/createQuote', async (quoteData, { rejectWithValue }) => {
+    try {
+        const response = await axios.post(API_URL, quoteData, {
+            headers: {
+                ...getAuthHeaders(),
+                'Content-Type': 'application/json',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data || 'Failed to create quote');
+    }
 });
 
 // Update an existing quote
-export const updateQuote = createAsyncThunk('quotes/updateQuote', async ({ id, quoteData }) => {
-    const response = await axios.put(`${API_URL}/${id}`, quoteData);
-    return response.data; // Return the full updated quote information
+export const updateQuote = createAsyncThunk('quotes/updateQuote', async ({ id, quoteData }, { rejectWithValue }) => {
+    try {
+        const response = await axios.put(`${API_URL}/${id}`, quoteData, {
+            headers: {
+                ...getAuthHeaders(),
+                'Content-Type': 'application/json',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data || 'Failed to update quote');
+    }
 });
 
 // Delete a quote
-export const deleteQuote = createAsyncThunk('quotes/deleteQuote', async (id) => {
-    await axios.delete(`${API_URL}/${id}`);
-    return id;
+export const deleteQuote = createAsyncThunk('quotes/deleteQuote', async (id, { rejectWithValue }) => {
+    try {
+        await axios.delete(`${API_URL}/${id}`, {
+            headers: getAuthHeaders(),
+        });
+        return id;
+    } catch (error) {
+        return rejectWithValue(error.response?.data || 'Failed to delete quote');
+    }
 });
 
 // Quotes slice
@@ -47,9 +85,6 @@ const quotesSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            // Fetch quotes
-            // === hadi stakhdmta bach ntalae wahda kola 24 saea 
-            // === anstakhdmoha bach ytleo quotes kamlin n admin hta huaa ===
             .addCase(fetchQuotes.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -60,21 +95,17 @@ const quotesSlice = createSlice({
             })
             .addCase(fetchQuotes.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.error.message;
+                state.error = action.payload;
             })
-            // Create quote
-            // == ghir admin li yqdar ycriyi ymodifyi wla ysupprimi chi quote ===
             .addCase(createQuote.fulfilled, (state, action) => {
-                state.quotes.push(action.payload); // Add the full quote information
+                state.quotes.push(action.payload);
             })
-            // Update quote
             .addCase(updateQuote.fulfilled, (state, action) => {
                 const index = state.quotes.findIndex((quote) => quote.id === action.payload.id);
                 if (index !== -1) {
-                    state.quotes[index] = action.payload; // Update with the full quote information
+                    state.quotes[index] = action.payload;
                 }
             })
-            // Delete quote
             .addCase(deleteQuote.fulfilled, (state, action) => {
                 state.quotes = state.quotes.filter((quote) => quote.id !== action.payload);
             });
