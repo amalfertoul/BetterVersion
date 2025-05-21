@@ -3,49 +3,75 @@ import axios from 'axios';
 
 const API_URL = 'http://127.0.0.1:8000/api/vision-boards';
 
+// Helper function to get the token from localStorage
+const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    return {
+        Authorization: `Bearer ${token}`,
+    };
+};
+
 // Async thunks for CRUD operations
+
+// Fetch all vision boards
 export const fetchVisionBoards = createAsyncThunk('visionBoard/fetchAll', async (_, { rejectWithValue }) => {
     try {
-        const response = await axios.get(API_URL);
+        const response = await axios.get(API_URL, {
+            headers: getAuthHeaders(),
+        });
         return response.data;
     } catch (error) {
-        return rejectWithValue(error.response.data);
+        return rejectWithValue(error.response?.data || 'Failed to fetch vision boards.');
     }
 });
 
 export const createVisionBoard = createAsyncThunk('visionBoard/create', async (visionBoardData, { rejectWithValue }) => {
     try {
-        const response = await axios.post(API_URL, visionBoardData);
+        const response = await axios.post(API_URL, visionBoardData, {
+            headers: {
+                ...getAuthHeaders(),
+                'Content-Type': 'application/json',
+            },
+        });
         return response.data;
     } catch (error) {
-        return rejectWithValue(error.response.data);
+        return rejectWithValue(error.response?.data || 'Failed to create vision board.');
     }
 });
 
 export const fetchVisionBoardById = createAsyncThunk('visionBoard/fetchById', async (id, { rejectWithValue }) => {
     try {
-        const response = await axios.get(`${API_URL}/${id}`);
+        const response = await axios.get(`${API_URL}/${id}`, {
+            headers: getAuthHeaders(),
+        });
         return response.data;
     } catch (error) {
-        return rejectWithValue(error.response.data);
+        return rejectWithValue(error.response?.data || 'Failed to fetch vision board.');
     }
 });
 
 export const updateVisionBoard = createAsyncThunk('visionBoard/update', async ({ id, visionBoardData }, { rejectWithValue }) => {
     try {
-        const response = await axios.put(`${API_URL}/${id}`, visionBoardData);
+        const response = await axios.put(`${API_URL}/${id}`, visionBoardData, {
+            headers: {
+                ...getAuthHeaders(),
+                'Content-Type': 'application/json',
+            },
+        });
         return response.data;
     } catch (error) {
-        return rejectWithValue(error.response.data);
+        return rejectWithValue(error.response?.data || 'Failed to update vision board.');
     }
 });
 
 export const deleteVisionBoard = createAsyncThunk('visionBoard/delete', async (id, { rejectWithValue }) => {
     try {
-        await axios.delete(`${API_URL}/${id}`);
+        await axios.delete(`${API_URL}/${id}`, {
+            headers: getAuthHeaders(),
+        });
         return id;
     } catch (error) {
-        return rejectWithValue(error.response.data);
+        return rejectWithValue(error.response?.data || 'Failed to delete vision board.');
     }
 });
 
@@ -69,8 +95,6 @@ const visionBoardSlice = createSlice({
     extraReducers: (builder) => {
         builder
             // Fetch all vision boards
-            //=== hadi anhtajoha aneaytola f profile ms , ghanfiltriw eliha bach ytleolna ghir dial l user dialna ===
-            // === machi gae li f database rak fahm ===
             .addCase(fetchVisionBoards.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -84,8 +108,6 @@ const visionBoardSlice = createSlice({
                 state.error = action.payload;
             })
             // Create vision board
-            // === hadi aneaytola f profile f chi partie li ncriyiw fiha vision board ===
-            // === n9deo nemloha hta f explore ida kona creative f design w hta f lcode nemlohom kitleo f chi section ===
             .addCase(createVisionBoard.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -99,7 +121,6 @@ const visionBoardSlice = createSlice({
                 state.error = action.payload;
             })
             // Fetch vision board by ID
-            // === idk nqdro nhtajoha somehow gha khaliwha hnaya hhhh ===
             .addCase(fetchVisionBoardById.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -113,9 +134,6 @@ const visionBoardSlice = createSlice({
                 state.error = action.payload;
             })
             // Update vision board
-            // === hadi kanupdatiw biha dkchi eadi fhal l2ism etc ms ida bghiti thayd mna chi image ===
-            // == khsk hta tdkhol n image w temla hia update n id d vision board trodo null ===
-            // === hit asln tn fach katcliki ela vision board mn bara khas ytaffichawlk les images li fiha ===
             .addCase(updateVisionBoard.pending, (state) => {
                 state.loading = true;
                 state.error = null;

@@ -1,53 +1,80 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000/api/mini-game-users'; 
+const API_URL = 'http://localhost:8000/api/mini-game-users';
+
+// Helper function to get the token from localStorage
+const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    return {
+        Authorization: `Bearer ${token}`,
+    };
+};
 
 // Async thunks for CRUD operations
+
+// Fetch all mini-game users
 export const fetchMiniGameUsers = createAsyncThunk(
     'gameUser/fetchMiniGameUsers',
     async (_, { rejectWithValue }) => {
         try {
-            const response = await axios.get(API_URL);
+            const response = await axios.get(API_URL, {
+                headers: getAuthHeaders(),
+            });
             return response.data;
         } catch (error) {
-            return rejectWithValue(error.response.data);
+            return rejectWithValue(error.response?.data || 'Failed to fetch mini-game users');
         }
     }
 );
 
+// Create a new mini-game user
 export const createMiniGameUser = createAsyncThunk(
     'gameUser/createMiniGameUser',
     async (newUser, { rejectWithValue }) => {
         try {
-            const response = await axios.post(API_URL, newUser);
+            const response = await axios.post(API_URL, newUser, {
+                headers: {
+                    ...getAuthHeaders(),
+                    'Content-Type': 'application/json',
+                },
+            });
             return response.data;
         } catch (error) {
-            return rejectWithValue(error.response.data);
+            return rejectWithValue(error.response?.data || 'Failed to create mini-game user');
         }
     }
 );
 
+// Update a mini-game user
 export const updateMiniGameUser = createAsyncThunk(
     'gameUser/updateMiniGameUser',
     async ({ id, updatedData }, { rejectWithValue }) => {
         try {
-            const response = await axios.put(`${API_URL}/${id}`, updatedData);
+            const response = await axios.put(`${API_URL}/${id}`, updatedData, {
+                headers: {
+                    ...getAuthHeaders(),
+                    'Content-Type': 'application/json',
+                },
+            });
             return response.data;
         } catch (error) {
-            return rejectWithValue(error.response.data);
+            return rejectWithValue(error.response?.data || 'Failed to update mini-game user');
         }
     }
 );
 
+// Delete a mini-game user
 export const deleteMiniGameUser = createAsyncThunk(
     'gameUser/deleteMiniGameUser',
     async (id, { rejectWithValue }) => {
         try {
-            await axios.delete(`${API_URL}/${id}`);
+            await axios.delete(`${API_URL}/${id}`, {
+                headers: getAuthHeaders(),
+            });
             return id;
         } catch (error) {
-            return rejectWithValue(error.response.data);
+            return rejectWithValue(error.response?.data || 'Failed to delete mini-game user');
         }
     }
 );
@@ -63,9 +90,7 @@ const gameUserSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            // Fetch all users
-            // === kattlae ghir n admin , biha angroupiw kolla game id ancountiw chhal mn mn mara ktteawd matalan ttl3b 
-            // == khsna nkhadmo l cound diala chhal mn mara matalan bach ytlae lhsan n si l admin ===
+            // Fetch all mini-game users
             .addCase(fetchMiniGameUsers.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -78,8 +103,7 @@ const gameUserSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-            // Create a new user
-            // === katdiclancha une fois l user kitki ela div dial lgame soi button soi tswira ilakh ===
+            // Create a new mini-game user
             .addCase(createMiniGameUser.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -92,8 +116,7 @@ const gameUserSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-            // Update a user
-            // === hadi anstakhdmohachi ===
+            // Update a mini-game user
             .addCase(updateMiniGameUser.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -111,8 +134,7 @@ const gameUserSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-            // Delete a user
-            // === hta hadi anstakhdmohachi ==
+            // Delete a mini-game user
             .addCase(deleteMiniGameUser.pending, (state) => {
                 state.loading = true;
                 state.error = null;

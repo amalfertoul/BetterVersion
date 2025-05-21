@@ -6,7 +6,7 @@ import { fetchImages } from '../slices/imagesSlice';
 
 const CreateVisionBoard = () => {
   const dispatch = useDispatch();
-  const userId = useSelector((state) => state.users.userId);
+  const userId = useSelector((state) => state.users.user?.id);
   const images = useSelector((state) => state.images.images);
   const visionBoards = useSelector((state) => state.visionBoard.visionBoards);
   const [error, setError] = useState(null);
