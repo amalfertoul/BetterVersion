@@ -5,25 +5,25 @@ import { createMiniGameUser } from '../slices/gameUserSlice';
 
 const Games = () => {
   const dispatch = useDispatch();
-  //const { userId: paramUserId } = useParams(); haydt hadi ela hsab url mandakhlochi fih id
-  // Récupérer les jeux depuis le state Redux
+
+  // Retrieve games from Redux state
   const { games, loading, error } = useSelector((state) => state.games);
-  
-  // Récupérer l'id de l'utilisateur connecté depuis le state Redux
-    const userId = useSelector((state) => state.users.userId);
+
+  // Retrieve the logged-in user's ID from Redux state
+  const userId = useSelector((state) => state.users.user?.id);
 
   useEffect(() => {
     dispatch(fetchGames());
   }, [dispatch]);
 
   const handlePlay = (gameId, link) => {
-    // Enregistrer l'action de jouer dans la table mini-game-users
+    // Record the play action in the mini-game-users table
     dispatch(createMiniGameUser({ user_id: userId, mini_game_id: gameId, date: new Date().toISOString().split('T')[0] }));
     window.open(link, '_blank');
   };
 
   if (loading) {
-    return <div className="loading-message">Chargement des jeux...</div>;
+    return <div className="loading-message">Loading games...</div>;
   }
 
   if (error) {
@@ -45,7 +45,7 @@ const Games = () => {
         }
       }}
     >
-      <h1 className="games-title">Jeux calmes et éducatifs en ligne</h1>
+      <h1 className="games-title">Calm and Educational Online Games</h1>
       
       <div className="games-grid">
         {games.map((game, index) => (
@@ -57,7 +57,7 @@ const Games = () => {
           >
             <img
               className="game-image"
-              src={game.image || 'https://via.placeholder.com/300x180?text=Jeux+Éducatif'}
+              src={"http://127.0.0.1:8000"+game.image || 'https://via.placeholder.com/300x180?text=Educational+Game'}
               alt={game.name}
             />
             <h3 className="game-title">{game.name}</h3>
@@ -69,7 +69,7 @@ const Games = () => {
                 handlePlay(game.id, game.link);
               }}
             >
-              Jouer
+              Play
             </button>
           </div>
         ))}
