@@ -14,8 +14,11 @@ const RenderMessages = () => {
     const currentUserId = useSelector((state) => state.users.userId);
 
     useEffect(() => {
+        if (!userId) {
+            navigate('/login');
+        }
         dispatch(fetchMessages(userId));
-    }, [dispatch, userId]);
+    }, [dispatch, userId , currentUserId]);
 
     const handleSendMessage = () => {
         if (newMessage.trim()) {
