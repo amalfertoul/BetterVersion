@@ -27,24 +27,29 @@ export const registerUser = createAsyncThunk('users/registerUser', async (userDa
 });
 
 // Login user
-export const loginUser = createAsyncThunk('users/loginUser', async (credentials, { rejectWithValue }) => {
-    try {
-        const response = await axios.post(`${API_URL}/login`, credentials, {
-            withCredentials: true,
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json'
-            }
-          });
-          state.userId = action.payload.user.id;
-          localStorage.setItem('userId', action.payload.user.id);
+export const loginUser = createAsyncThunk(
+    'users/loginUser',
+    async (credentials, { rejectWithValue }) => {
+        try {
+            const response = await axios.post(`${API_URL}/login`, credentials, {
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+            });
 
-        return response.data;
-    } catch (error) {
-        console.error('Login error:', error.response?.data || error.message);
-        return rejectWithValue(error.response?.data || 'Login failed');
+            // Save user ID to localStorage here if you want
+            localStorage.setItem('userId', response.data.user.id);
+
+            return response.data;
+        } catch (error) {
+            console.error('Login error:', error.response?.data || error.message);
+            return rejectWithValue(error.response?.data || 'Login failed');
+        }
     }
-});
+);
+
 
 // Logout user
 export const logoutUser = createAsyncThunk('users/logoutUser', async (_, { rejectWithValue }) => {

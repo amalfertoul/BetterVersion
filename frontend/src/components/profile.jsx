@@ -5,6 +5,7 @@ import { fetchImages, createImage, updateImage, deleteImage } from '../slices/im
 import { fetchCategories } from '../slices/categorySlice';
 import { fetchUserPerformance } from '../slices/userPerformanceSlice';
 import { Link } from 'react-router-dom';
+import { fetchVisionBoards, createVisionBoard, updateVisionBoard, deleteVisionBoard } from '../slices/visionBoardSlice';
 
 const Profile = () => {
     const dispatch = useDispatch();
@@ -20,6 +21,7 @@ const Profile = () => {
         performanceStatus,
         status: performanceStatusLoading 
     } = useSelector((state) => state.userPerformance);
+    const { visionBoards, loading: visionBoardLoading, error: visionBoardError } = useSelector((state) => state.visionBoard);
     const [selectedFile, setSelectedFile] = useState(null);
     const [editingImage, setEditingImage] = useState(null);
     const [imageDescription, setImageDescription] = useState('');
@@ -27,12 +29,19 @@ const Profile = () => {
     const [showUploadForm, setShowUploadForm] = useState(false);
     const [uploadError, setUploadError] = useState('');
     const [isUploading, setIsUploading] = useState(false);
+    const [showVBForm, setShowVBForm] = useState(false);
+    const [vbName, setVBName] = useState('');
+    const [vbVisibility, setVBVisibility] = useState(true);
+    const [vbCategory, setVBCategory] = useState('');
+    const [editingVB, setEditingVB] = useState(null);
+    const [vbError, setVBError] = useState('');
     
     useEffect(() => {
         dispatch(fetchUsers());
         dispatch(fetchImages());
         dispatch(fetchCategories());
         dispatch(fetchUserPerformance());
+        dispatch(fetchVisionBoards());
     }, [dispatch]);
 
     // Find the current user's data
@@ -40,6 +49,7 @@ const Profile = () => {
     
     // Filter images for current user
     const userImages = images.filter(img => img.user_id === currentUserId);
+    const userVisionBoards = visionBoards.filter(vb => vb.user_id === currentUserId);
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -136,21 +146,38 @@ const Profile = () => {
     };
 
     const handleUpdate = async (imageId) => {
-        if (!imageDescription.trim()) {
-            setUploadError('Please provide a description');
+        if (!imageDescription.trim() || !selectedCategory) {
+            setUploadError('Please provide a description and select a category');
             return;
         }
 
         try {
+            let imageData;
+            if (selectedFile) {
+                imageData = new FormData();
+                imageData.append('image', selectedFile);
+                imageData.append('description', imageDescription.trim());
+                imageData.append('category_id', selectedCategory);
+                imageData.append('user_id', currentUserId); // Ajoute user_id si besoin
+            } else {
+                imageData = {
+                    description: imageDescription.trim(),
+                    category_id: selectedCategory,
+                    user_id: currentUserId
+                };
+            }
+
             await dispatch(updateImage({
                 id: imageId,
-                imageData: { description: imageDescription.trim() }
+                imageData
             })).unwrap();
             setEditingImage(null);
             setImageDescription('');
+            setSelectedCategory('');
+            setSelectedFile(null);
             setUploadError('');
+            dispatch(fetchImages());
         } catch (error) {
-            console.error('Failed to update image:', error);
             setUploadError('Failed to update image. Please try again.');
         }
     };
@@ -164,6 +191,75 @@ const Profile = () => {
                 console.error('Failed to delete image:', error);
                 setUploadError('Failed to delete image. Please try again.');
             }
+        }
+    };
+
+    const handleAddVisionBoard = async (e) => {
+        e.preventDefault();
+        if (!vbName.trim() || !vbCategory) {
+            setVBError('Name and category are required');
+            return;
+        }
+        try {
+            await dispatch(createVisionBoard({
+                name: vbName,
+                visibility: vbVisibility,
+                user_id: currentUserId,
+                category_id: vbCategory
+            })).unwrap();
+            setVBName('');
+            setVBVisibility(true);
+            setVBCategory('');
+            setShowVBForm(false);
+            setVBError('');
+            dispatch(fetchVisionBoards());
+        } catch (err) {
+            setVBError('Failed to create vision board');
+        }
+    };
+
+    const handleDeleteVB = async (id) => {
+        if (window.confirm('Delete this vision board?')) {
+            try {
+                await dispatch(deleteVisionBoard(id)).unwrap();
+                setVBError('');
+            } catch {
+                setVBError('Failed to delete vision board');
+            }
+        }
+    };
+
+    const handleEditVB = (vb) => {
+        setEditingVB(vb.id);
+        setVBName(vb.name);
+        setVBVisibility(vb.visibility);
+        setVBCategory(vb.category_id || '');
+        setVBError('');
+    };
+
+    const handleUpdateVB = async (e) => {
+        e.preventDefault();
+        if (!vbName.trim() || !vbCategory) {
+            setVBError('Name and category are required');
+            return;
+        }
+        try {
+            await dispatch(updateVisionBoard({
+                id: editingVB,
+                visionBoardData: {
+                    name: vbName,
+                    visibility: vbVisibility,
+                    category_id: vbCategory
+                }
+            })).unwrap();
+            setEditingVB(null);
+            setVBName('');
+            setVBVisibility(true);
+            setVBCategory('');
+            setVBError('');
+            dispatch(fetchVisionBoards());
+        } catch {
+            setVBError('Failed to update vision board');
         }
     };
 
@@ -215,7 +311,7 @@ const Profile = () => {
                                     
                                     <div className="stat-item">
                                         <h4>Performance Status</h4>
-                                        <p className={`status ${performanceStatus.toLowerCase()}`}>
+                                        <p className={`status ${performanceStatus.toLowerCase().replace(/\s/g, '-')}`}>
                                             {performanceStatus}
                                         </p>
                                         <div className="status-description">
@@ -250,145 +346,139 @@ const Profile = () => {
                         </div>
 
                         {/* Image Section */}
-                        <div className="image-section">
+                        <div className="visionboard-section">
                             <div className="section-header">
-                                <h3>My Images</h3>
+                                <h3>My Vision Boards</h3>
                                 <button 
-                                    className="add-image-btn"
+                                    className="add-vb-btn"
                                     onClick={() => {
-                                        setShowUploadForm(!showUploadForm);
-                                        setUploadError('');
-                                        setSelectedFile(null);
-                                        setImageDescription('');
-                                        setSelectedCategory('');
+                                        setShowVBForm(!showVBForm);
+                                        setVBError('');
+                                        setVBName('');
+                                        setVBVisibility(true);
+                                        setVBCategory('');
+                                        setEditingVB(null);
                                     }}
                                 >
-                                    {showUploadForm ? 'Cancel' : 'Add New Image'}
+                                    {showVBForm ? 'Cancel' : 'Add Vision Board'}
                                 </button>
                             </div>
-
-                            {uploadError && (
-                                <div className="error-message">
-                                    {uploadError}
-                                </div>
-                            )}
-
-                            {showUploadForm && (
-                                <div className="upload-form">
-                                    <div className="form-group">
-                                        <label htmlFor="imageDescription">Description</label>
+                            {vbError && <div className="error-message">{vbError}</div>}
+                            {(showVBForm || editingVB) && (
+                                <form className="vb-form" onSubmit={editingVB ? handleUpdateVB : handleAddVisionBoard}>
+                                    <div>
+                                        <label>Name</label>
                                         <input
-                                            id="imageDescription"
                                             type="text"
-                                            value={imageDescription}
-                                            onChange={(e) => setImageDescription(e.target.value)}
-                                            placeholder="Enter image description"
-                                            disabled={isUploading}
+                                            value={vbName}
+                                            onChange={e => setVBName(e.target.value)}
+                                            required
                                         />
                                     </div>
-
-                                    <div className="form-group">
-                                        <label htmlFor="imageCategory">Category</label>
-                                        <select
-                                            id="imageCategory"
-                                            value={selectedCategory}
-                                            onChange={(e) => setSelectedCategory(e.target.value)}
-                                            disabled={isUploading}
-                                        >
+                                    <div>
+                                        <label>Visibility</label>
+                                        <select value={vbVisibility} onChange={e => setVBVisibility(e.target.value === 'true')}>
+                                            <option value="true">Public</option>
+                                            <option value="false">Private</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label>Category</label>
+                                        <select value={vbCategory} onChange={e => setVBCategory(e.target.value)} required>
                                             <option value="">Select a category</option>
-                                            {categories.map(category => (
-                                                <option key={category.id} value={category.id}>
-                                                    {category.name}
-                                                </option>
+                                            {categories.map(cat => (
+                                                <option key={cat.id} value={cat.id}>{cat.name}</option>
                                             ))}
                                         </select>
                                     </div>
-                                    <div className="form-group">
-                                        <label htmlFor="imageFile">Select Image</label>
-
-                                        <input
-                                            id="imageFile"
-                                            type="file"
-                                            accept="image/jpeg,image/png,image/gif,image/webp"
-                                            onChange={handleFileChange}
-                                            disabled={isUploading}
-                                        />
-                                        {selectedFile && (
-                                            <div className="file-info">
-                                                <p>Selected: {selectedFile.name}</p>
-                                                <p>Size: {(selectedFile.size / 1024 / 1024).toFixed(2)}MB</p>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <button 
-                                        className="upload-btn"
-                                        onClick={handleUpload}
-                                        disabled={!selectedFile || !imageDescription.trim() || !selectedCategory || isUploading}
-                                    >
-                                        {isUploading ? 'Uploading...' : 'Upload Image'}
-                                    </button>
-                                </div>
+                                    <button type="submit">{editingVB ? 'Update' : 'Create'}</button>
+                                </form>
                             )}
+                            <div className="visionboard-list">
+                                {visionBoardLoading ? (
+                                    <div>Loading...</div>
+                                ) : userVisionBoards.length === 0 ? (
+                                    <div>No vision boards yet.</div>
+                                ) : (
+                                    userVisionBoards.map(vb => (
+                                        <div key={vb.id} className="visionboard-card">
+                                            <h4>{vb.name}</h4>
+                                            <p>Visibility: {vb.visibility ? 'Public' : 'Private'}</p>
+                                            <div>
+                                                <button onClick={() => handleEditVB(vb)}>Edit</button>
+                                                <button onClick={() => handleDeleteVB(vb.id)} style={{color:'red'}}>Delete</button>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </div>
 
-                            {/* Image Gallery */}
-                            <div className="image-gallery">
-                                {userImages.map(image => (
-                                    <div key={image.id} className="image-card">
-                                        <img src={image.url} alt={image.description} />
-                                        {editingImage === image.id ? (
-                                            <div className="edit-form">
-                                                <input
-                                                    type="text"
+                        {/* Images Section */}
+                        <div className="images-section">
+                            <div className="section-header">
+                                <h3>My Images</h3>
+                            </div>
+                            {uploadError && <div className="error-message">{uploadError}</div>}
+
+                            <div className="user-images-list">
+                                {userImages.length === 0 ? (
+                                    <div>No images posted yet.</div>
+                                ) : (
+                                    userImages.map(img => (
+                                        <div key={img.id} className="user-image-card">
+                                            <img src={img.url} alt={img.description} style={{ width: 120, borderRadius: 8 }} />
+                                            {editingImage === img.id ? (
+                                                <form
+                                                  className="edit-image-form"
+                                                  onSubmit={e => {
+                                                    e.preventDefault();
+                                                    handleUpdate(img.id);
+                                                  }}
+                                                  encType="multipart/form-data"
+                                                >
+                                                  <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={handleFileChange}
+                                                  />
+                                                  <textarea
                                                     value={imageDescription}
-                                                    onChange={(e) => setImageDescription(e.target.value)}
-                                                    placeholder="New description"
-                                                />
-                                                <div className="edit-buttons">
-                                                    <button 
-                                                        className="save-btn"
-                                                        onClick={() => handleUpdate(image.id)}
-                                                    >
-                                                        Save
-                                                    </button>
-                                                    <button 
-                                                        className="cancel-btn"
-                                                        onClick={() => {
-                                                            setEditingImage(null);
-                                                            setImageDescription('');
-                                                            setUploadError('');
-                                                        }}
-                                                    >
-                                                        Cancel
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div className="image-actions">
-                                                <h4>{image.description}</h4>
-                                                <div className="action-buttons">
-                                                    <button 
-                                                        className="edit-btn"
-                                                        onClick={() => {
-                                                            setEditingImage(image.id);
-                                                            setImageDescription(image.description);
-                                                            setUploadError('');
-                                                        }}
-                                                    >
-                                                        Edit
-                                                    </button>
-                                                    <button 
-                                                        className="delete-btn"
-                                                        onClick={() => handleDelete(image.id)}
-                                                    >
-                                                        Delete
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
-                                
+                                                    onChange={e => setImageDescription(e.target.value)}
+                                                    required
+                                                  />
+                                                  <select
+                                                    value={selectedCategory}
+                                                    onChange={e => setSelectedCategory(e.target.value)}
+                                                    required
+                                                  >
+                                                    <option value="">Select a category</option>
+                                                    {categories.map(cat => (
+                                                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                                    ))}
+                                                  </select>
+                                                  <button type="submit">Save</button>
+                                                  <button type="button" onClick={() => setEditingImage(null)}>Cancel</button>
+                                                </form>
+                                            ) : (
+                                                <>
+                                                  <div style={{ fontSize: 13, margin: '8px 0' }}>{img.description}</div>
+                                                  <button onClick={() => {
+                                                    setEditingImage(img.id);
+                                                    setImageDescription(img.description);
+                                                    setSelectedCategory(img.category_id);
+                                                    setSelectedFile(null);
+                                                  }}>
+                                                    Edit
+                                                  </button>
+                                                  <button onClick={() => handleDelete(img.id)} style={{ color: 'red', marginLeft: 8 }}>
+                                                    Delete
+                                                  </button>
+                                                </>
+                                            )}
+                                        </div>
+                                    ))
+                                )}
                             </div>
                         </div>
                       
@@ -544,6 +634,135 @@ const Profile = () => {
                     text-align: center;
                     padding: 20px;
                     color: #666;
+                }
+
+                .visionboard-section {
+                    margin: 20px 0;
+                    padding: 20px;
+                    background: #f8f9fa;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                }
+
+                .visionboard-list {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                    gap: 20px;
+                    margin-top: 15px;
+                }
+
+                .visionboard-card {
+                    background: white;
+                    padding: 15px;
+                    border-radius: 8px;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                }
+
+                .vb-form {
+                    display: grid;
+                    grid-template-columns: 1fr;
+                    gap: 15px;
+                    margin-bottom: 20px;
+                }
+
+                .vb-form label {
+                    font-weight: bold;
+                    margin-bottom: 5px;
+                }
+
+                .vb-form input,
+                .vb-form select {
+                    padding: 10px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    font-size: 1em;
+                }
+
+                .vb-form button {
+                    padding: 10px;
+                    background-color: #007bff;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 1em;
+                    transition: background-color 0.3s;
+                }
+
+                .vb-form button:hover {
+                    background-color: #0056b3;
+                }
+
+                .error-message {
+                    color: red;
+                    font-size: 0.9em;
+                    margin-top: 10px;
+                }
+
+                .images-section {
+                    margin: 20px 0;
+                    padding: 20px;
+                    background: #f8f9fa;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                }
+
+                .user-images-list {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                    gap: 15px;
+                    margin-top: 15px;
+                }
+
+                .user-image-card {
+                    background: white;
+                    padding: 10px;
+                    border-radius: 8px;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                    text-align: center;
+                }
+
+                .user-image-card img {
+                    width: 100%;
+                    border-radius: 8px;
+                    object-fit: cover;
+                }
+
+                .edit-image-form {
+                    display: grid;
+                    grid-template-columns: 1fr;
+                    gap: 10px;
+                    margin-top: 10px;
+                }
+
+                .edit-image-form textarea {
+                    padding: 10px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    font-size: 1em;
+                    resize: none;
+                }
+
+                .edit-image-form select {
+                    padding: 10px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    font-size: 1em;
+                }
+
+                .edit-image-form button {
+                    padding: 10px;
+                    background-color: #007bff;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 1em;
+                    transition: background-color 0.3s;
+                }
+
+                .edit-image-form button:hover {
+                    background-color: #0056b3;
                 }
 
                 /* ... rest of your existing styles ... */
