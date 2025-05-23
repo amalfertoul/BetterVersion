@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchImages, createImage } from '../slices/imagesSlice';
 import { fetchCategories } from '../slices/categorySlice';
+import { useNavigate } from 'react-router-dom';
 
 const Explore = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const images = useSelector((state) => state.images.images);
   const loading = useSelector((state) => state.images.loading);
   const error = useSelector((state) => state.images.error);
@@ -18,9 +20,14 @@ const Explore = () => {
   const [newCategory, setNewCategory] = useState('');
 
   useEffect(() => {
+    if (!userId) {
+      alert("Vous devez être connecté pour accéder à cette page.");
+      navigate('/login');
+      return;
+    }
     dispatch(fetchImages());
     dispatch(fetchCategories());
-  }, [dispatch]);
+  }, [dispatch, userId, navigate]);
 
   // Ajout d'image avec fichier
   const handleAddImage = async (e) => {

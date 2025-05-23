@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchGames } from '../slices/gamesSlice';
 import { createMiniGameUser } from '../slices/gameUserSlice';
+import { useNavigate } from 'react-router-dom';
 
 const Games = () => {
   const dispatch = useDispatch();
@@ -11,10 +12,14 @@ const Games = () => {
   
   // Récupérer l'id de l'utilisateur connecté depuis le state Redux
     const userId = useSelector((state) => state.users.userId);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    if (!userId) {
+            navigate('/login');
+        }
     dispatch(fetchGames());
-  }, [dispatch]);
+  }, [userId, navigate,dispatch]);
 
   const handlePlay = (gameId, link) => {
     // Enregistrer l'action de jouer dans la table mini-game-users

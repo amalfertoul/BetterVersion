@@ -10,7 +10,6 @@ const AdminOnly = () => {
     const loading = useSelector((state) => state.users.loading);
     const error = useSelector((state) => state.users.error);
 
-    // Assume userPerformance is an object: { [userId]: { completedPercentage, totalTasks, ... } }
     const userPerformance = useSelector((state) => state.userPerformance || {});
 
     useEffect(() => {
