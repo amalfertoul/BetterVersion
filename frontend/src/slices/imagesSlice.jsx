@@ -20,7 +20,9 @@ export const fetchImageById = createAsyncThunk('images/fetchImageById', async (i
 });
 
 export const updateImage = createAsyncThunk('images/updateImage', async ({ id, imageData }) => {
-    const response = await axios.put(`${API_URL}/${id}`, imageData);
+    const response = await axios.put(`${API_URL}/${id}`, imageData, {
+        headers: imageData instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined
+    });
     return response.data;
 });
 
