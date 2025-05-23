@@ -30,6 +30,7 @@ const Navbar = ({ userId }) => {
             <li><Link to="/games">Games</Link></li>
             <li><Link to="/profile">Profile</Link></li>
             <li><Link to="/socialize">socialize</Link></li>
+            <li><Link to="/todolist">todolist</Link></li>
             <li><button onClick={handleLogout}>Logout</button></li>
           </>
         )}

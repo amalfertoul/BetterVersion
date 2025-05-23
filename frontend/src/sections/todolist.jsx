@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { fetchUsers } from '../slices/UserSlice';
 import { fetchTasks, createTask, updateTask, deleteTask } from '../slices/taskSlice';
 
 const TodoListPage = () => {
     const dispatch = useDispatch();
-    const  userId = useSelector((state) => state.users);
-    const { tasks = [], loading = false, error = null } = useSelector((state) => state.tasks || {});
+    const userId = useSelector((state) => state.users.userId);
+    const { tasks, loading = false, error = null } = useSelector((state) => state.tasks || {});
+    const users = useSelector((state) => state.users.users) || [];
 
     const [taskTitle, setTaskTitle] = useState('');
     const [taskDescription, setTaskDescription] = useState('');
@@ -13,8 +15,12 @@ const TodoListPage = () => {
     const [status, setStatus] = useState('pending');
 
     useEffect(() => {
+        dispatch(fetchUsers());
+    }, [dispatch]);
+
+    useEffect(() => {
         if (userId) {
-            dispatch(fetchTasks({ userId }));
+            dispatch(fetchTasks());
         }
     }, [dispatch, userId]);
 
@@ -44,6 +50,9 @@ const TodoListPage = () => {
     const handleDeleteTask = (taskId) => {
         dispatch(deleteTask(taskId));
     };
+
+    console.log('tasks:', tasks);
+    console.log('userId:', userId);
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
@@ -85,15 +94,14 @@ const TodoListPage = () => {
             </form>
 
             <div className="tasks">
-                {tasks
-                    .filter((task) => task.user_id === userId)
+                {Array.isArray(tasks) && tasks
+                    .filter((task) => Number(task.user_id) === Number(userId))
                     .map((task) => (
                         <div key={task.id} className="task">
                             <h3>{task.title}</h3>
                             <p>{task.description}</p>
                             <p>Status: {task.status}</p>
                             <p>Due: {new Date(task.due_date).toLocaleString()}</p>
-
                             <button onClick={() => handleUpdateTask(task.id, { status: 'completed' })}>
                                 Mark as Completed
                             </button>
@@ -101,6 +109,8 @@ const TodoListPage = () => {
                         </div>
                     ))}
             </div>
+
+           
         </div>
     );
 };

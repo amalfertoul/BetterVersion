@@ -15,7 +15,7 @@ const store = configureStore({
     reducer: {
         quotes: quotesReducer,
         users: usersReducer,
-        task : taskSlice,
+        tasks : taskSlice,
         userPerformance: userPerformanceSlice,
         images: imagesSlice,
         visionBoard: visionBoardSlice,

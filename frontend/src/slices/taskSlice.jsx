@@ -6,7 +6,8 @@ const API_URL = 'http://localhost:8000/api/tasks';
 // Async thunks for CRUD operations
 export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async () => {
     const response = await axios.get(API_URL);
-    return response.data;
+    console.log('API tasks:', response.data);
+    return response.data; // <-- retourne directement le tableau
 });
 
 export const createTask = createAsyncThunk('tasks/createTask', async (taskData) => {
@@ -31,7 +32,7 @@ export const deleteTask = createAsyncThunk('tasks/deleteTask', async (id) => {
 
 // Initial state
 const initialState = {
-    tasks: [],
+    tasks:[],
     task: null,
     loading: false,
     error: null,
