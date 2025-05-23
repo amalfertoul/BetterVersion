@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchUsers } from '../slices/UserSlice';
 import { fetchImages, createImage, updateImage, deleteImage } from '../slices/imagesSlice';
 import { fetchCategories } from '../slices/categorySlice';
-import { fetchUserPerformance } from '../slices/userPerformanceSlice';
+import { fetchTasks } from '../slices/userPerformanceSlice';
 import { Link } from 'react-router-dom';
 import { fetchVisionBoards, createVisionBoard, updateVisionBoard, deleteVisionBoard } from '../slices/visionBoardSlice';
 
@@ -40,7 +40,7 @@ const Profile = () => {
         dispatch(fetchUsers());
         dispatch(fetchImages());
         dispatch(fetchCategories());
-        dispatch(fetchUserPerformance());
+        dispatch(fetchTasks());
         dispatch(fetchVisionBoards());
     }, [dispatch]);
 
@@ -586,7 +586,7 @@ const Profile = () => {
                     color: #856404;
                 }
 
-                .status.needs\ improvement {
+                .status.needs-improvement {
                     background: #f8d7da;
                     color: #721c24;
                 }

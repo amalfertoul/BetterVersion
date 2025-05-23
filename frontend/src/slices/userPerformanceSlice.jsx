@@ -11,7 +11,6 @@ export const fetchUserPerformance = createAsyncThunk(
 );
  
 const API_URL = 'http://localhost:8000/api/tasks'; 
-// Async thunks for CRUD operations
 export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async () => {
     const response = await axios.get(API_URL);
     return response.data;
@@ -24,7 +23,7 @@ const initialState = {
   completedPercentage: 0,
   incompletedPercentage: 0,
   performanceStatus: '',
-  status: 'idle', // 'loading', 'succeeded', 'failed'
+  status: 'idle', 
   error: null,
 };
 
@@ -34,12 +33,12 @@ const userPerformanceSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchUserPerformance.pending, (state) => {
+      .addCase(fetchTasks.pending, (state) => {
         state.status = 'loading';
       })
       
       // === had part hadi ateaytola gha f profile kolchi kithsb automaticcally ===
-      .addCase(fetchUserPerformance.fulfilled, (state, action) => {
+      .addCase(fetchTasks.fulfilled, (state, action) => {
         state.status = 'succeeded';
         const tasks = action.payload;
 
@@ -63,7 +62,7 @@ const userPerformanceSlice = createSlice({
                                  state.completedPercentage >= 50 ? 'Good' : 
                                  'Needs Improvement';
       })
-      .addCase(fetchUserPerformance.rejected, (state, action) => {
+      .addCase(fetchTasks.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message;
       });

@@ -16,7 +16,6 @@ class UserPerformanceController extends Controller
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
-            'timestamp' => 'required|date',
         ]);
 
         return UserPerformance::create($request->all());
@@ -31,7 +30,6 @@ class UserPerformanceController extends Controller
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
-            'timestamp' => 'required|date',
         ]);
 
         $performance = UserPerformance::findOrFail($id);
