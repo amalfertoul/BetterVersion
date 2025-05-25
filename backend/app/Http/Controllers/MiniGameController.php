@@ -4,68 +4,105 @@ namespace App\Http\Controllers;
 
 use App\Models\MiniGame;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class MiniGameController extends Controller
 {
-    // Afficher la liste des mini-jeux
     public function index()
     {
-        return response()->json(MiniGame::all());
+        return MiniGame::all();
     }
 
-    // Créer un nouveau mini-jeu
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
+        $request->validate([
+            'name' => 'required|string',
             'description' => 'required|string',
-            'link' => 'required|string',
-            'image' => 'required|string',
+            'link' => 'required|file|mimes:swf|max:2048', // SWF file validation
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Image validation
         ]);
 
-        $miniGame = MiniGame::create($validated);
+        // Handle SWF file upload
+        $swfPath = $request->file('link')->store('swf', 'public');
+        
+        // Handle image upload
+        $imagePath = $request->file('image')->store('images', 'public');
 
-        return response()->json($miniGame, 201);
-    }
-
-    // Afficher un mini-jeu spécifique
-    public function show($id)
-    {
-        $miniGame = MiniGame::find($id);
-        if (!$miniGame) {
-            return response()->json(['message' => 'MiniGame not found'], 404);
-        }
-        return response()->json($miniGame);
-    }
-
-    // Mettre à jour un mini-jeu
-    public function update(Request $request, $id)
-    {
-        $miniGame = MiniGame::find($id);
-        if (!$miniGame) {
-            return response()->json(['message' => 'MiniGame not found'], 404);
-        }
-
-        $validated = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'description' => 'sometimes|required|string',
-            'link' => 'sometimes|required|string',
-            'image' => 'sometimes|required|string',
+        $game = MiniGame::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'link' => asset('storage/' . $swfPath), // Link to the SWF file
+            'image' => asset('storage/' . $imagePath), // Link to the image
         ]);
 
-        $miniGame->update($validated);
-
-        return response()->json($miniGame);
+        return response()->json($game, 201);
     }
 
-    // Supprimer un mini-jeu
-    public function destroy($id)
+    public function show($game_id)
     {
-        $miniGame = MiniGame::find($id);
-        if (!$miniGame) {
-            return response()->json(['message' => 'MiniGame not found'], 404);
+        return MiniGame::findOrFail($game_id);
+    }
+
+    public function update(Request $request, $game_id)
+    {
+        $request->validate([
+            'name' => 'required|string',
+            'description' => 'required|string',
+            'link' => 'nullable|file|mimes:swf|max:2048', // SWF file validation
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Image validation
+        ]);
+
+        $game = MiniGame::findOrFail($game_id);
+
+        // Handle SWF file update if a new file is provided
+        if ($request->hasFile('link')) {
+            // Delete the old SWF file
+            $swfPath = $game->link;
+            if ($swfPath) {
+                Storage::disk('public')->delete(str_replace(asset('storage/'), '', $swfPath));
+            }
+
+            // Store new SWF file
+            $newSwfPath = $request->file('link')->store('swf', 'public');
+            $game->link = asset('storage/' . $newSwfPath);
         }
-        $miniGame->delete();
-        return response()->json(['message' => 'MiniGame deleted successfully']);
+
+        // Handle image update if a new image is provided
+        if ($request->hasFile('image')) {
+            // Delete the old image
+            if ($game->image) {
+                Storage::disk('public')->delete(str_replace(asset('storage/'), '', $game->image));
+            }
+
+            // Store new image
+            $newImagePath = $request->file('image')->store('images', 'public');
+            $game->image = asset('storage/' . $newImagePath);
+        }
+
+        $game->update([
+            'name' => $request->name,
+            'description' => $request->description,
+        ]);
+
+        return $game;
+    }
+
+    public function destroy($game_id)
+    {
+        $game = MiniGame::findOrFail($game_id);
+
+        // Delete the SWF file
+        if ($game->link) {
+            Storage::disk('public')->delete(str_replace(asset('storage/'), '', $game->link));
+        }
+
+        // Delete the image file
+        if ($game->image) {
+            Storage::disk('public')->delete(str_replace(asset('storage/'), '', $game->image));
+        }
+
+        $game->delete();
+
+        return response()->json(['message' => 'Mini game deleted successfully']);
     }
 }
