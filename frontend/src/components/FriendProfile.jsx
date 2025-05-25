@@ -26,7 +26,7 @@ const FriendPfp = () => {
     useEffect(() => {
         dispatch(fetchUsers());
         dispatch(fetchImages());
-        dispatch(fetchTasks());
+        dispatch(fetchTasks(currentUserId));
     }, [dispatch]);
 
     return (

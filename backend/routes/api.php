@@ -29,6 +29,8 @@ Route::apiResource('mini-games', MiniGameController::class);
 Route::apiResource('friend-requests', FriendRequestController::class);
 Route::apiResource('visionboards', VisionBoardController::class);
 Route::apiResource('mini-game-users', MiniGameUserController::class);
+Route::get('/tasks/user/{userId}', [TaskController::class, 'getTasksByUserId']);
+
 
 /*
 |--------------------------------------------------------------------------

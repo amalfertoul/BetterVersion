@@ -40,7 +40,7 @@ const Profile = () => {
         dispatch(fetchUsers());
         dispatch(fetchImages());
         dispatch(fetchCategories());
-        dispatch(fetchTasks());
+        dispatch(fetchTasks(currentUserId));
         dispatch(fetchVisionBoards());
     }, [dispatch]);
 

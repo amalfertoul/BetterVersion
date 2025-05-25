@@ -58,6 +58,12 @@ class TaskController extends Controller
         return response()->json($task);
     }
 
+    public function getTasksByUserId($userId)
+    {
+        $tasks = Task::with('user')->where('user_id', $userId)->get();
+        return response()->json($tasks);
+    }
+
     public function destroy($id)
     {
         // Delete the task by its ID
