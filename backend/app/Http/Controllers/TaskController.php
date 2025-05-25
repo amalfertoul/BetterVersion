@@ -22,6 +22,7 @@ class TaskController extends Controller
             'title' => 'required|string',
             'status' => 'required|in:pending,in_progress,completed',
             'description' => 'required|string',
+            'category' => 'required|in:daily,weekly,monthly,yearly',
             'user_id' => 'required|exists:users,id',
             'due_date' => 'required|date',
         ]);
@@ -47,6 +48,7 @@ class TaskController extends Controller
             'title' => 'required|string',
             'status' => 'required|in:pending,in_progress,completed',
             'description' => 'required|string',
+            'category' => 'required|in:daily,weekly,monthly,yearly',
             'user_id' => 'required|exists:users,id',
             'due_date' => 'required|date',
         ]);
