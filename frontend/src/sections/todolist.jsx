@@ -27,6 +27,7 @@ const TodoListPage = () => {
 
     useEffect(() => {
         dispatch(fetchUsers());
+        dispatch(fetchTasks());
     }, [dispatch]);
 
     useEffect(() => {
