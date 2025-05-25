@@ -38,12 +38,14 @@ export const loginUser = createAsyncThunk('users/loginUser', async (credentials,
         localStorage.setItem('token', access_token);
         localStorage.setItem('user', JSON.stringify(user));
 
-        return response.data;
-    } catch (error) {
-        console.error('Login error:', error.response?.data || error.message);
-        return rejectWithValue(error.response?.data || 'Login failed');
+            return response.data;
+        } catch (error) {
+            console.error('Login error:', error.response?.data || error.message);
+            return rejectWithValue(error.response?.data || 'Login failed');
+        }
     }
-});
+);
+
 
 // Logout user
 export const logoutUser = createAsyncThunk('users/logoutUser', async (_, { rejectWithValue }) => {

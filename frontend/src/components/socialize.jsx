@@ -3,11 +3,22 @@ import ChatsTesting from '../sections/chats';
 import FriendRequest from '../sections/friendRequest';
 import FriendsList from '../sections/friendsList';
 import Suggestions from '../sections/suggestions';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import '../style/socialize.css';
 
 const Socialize = () => {
     const [activeTab, setActiveTab] = React.useState(0);
     const pagesRef = React.useRef(null);
+      const userId = useSelector((state) => state.users.user?.id); 
+    const navigate = useNavigate();
+
+     useEffect(() => {
+            if (!userId) {
+                navigate('/login');
+            }
+        }, [userId, navigate]);
     
     const tabs = [
         { title: "Chats", component: <ChatsTesting /> },

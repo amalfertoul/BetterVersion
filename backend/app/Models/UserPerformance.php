@@ -23,15 +23,16 @@ class UserPerformance extends Model
 
     protected $fillable = [
         'score',
-        'task_id',
+        'user_id',
         'timestamp',
     ];
 
     /**
      * Define the relationship with the Task model.
      */
-    public function task()
+    public function user()
     {
-        return $this->belongsTo(Task::class, 'task_id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
+   
 }

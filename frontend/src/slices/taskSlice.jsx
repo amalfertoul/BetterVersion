@@ -25,16 +25,23 @@ export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async (_, { rejec
 
 export const createTask = createAsyncThunk('tasks/createTask', async (taskData, { rejectWithValue }) => {
     try {
+        console.log('Task data being sent:', taskData); // Log the task data
         const response = await axios.post(API_URL, taskData, {
             headers: {
-                ...getAuthHeaders(),
+                ...getAuthHeaders(), // Include the Authorization header
                 'Content-Type': 'application/json',
             },
         });
         return response.data;
     } catch (error) {
+        console.error('Error creating task:', error.response?.data || error.message); // Log the error
         return rejectWithValue(error.response?.data || 'Failed to create task');
     }
+});
+
+export const fetchTaskById = createAsyncThunk('tasks/fetchTaskById', async (id) => {
+    const response = await axios.get(`${API_URL}/${id}`);
+    return response.data;
 });
 
 export const updateTask = createAsyncThunk('tasks/updateTask', async ({ id, taskData }, { rejectWithValue }) => {
@@ -64,7 +71,8 @@ export const deleteTask = createAsyncThunk('tasks/deleteTask', async (id, { reje
 
 // Initial state
 const initialState = {
-    tasks: [],
+    tasks:[],
+    task: null,
     loading: false,
     error: null,
 };

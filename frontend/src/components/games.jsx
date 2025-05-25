@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchGames } from '../slices/gamesSlice';
 import { createMiniGameUser } from '../slices/gameUserSlice';
+import { useNavigate } from 'react-router-dom'; // Add this import
 import '../style/games.css';
 
 const Games = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // Initialize navigate
 
   // Retrieve games from Redux state
   const { games, loading, error } = useSelector((state) => state.games);
@@ -17,8 +19,11 @@ const Games = () => {
   const [selectedGame, setSelectedGame] = useState(null);
 
   useEffect(() => {
+    if (!userId) {
+      navigate('/login');
+    }
     dispatch(fetchGames());
-  }, [dispatch]);
+  }, [userId, navigate, dispatch]);
 
   const handlePlay = (game) => {
     // Record the play action in the mini-game-users table

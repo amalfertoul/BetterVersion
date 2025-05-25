@@ -28,6 +28,12 @@ export const fetchUserPerformance = createAsyncThunk(
         }
     }
 );
+ 
+const TASKS_API_URL = 'http://localhost:8000/api/tasks'; 
+export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async () => {
+    const response = await axios.get(TASKS_API_URL);
+    return response.data;
+});
 
 const initialState = {
     completedTasks: [],

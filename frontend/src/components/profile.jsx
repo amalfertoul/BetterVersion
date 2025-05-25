@@ -7,6 +7,7 @@ import { fetchCategories } from '../slices/categorySlice';
 import { fetchUserPerformance } from '../slices/userPerformanceSlice';
 import { Link, useNavigate } from 'react-router-dom';
 import '../style/profile.css';
+import { fetchVisionBoards, createVisionBoard, updateVisionBoard, deleteVisionBoard } from '../slices/visionBoardSlice';
 
 const Profile = () => {
     const dispatch = useDispatch();
@@ -22,7 +23,7 @@ const Profile = () => {
         performanceStatus,
         status: performanceStatusLoading,
     } = useSelector((state) => state.userPerformance);
-
+    const { visionBoards, loading: visionBoardLoading, error: visionBoardError } = useSelector((state) => state.visionBoard);
     const [selectedFile, setSelectedFile] = useState(null);
     const [editingImage, setEditingImage] = useState(null);
     const [imageDescription, setImageDescription] = useState('');
@@ -33,6 +34,12 @@ const Profile = () => {
     
     const token = localStorage.getItem('token');
 
+    const [showVBForm, setShowVBForm] = useState(false);
+    const [vbName, setVBName] = useState('');
+    const [vbVisibility, setVBVisibility] = useState(true);
+    const [vbCategory, setVBCategory] = useState('');
+    const [editingVB, setEditingVB] = useState(null);
+    const [vbError, setVBError] = useState('');
 
     useEffect(() => {
         if (!currentUser) {
@@ -41,10 +48,12 @@ const Profile = () => {
         dispatch(fetchImages());
         dispatch(fetchCategories());
         dispatch(fetchUserPerformance());
+        dispatch(fetchVisionBoards());
     }, [dispatch, currentUser]);
 
     // Filter images for the current user
     const userImages = images.filter((img) => img.user_id === currentUser?.id);
+    const userVisionBoards = visionBoards.filter(vb => vb.user_id === currentUser?.id);
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -103,13 +112,11 @@ const Profile = () => {
         setImageDescription(image.description);
         setSelectedCategory(image.category_id); 
         setShowUploadForm(true); 
-
     };
     
-
     const handleUpdate = async (imageId) => {
-        if (!imageDescription.trim()) {
-            setUploadError('Please provide a description');
+        if (!imageDescription.trim() || !selectedCategory) {
+            setUploadError('Please provide a description and select a category');
             return;
         }
 
@@ -131,25 +138,23 @@ const Profile = () => {
             }
 
             // Dispatch the updateImage thunk
-            const updatedImage = await dispatch(
+            await dispatch(
                 updateImage({
                     id: imageId,
                     imageData: formData,
                 })
             ).unwrap();
 
-            // Update the local state to reflect the updated image
-            dispatch(fetchImages()); // Re-fetch all images to update the gallery
-
             // Reset state after successful update
             setEditingImage(null);
             setImageDescription('');
+            setSelectedCategory('');
             setSelectedFile(null);
             setUploadError('');
+            dispatch(fetchImages());
         } catch (error) {
             setUploadError('Failed to update image. Please try again.');
         }
-        
     };
 
     const handleDelete = async (imageId) => {
@@ -162,8 +167,6 @@ const Profile = () => {
             }
         }
     };
-
-    const [pfpFile, setPfpFile] = useState(null);
 
     const handlePfpChange = async (e) => {
         const file = e.target.files[0];
@@ -196,7 +199,6 @@ const Profile = () => {
                 }
             );
     
-            // Optional: check if Laravel responded with success
             if (response.status !== 200) {
                 throw new Error('Failed to upload');
             }
@@ -208,15 +210,82 @@ const Profile = () => {
             alert('Error updating profile picture.');
         }
     };
-    
-
 
     const handleLogout = async () => {
         try {
-            await dispatch(logoutUser()).unwrap(); // Dispatch the logout action
-            navigate('/login'); // Redirect to the login page after logout
+            await dispatch(logoutUser()).unwrap();
+            navigate('/login');
         } catch (error) {
             console.error('Logout failed:', error);
+        }
+    };
+
+    const handleAddVisionBoard = async (e) => {
+        e.preventDefault();
+        if (!vbName.trim() || !vbCategory) {
+            setVBError('Name and category are required');
+            return;
+        }
+        try {
+            await dispatch(createVisionBoard({
+                name: vbName,
+                visibility: vbVisibility,
+                user_id: currentUser.id,
+                category_id: vbCategory
+            })).unwrap();
+            setVBName('');
+            setVBVisibility(true);
+            setVBCategory('');
+            setShowVBForm(false);
+            setVBError('');
+            dispatch(fetchVisionBoards());
+        } catch (err) {
+            setVBError('Failed to create vision board');
+        }
+    };
+
+    const handleDeleteVB = async (id) => {
+        if (window.confirm('Delete this vision board?')) {
+            try {
+                await dispatch(deleteVisionBoard(id)).unwrap();
+                setVBError('');
+            } catch {
+                setVBError('Failed to delete vision board');
+            }
+        }
+    };
+
+    const handleEditVB = (vb) => {
+        setEditingVB(vb.id);
+        setVBName(vb.name);
+        setVBVisibility(vb.visibility);
+        setVBCategory(vb.category_id || '');
+        setVBError('');
+    };
+
+    const handleUpdateVB = async (e) => {
+        e.preventDefault();
+        if (!vbName.trim() || !vbCategory) {
+            setVBError('Name and category are required');
+            return;
+        }
+        try {
+            await dispatch(updateVisionBoard({
+                id: editingVB,
+                visionBoardData: {
+                    name: vbName,
+                    visibility: vbVisibility,
+                    category_id: vbCategory
+                }
+            })).unwrap();
+            setEditingVB(null);
+            setVBName('');
+            setVBVisibility(true);
+            setVBCategory('');
+            setVBError('');
+            dispatch(fetchVisionBoards());
+        } catch {
+            setVBError('Failed to update vision board');
         }
     };
 
@@ -253,7 +322,6 @@ const Profile = () => {
                             </div>
                         )}
 
-                        {/* Change Profile Picture Button */}
                         <input
                             type="file"
                             id="pfp-upload"
@@ -292,7 +360,7 @@ const Profile = () => {
 
                                 <div className="stat-item">
                                     <h4>Performance Status</h4>
-                                    <p className={`status ${performanceStatus.toLowerCase()}`}>
+                                    <p className={`status ${performanceStatus.toLowerCase().replace(/\s/g, '-')}`}>
                                         {performanceStatus}
                                     </p>
                                 </div>
@@ -318,162 +386,451 @@ const Profile = () => {
                         )}
                     </div>
 
-                    {/* Image Section */}
-                    <div className="image-section">
+                    {/* Vision Board Section */}
+                    <div className="visionboard-section">
                         <div className="section-header">
-                            <h3>My Images</h3>
-                            <button
-                                className="add-image-btn"
+                            <h3>My Vision Boards</h3>
+                            <button 
+                                className="add-vb-btn"
                                 onClick={() => {
-                                    setShowUploadForm(!showUploadForm);
-                                    setUploadError('');
-                                    setSelectedFile(null);
-                                    setImageDescription('');
-                                    setSelectedCategory('');
+                                    setShowVBForm(!showVBForm);
+                                    setVBError('');
+                                    setVBName('');
+                                    setVBVisibility(true);
+                                    setVBCategory('');
+                                    setEditingVB(null);
                                 }}
                             >
-                                {showUploadForm ? 'Cancel' : 'Add New Image'}
+                                {showVBForm ? 'Cancel' : 'Add Vision Board'}
                             </button>
                         </div>
+                        {vbError && <div className="error-message">{vbError}</div>}
+                        {(showVBForm || editingVB) && (
+                            <form className="vb-form" onSubmit={editingVB ? handleUpdateVB : handleAddVisionBoard}>
+                                <div>
+                                    <label>Name</label>
+                                    <input
+                                        type="text"
+                                        value={vbName}
+                                        onChange={e => setVBName(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label>Visibility</label>
+                                    <select value={vbVisibility} onChange={e => setVBVisibility(e.target.value === 'true')}>
+                                        <option value="true">Public</option>
+                                        <option value="false">Private</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>Category</label>
+                                    <select value={vbCategory} onChange={e => setVBCategory(e.target.value)} required>
+                                        <option value="">Select a category</option>
+                                        {categories.map(cat => (
+                                            <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <button type="submit">{editingVB ? 'Update' : 'Create'}</button>
+                            </form>
+                        )}
+                        <div className="visionboard-list">
+                            {visionBoardLoading ? (
+                                <div>Loading...</div>
+                            ) : userVisionBoards.length === 0 ? (
+                                <div>No vision boards yet.</div>
+                            ) : (
+                                userVisionBoards.map(vb => (
+                                    <div key={vb.id} className="visionboard-card">
+                                        <h4>{vb.name}</h4>
+                                        <p>Visibility: {vb.visibility ? 'Public' : 'Private'}</p>
+                                        <div>
+                                            <button onClick={() => handleEditVB(vb)}>Edit</button>
+                                            <button onClick={() => handleDeleteVB(vb.id)} style={{color:'red'}}>Delete</button>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
 
+                    {/* Images Section */}
+                    <div className="images-section">
+                        <div className="section-header">
+                            <h3>My Images</h3>
+                            <button 
+                                onClick={() => setShowUploadForm(!showUploadForm)}
+                                className="upload-btn"
+                            >
+                                {showUploadForm ? 'Cancel' : 'Upload Image'}
+                            </button>
+                        </div>
                         {uploadError && <div className="error-message">{uploadError}</div>}
 
                         {showUploadForm && (
                             <div className="upload-form">
-                                <div className="form-group">
-                                    <label htmlFor="imageDescription">Description</label>
-                                    <input
-                                        id="imageDescription"
-                                        type="text"
-                                        value={imageDescription}
-                                        onChange={(e) => setImageDescription(e.target.value)}
-                                        placeholder="Enter image description"
-                                        disabled={isUploading}
-                                    />
-                                </div>
-
-                                <div className="form-group">
-                                    <label htmlFor="imageCategory">Category</label>
-                                    <select
-                                        id="imageCategory"
-                                        value={selectedCategory}
-                                        onChange={(e) => setSelectedCategory(e.target.value)}
-                                        disabled={isUploading}
-                                    >
-                                        <option value="">Select a category</option>
-                                        {categories.map((category) => (
-                                            <option key={category.id} value={category.id}>
-                                                {category.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="imageFile">Select Image</label>
-
-                                    <input
-                                        id="imageFile"
-                                        type="file"
-                                        accept="image/jpeg,image/png,image/gif,image/webp"
-                                        onChange={handleFileChange}
-                                        disabled={isUploading}
-                                    />
-                                    {selectedFile && (
-                                        <div className="file-info">
-                                            <p>Selected: {selectedFile.name}</p>
-                                            <p>Size: {(selectedFile.size / 1024 / 1024).toFixed(2)}MB</p>
-                                        </div>
-                                    )}
-                                </div>
-
-                                <button
-                                    className="upload-btn"
-                                    onClick={handleUpload}
-                                    disabled={!selectedFile || !imageDescription.trim() || !selectedCategory || isUploading}
+                                <input type="file" onChange={handleFileChange} />
+                                <textarea
+                                    value={imageDescription}
+                                    onChange={e => setImageDescription(e.target.value)}
+                                    placeholder="Image description"
+                                />
+                                <select
+                                    value={selectedCategory}
+                                    onChange={e => setSelectedCategory(e.target.value)}
                                 >
-                                    {isUploading ? 'Uploading...' : 'Upload Image'}
+                                    <option value="">Select a category</option>
+                                    {categories.map(cat => (
+                                        <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                    ))}
+                                </select>
+                                <button
+                                    onClick={editingImage ? () => handleUpdate(editingImage) : handleUpload}
+                                    disabled={isUploading}
+                                >
+                                    {isUploading ? 'Uploading...' : editingImage ? 'Update Image' : 'Upload Image'}
                                 </button>
                             </div>
                         )}
 
-                        {/* Image Gallery */}
-                        <div className="image-gallery">
-                            {userImages.map((image) => (
-                                <div key={image.id} className="image-card">
-                                    <img src={`http://127.0.0.1:8000/storage/${image.url}`} alt={image.description} />
-                                    {editingImage === image.id ? (
-                                        <div className="edit-form">
-                                            <input
-                                                type="text"
+                        <div className="user-images-list">
+                            {userImages.length === 0 ? (
+                                <div>No images posted yet.</div>
+                            ) : (
+                                userImages.map(img => (
+                                    <div key={img.id} className="user-image-card">
+                                        <img src={`http://127.0.0.1:8000/storage/${img.url}`} alt={img.description} style={{ width: 120, borderRadius: 8 }} />
+                                        {editingImage === img.id ? (
+                                            <form
+                                              className="edit-image-form"
+                                              onSubmit={e => {
+                                                e.preventDefault();
+                                                handleUpdate(img.id);
+                                              }}
+                                              encType="multipart/form-data"
+                                            >
+                                              <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleFileChange}
+                                              />
+                                              <textarea
                                                 value={imageDescription}
-                                                onChange={(e) => setImageDescription(e.target.value)}
-                                                placeholder="New description"
-                                            />
-
-                                    <div className="form-group">
-                                        <label htmlFor="imageCategory">Category</label>
-                                        <select
-                                            id="imageCategory"
-                                            value={selectedCategory}
-                                            onChange={(e) => setSelectedCategory(e.target.value)}
-                                            disabled={isUploading}
-                                        >
-                                            <option value="">Select a category</option>
-                                            {categories.map((category) => (
-                                                <option key={category.id} value={category.id}>
-                                                    {category.name}
-                                                </option>
-                                            ))}
-                                        </select>
+                                                onChange={e => setImageDescription(e.target.value)}
+                                                required
+                                              />
+                                              <select
+                                                value={selectedCategory}
+                                                onChange={e => setSelectedCategory(e.target.value)}
+                                                required
+                                              >
+                                                  <option value="">Select a category</option>
+                                                  {categories.map(cat => (
+                                                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                                  ))}
+                                              </select>
+                                              <button type="submit">Save</button>
+                                              <button type="button" onClick={() => setEditingImage(null)}>Cancel</button>
+                                            </form>
+                                        ) : (
+                                            <>
+                                              <div style={{ fontSize: 13, margin: '8px 0' }}>{img.description}</div>
+                                              <button onClick={() => {
+                                                setEditingImage(img.id);
+                                                setImageDescription(img.description);
+                                                setSelectedCategory(img.category_id);
+                                                setSelectedFile(null);
+                                              }}>
+                                                Edit
+                                              </button>
+                                              <button onClick={() => handleDelete(img.id)} style={{ color: 'red', marginLeft: 8 }}>
+                                                Delete
+                                              </button>
+                                            </>
+                                        )}
                                     </div>
-
-
-
-                                            
-                                            <div className="edit-buttons">
-                                                <button
-                                                    className="save-btn"
-                                                    onClick={() => handleUpdate(image.id)}
-                                                >
-                                                    Save
-                                                </button>
-                                                <button
-                                                    className="cancel-btn"
-                                                    onClick={() => {
-                                                        setEditingImage(null);
-                                                        setImageDescription('');
-                                                        setUploadError('');
-                                                    }}
-                                                >
-                                                    Cancel
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="image-actions">
-                                            <h4>{image.description}</h4>
-                                            <div className="action-buttons">
-                                                <button
-                                                    className="edit-btn"
-                                                    onClick={() => startEditing(image)}
-                                                >
-                                                    Edit
-                                                </button>
-                                                <button
-                                                    className="delete-btn"
-                                                    onClick={() => handleDelete(image.id)}
-                                                >
-                                                    Delete
-                                                </button>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
+                                ))
+                            )}
                         </div>
                     </div>
                 </div>
             </div>
+
+            <style>{`
+                .profile-container {
+                    padding: 20px;
+                    max-width: 1200px;
+                    margin: 0 auto;
+                }
+
+                .profile-card {
+                    background: white;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    padding: 20px;
+                }
+
+                .profile-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 20px;
+                    padding-bottom: 10px;
+                    border-bottom: 1px solid #eee;
+                }
+
+                .logout-btn, .register-link {
+                    padding: 8px 16px;
+                    background-color: #f44336;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 4px;
+                    transition: background-color 0.3s;
+                    border: none;
+                    cursor: pointer;
+                }
+
+                .logout-btn:hover, .register-link:hover {
+                    background-color: #d32f2f;
+                }
+
+                .profile-content {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 20px;
+                }
+
+                .profile-avatar {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 10px;
+                }
+
+                .profile-avatar img, .default-avatar {
+                    width: 150px;
+                    height: 150px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                    background-color: #eee;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 60px;
+                    color: #666;
+                }
+
+                .change-pfp-btn {
+                    padding: 8px 16px;
+                    background-color: #2196F3;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    transition: background-color 0.3s;
+                }
+
+                .change-pfp-btn:hover {
+                    background-color: #0b7dda;
+                }
+
+                .performance-section {
+                    margin: 20px 0;
+                    padding: 20px;
+                    background: #f8f9fa;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                }
+
+                .performance-stats {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                    gap: 20px;
+                    margin-top: 15px;
+                }
+
+                .stat-item {
+                    background: white;
+                    padding: 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                }
+
+                .stat-item h4 {
+                    color: #333;
+                    margin-bottom: 15px;
+                    font-size: 1.1em;
+                }
+
+                .progress-bar {
+                    width: 100%;
+                    height: 20px;
+                    background: #e9ecef;
+                    border-radius: 10px;
+                    overflow: hidden;
+                    margin: 10px 0;
+                }
+
+                .progress-fill {
+                    height: 100%;
+                    background: linear-gradient(90deg, #4CAF50, #45a049);
+                    transition: width 0.3s ease;
+                }
+
+                .status {
+                    font-weight: bold;
+                    padding: 8px 12px;
+                    border-radius: 4px;
+                    display: inline-block;
+                    margin-bottom: 10px;
+                }
+
+                .status.excellent {
+                    background: #d4edda;
+                    color: #155724;
+                }
+
+                .status.good {
+                    background: #fff3cd;
+                    color: #856404;
+                }
+
+                .status.needs-improvement {
+                    background: #f8d7da;
+                    color: #721c24;
+                }
+
+                .tasks-breakdown {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 10px;
+                    text-align: center;
+                }
+
+                .task-count {
+                    padding: 10px;
+                    border-radius: 6px;
+                    background: #f8f9fa;
+                }
+
+                .task-count .count {
+                    display: block;
+                    font-size: 1.5em;
+                    font-weight: bold;
+                    color: #333;
+                }
+
+                .task-count .label {
+                    font-size: 0.9em;
+                    color: #666;
+                }
+
+                .task-count.completed {
+                    background: #d4edda;
+                }
+
+                .task-count.incomplete {
+                    background: #f8d7da;
+                }
+
+                .loading {
+                    text-align: center;
+                    padding: 20px;
+                    color: #666;
+                }
+
+                .visionboard-section, .images-section {
+                    margin: 20px 0;
+                    padding: 20px;
+                    background: #f8f9fa;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                }
+
+                .section-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 15px;
+                }
+
+                .add-vb-btn, .upload-btn {
+                    padding: 8px 16px;
+                    background-color: #4CAF50;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    transition: background-color 0.3s;
+                }
+
+                .add-vb-btn:hover, .upload-btn:hover {
+                    background-color: #45a049;
+                }
+
+                .visionboard-list, .user-images-list {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                    gap: 20px;
+                    margin-top: 15px;
+                }
+
+                .visionboard-card, .user-image-card {
+                    background: white;
+                    padding: 15px;
+                    border-radius: 8px;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                }
+
+                .vb-form, .upload-form, .edit-image-form {
+                    display: grid;
+                    grid-template-columns: 1fr;
+                    gap: 15px;
+                    margin-bottom: 20px;
+                }
+
+                .vb-form label, .upload-form label, .edit-image-form label {
+                    font-weight: bold;
+                    margin-bottom: 5px;
+                }
+
+                .vb-form input, .vb-form select,
+                .upload-form input, .upload-form textarea, .upload-form select,
+                .edit-image-form input, .edit-image-form textarea, .edit-image-form select {
+                    padding: 10px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    font-size: 1em;
+                }
+
+                .vb-form button, .upload-form button, .edit-image-form button {
+                    padding: 10px;
+                    background-color: #007bff;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 1em;
+                    transition: background-color 0.3s;
+                }
+
+                .vb-form button:hover, .upload-form button:hover, .edit-image-form button:hover {
+                    background-color: #0056b3;
+                }
+
+                .error-message {
+                    color: red;
+                    font-size: 0.9em;
+                    margin-top: 10px;
+                }
+
+                .user-image-card img {
+                    max-width: 100%;
+                    height: auto;
+                    border-radius: 8px;
+                }
+            `}</style>
         </div>
     );
 };

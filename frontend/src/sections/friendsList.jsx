@@ -18,7 +18,10 @@ const FriendsList = () => {
         dispatch(deleteFriendRequest(requestId));
     };
 
-    const filteredRequests = acceptedRequests.filter(request => request.receiver_id === currentUserId);
+    // Show all accepted requests where current user is either sender or receiver
+    const filteredRequests = acceptedRequests.filter(
+        request => request.sender_id === currentUserId || request.receiver_id === currentUserId
+    );
 
     return (
         <div>
@@ -28,10 +31,12 @@ const FriendsList = () => {
             ) : (
                 <ul>
                     {filteredRequests.map(request => {
-                        const sender = users.find(user => user.id === request.sender_id);
+                        // Find the other user (not the current user)
+                        const friendId = request.sender_id === currentUserId ? request.receiver_id : request.sender_id;
+                        const friend = users.find(user => user.id === friendId);
                         return (
                             <li key={request.id}>
-                                {sender ? sender.fullname : 'Unknown Sender'}
+                                {friend ? friend.fullname : 'Unknown Friend'}
                                 <button onClick={() => handleDelete(request.id)}>Remove Friend</button>
                             </li>
                         );

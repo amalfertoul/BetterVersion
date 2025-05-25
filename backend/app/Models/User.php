@@ -50,4 +50,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(MiniGameUser::class, 'user_id', 'id');
     }
+
+    public function userPerformance()
+    {
+        return $this->hasOne(UserPerformance::class, 'user_id', 'id');
+    }
 }
