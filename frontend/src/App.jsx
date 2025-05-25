@@ -12,6 +12,7 @@ import FirstPage from './components/firstPage';
 import Socialize from './components/socialize';
 import RenderMessages from './sections/conversation';
 import AdminOnly from './components/AdminOnly';
+import FriendPfp from './components/FriendProfile';
 function App() {
   const userId = useSelector((state) => state.users.userId);
 
@@ -30,6 +31,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/socialize" element={<Socialize />} />
         <Route path="/conversation/:userId" element={<RenderMessages />} />
+        <Route path="/friend/:id" element={<FriendPfp />} />
         {/* Add other routes here */}
 
       </Routes>

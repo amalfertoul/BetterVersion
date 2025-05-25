@@ -38,19 +38,40 @@ const FriendsList = () => {
                 <p>No friends accepted yet.</p>
             ) : (
                 <ul>
-                    {filteredRequests.map(request => {
-                        // Find the other user (not the current user)
-                        const friendId = request.sender_id === currentUserId ? request.receiver_id : request.sender_id;
-                        const friend = users.find(user => user.id === friendId);
-                        return (
-                            <li key={request.id}>
-                                {friend ? friend.fullname : 'Unknown Friend'}
-                                <button onClick={() => handleDelete(request.id)}>Remove Friend</button>
-                                  <button onClick={() => handleMessage(friendId)}>Message</button>
-                            </li>
-                        );
-                    })}
-                </ul>
+  {filteredRequests.map(request => {
+    const friendId = request.sender_id === currentUserId ? request.receiver_id : request.sender_id;
+    const friend = users.find(user => user.id === friendId);
+
+    return (
+      <li
+        key={request.id}
+        onClick={() => navigate(`/friend/${friendId}`)}
+        style={{ 
+          cursor: 'pointer', 
+          padding: '10px', 
+          border: '1px solid #ccc', 
+          marginBottom: '10px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}
+      >
+        <span>{friend ? friend.fullname : 'Unknown Friend'}</span>
+
+        <div>
+          <button onClick={(e) => { e.stopPropagation(); handleDelete(request.id); }}>
+            Remove Friend
+          </button>
+
+          <button onClick={(e) => { e.stopPropagation(); handleMessage(friendId); }}>
+            Message
+          </button>
+        </div>
+      </li>
+    );
+  })}
+</ul>
+
             )}
         </div>
     );

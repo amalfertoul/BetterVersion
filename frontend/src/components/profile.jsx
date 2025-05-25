@@ -4,7 +4,6 @@ import { fetchUsers } from '../slices/UserSlice';
 import { fetchImages, createImage, updateImage, deleteImage } from '../slices/imagesSlice';
 import { fetchCategories } from '../slices/categorySlice';
 import { fetchTasks } from '../slices/userPerformanceSlice';
-import { Link } from 'react-router-dom';
 import { fetchVisionBoards, createVisionBoard, updateVisionBoard, deleteVisionBoard } from '../slices/visionBoardSlice';
 import { useNavigate } from 'react-router-dom';
 const Profile = () => {
