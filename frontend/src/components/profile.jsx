@@ -6,9 +6,10 @@ import { fetchCategories } from '../slices/categorySlice';
 import { fetchTasks } from '../slices/userPerformanceSlice';
 import { Link } from 'react-router-dom';
 import { fetchVisionBoards, createVisionBoard, updateVisionBoard, deleteVisionBoard } from '../slices/visionBoardSlice';
-
+import { useNavigate } from 'react-router-dom';
 const Profile = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const currentUserId = useSelector((state) => state.users.userId);
     const users = useSelector((state) => state.users.users);
     const { images } = useSelector((state) => state.images);
@@ -268,9 +269,9 @@ const Profile = () => {
             <div className="profile-card">
                 <div className="profile-header">
                     <h2>My Profile</h2>
-                    <Link to="/friends" className="friends-link">
+                    <button onClick={()=>{navigate('/socialize')}} className="friends-link">
                         My Friends List
-                    </Link>
+                    </button>
                 </div>
                 
                 {currentUser ? (
