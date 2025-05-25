@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUsers } from '../slices/UserSlice'; 
-import { fetchUserPerformance } from '../slices/userPerformanceSlice';
+import { fetchTasks } from '../slices/userPerformanceSlice';
 
 const AdminOnly = () => {
     const dispatch = useDispatch();
@@ -14,7 +14,7 @@ const AdminOnly = () => {
 
     useEffect(() => {
         dispatch(fetchUsers());
-        dispatch(fetchUserPerformance());
+        dispatch(fetchTasks());
     }, [dispatch]);
 
     return (

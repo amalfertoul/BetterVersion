@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { fetchMessages, sendMessage, deleteMessage } from '../slices/messageSlice';
@@ -12,13 +12,15 @@ const RenderMessages = () => {
 
     const { messages, status, error } = useSelector((state) => state.messages);
     const currentUserId = useSelector((state) => state.users.userId);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        if (!userId) {
+        if (!currentUserId) {
             navigate('/login');
+            return;
         }
         dispatch(fetchMessages(userId));
-    }, [dispatch, userId , currentUserId]);
+    }, [dispatch, userId, currentUserId, navigate]);
 
     const handleSendMessage = () => {
         if (newMessage.trim()) {
