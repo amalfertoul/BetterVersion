@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchGames } from '../slices/gamesSlice';
 import { createMiniGameUser } from '../slices/gameUserSlice';
+import '../style/games.css';
 
 const Games = () => {
   const dispatch = useDispatch();
