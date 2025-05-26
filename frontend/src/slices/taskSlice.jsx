@@ -11,7 +11,14 @@ export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async () => {
 });
 
 export const createTask = createAsyncThunk('tasks/createTask', async (taskData) => {
-    const response = await axios.post(API_URL, taskData);
+    const response = await axios.post(API_URL, {
+        title: taskData.title,
+        description: taskData.description,
+        due_date: taskData.due_date,  
+        status: taskData.status,
+        category: taskData.category,  
+        user_id: taskData.user_id,
+    });
     return response.data;
 });
 
@@ -21,7 +28,12 @@ export const fetchTaskById = createAsyncThunk('tasks/fetchTaskById', async (id) 
 });
 
 export const updateTask = createAsyncThunk('tasks/updateTask', async ({ id, taskData }) => {
-    const response = await axios.put(`${API_URL}/${id}`, taskData);
+    const response = await axios.put(`${API_URL}/${id}`,{
+        title: taskData.title,
+        description: taskData.description,
+        status: taskData.status,
+        category: taskData.category,  
+    });
     return response.data;
 });
 
