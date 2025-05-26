@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchUsers } from '../slices/UserSlice';
 import { fetchTasks, createTask, updateTask, deleteTask } from '../slices/taskSlice';
 
-const CATEGORIES = ['daily', 'weekly', 'monthly', 'yearly']; // Updated from 'MODES' to 'CATEGORIES'
+const CATEGORIES = ['daily', 'weekly', 'monthly', 'yearly'];
 
 const TodoListPage = () => {
     const dispatch = useDispatch();
@@ -25,6 +25,9 @@ const TodoListPage = () => {
     const [editDescription, setEditDescription] = useState('');
     const [editStatus, setEditStatus] = useState('pending');
     const [editCategory, setEditCategory] = useState('daily'); // Changed from 'editMode'
+
+    // Active category for filtering
+    const [activeCategory, setActiveCategory] = useState('all'); // 'all' par défaut
 
     // Fetch tasks on mount and when userId changes
     useEffect(() => {
@@ -99,11 +102,12 @@ const TodoListPage = () => {
         setExpandedTaskId(expandedTaskId === taskId ? null : taskId);
     };
 
-    // Filter tasks by current user and search query
+    // Filtrer les tâches selon la catégorie sélectionnée
     const filteredTasks = Array.isArray(tasks)
         ? tasks.filter(
             (task) =>
                 Number(task.user_id) === Number(userId) &&
+                (activeCategory === 'all' || task.category === activeCategory) &&
                 task.title.toLowerCase().includes(search.toLowerCase())
         )
         : [];
@@ -129,7 +133,7 @@ const TodoListPage = () => {
                             background: '#4caf50',
                             height: '100%',
                             borderRadius: 8,
-                            transition: 'width 0.3s'
+                            transition: 'width 0.3s',
                         }}
                     />
                 </div>
@@ -190,6 +194,44 @@ const TodoListPage = () => {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                 />
+            </div>
+
+            {/* Navbar de catégories */}
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginBottom: 24 }}>
+                <button
+                    key="all"
+                    onClick={() => setActiveCategory('all')}
+                    style={{
+                        padding: '8px 18px',
+                        borderRadius: 20,
+                        border: 'none',
+                        background: activeCategory === 'all' ? '#1976d2' : '#eee',
+                        color: activeCategory === 'all' ? '#fff' : '#333',
+                        fontWeight: activeCategory === 'all' ? 'bold' : 'normal',
+                        cursor: 'pointer',
+                        boxShadow: activeCategory === 'all' ? '0 2px 8px #1976d233' : 'none'
+                    }}
+                >
+                    All
+                </button>
+                {CATEGORIES.map(cat => (
+                    <button
+                        key={cat}
+                        onClick={() => setActiveCategory(cat)}
+                        style={{
+                            padding: '8px 18px',
+                            borderRadius: 20,
+                            border: 'none',
+                            background: activeCategory === cat ? '#1976d2' : '#eee',
+                            color: activeCategory === cat ? '#fff' : '#333',
+                            fontWeight: activeCategory === cat ? 'bold' : 'normal',
+                            cursor: 'pointer',
+                            boxShadow: activeCategory === cat ? '0 2px 8px #1976d233' : 'none'
+                        }}
+                    >
+                        {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                    </button>
+                ))}
             </div>
 
             {/* Tasks Table */}
