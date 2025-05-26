@@ -6,11 +6,19 @@ const API_URL = 'http://localhost:8000/api/tasks';
 // Async thunks for CRUD operations
 export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async () => {
     const response = await axios.get(API_URL);
-    return response.data;
+    console.log('API tasks:', response.data);
+    return response.data; // <-- retourne directement le tableau
 });
 
 export const createTask = createAsyncThunk('tasks/createTask', async (taskData) => {
-    const response = await axios.post(API_URL, taskData);
+    const response = await axios.post(API_URL, {
+        title: taskData.title,
+        description: taskData.description,
+        due_date: taskData.due_date,  
+        status: taskData.status,
+        category: taskData.category,  
+        user_id: taskData.user_id,
+    });
     return response.data;
 });
 
@@ -20,7 +28,12 @@ export const fetchTaskById = createAsyncThunk('tasks/fetchTaskById', async (id) 
 });
 
 export const updateTask = createAsyncThunk('tasks/updateTask', async ({ id, taskData }) => {
-    const response = await axios.put(`${API_URL}/${id}`, taskData);
+    const response = await axios.put(`${API_URL}/${id}`,{
+        title: taskData.title,
+        description: taskData.description,
+        status: taskData.status,
+        category: taskData.category,  
+    });
     return response.data;
 });
 
@@ -31,7 +44,7 @@ export const deleteTask = createAsyncThunk('tasks/deleteTask', async (id) => {
 
 // Initial state
 const initialState = {
-    tasks: [],
+    tasks:[],
     task: null,
     loading: false,
     error: null,

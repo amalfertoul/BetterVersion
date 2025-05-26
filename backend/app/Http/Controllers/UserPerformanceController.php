@@ -15,9 +15,7 @@ class UserPerformanceController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'score' => 'required|integer',
-            'task_id' => 'required|exists:tasks,id',
-            'timestamp' => 'required|date',
+            'user_id' => 'required|exists:users,id',
         ]);
 
         return UserPerformance::create($request->all());
@@ -31,9 +29,7 @@ class UserPerformanceController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'score' => 'required|integer',
-            'task_id' => 'required|exists:tasks,id',
-            'timestamp' => 'required|date',
+            'user_id' => 'required|exists:users,id',
         ]);
 
         $performance = UserPerformance::findOrFail($id);

@@ -8,6 +8,7 @@ const Suggestions = () => {
     const users = useSelector((state) => state.users.users);
     const currentUserId = useSelector((state) => state.users.userId);
     const pendingRequests = useSelector((state) => state.friendRequests.pending);
+    const acceptedRequests = useSelector((state) => state.friendRequests.accepted);
     const loading = useSelector((state) => state.users.loading);
     const error = useSelector((state) => state.users.error);
 
@@ -47,25 +48,29 @@ const Suggestions = () => {
 
     return (
         <div>
-            {/* nas li deja msardinlom hnaya gaema aybqaw ytleo f suggestions mea had lfilter */}
             {filteredUsers
-                .filter(user => 
-                    !pendingRequests.some(request => 
-                        request.receiver_id === user.id && request.sender_id === currentUserId
+                // Exclude users with pending requests (in either direction)
+                .filter(user =>
+                    !pendingRequests.some(request =>
+                        (request.sender_id === currentUserId && request.receiver_id === user.id) ||
+                        (request.sender_id === user.id && request.receiver_id === currentUserId)
                     )
                 )
-                // gha bach mantleochi n rasna hnaya
+                // Exclude users with accepted requests (friendship in either direction)
+                .filter(user =>
+                    !acceptedRequests.some(request =>
+                        (request.sender_id === currentUserId && request.receiver_id === user.id) ||
+                        (request.sender_id === user.id && request.receiver_id === currentUserId)
+                    )
+                )
                 .map((user, index) => (
                     <div key={`${user.id}-${index}`}>
-                        {/*had leiba d image maeraftchi kfch ntalea meawt*/}
                         <img 
                             src={user.profile_picture || '/default-profile.png'} 
                             alt={user.username}
                         />
-                        
                         <p>{user.fullname}</p>
                         <button onClick={() => handleSendFriendRequest(user.id)}>request</button> 
-                                            
                     </div>
                 ))}
         </div>

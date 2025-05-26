@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Task; // Import the Task model
 
 class UserPerformance extends Model
 {
@@ -23,15 +22,15 @@ class UserPerformance extends Model
 
     protected $fillable = [
         'score',
-        'task_id',
-        'timestamp',
+        'user_id',
     ];
 
     /**
      * Define the relationship with the Task model.
      */
-    public function task()
+    public function user()
     {
-        return $this->belongsTo(Task::class, 'task_id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
+   
 }

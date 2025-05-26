@@ -1,0 +1,110 @@
+[33mf283db6[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/main[m[33m)[m fixed
+[33m6f96d3c[m attempt to add update pfp button
+[33m941573f[m default pfp path issue fixed
+[33mb803066[m logout
+[33mbcf678b[m fixed images update/ state
+[33m3034eb9[m added category to edit form
+[33m8980efd[m image update
+[33mc3f4cff[m fixed images in profile page
+[33m7c2ccfa[m fixed images processing backend
+[33m76510ae[m fixed images backend processing
+[33mb49954d[m fixed profile picture
+[33ma5f982b[m fixed slices logic/ profile component logic
+[33m4cd5a83[m fixed login front end
+[33m6484604[m login backend
+[33m7416f53[m login logic
+[33m0c48cb9[m fixed user seeder/ added profile image functionality
+[33mfbe4648[m Merge pull request #49 from amalfertoul/master
+[33md30aa90[m Merge pull request #48 from amalfertoul/main
+[33m84c97f9[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/NoErrors[m[33m, [m[1;32mNoErrors[m[33m, [m[1;32mNoErreurs[m[33m)[m socialize style
+[33ma244549[m Merge pull request #47 from amalfertoul/master
+[33me5a17a3[m socialize page
+[33mb448556[m Merge pull request #46 from amalfertoul/master
+[33m8a92de5[m restructuring
+[33mf0ae36f[m Merge pull request #45 from amalfertoul/master
+[33md8d843a[m task
+[33m2467d39[m profile update
+[33m7abdf05[m page visionbord
+[33me0b10a6[m explore
+[33md02c3c7[m Finalisation des changements locaux
+[33m647f76e[m rien
+[33mb63b6b5[m Merge pull request #44 from amalfertoul/master
+[33m60cf1f8[m conversation first version / succesfull test
+[33m8677530[m rewrite minigames logic/ added minigames shockwave files
+[33m347a94b[m populated databaseSeeder
+[33m24fd5a8[m Merge branch 'main' of https://github.com/amalfertoul/BetterVersion
+[33m4556eb8[m storage issue
+[33mce37f2e[m Merge pull request #43 from amalfertoul/master
+[33mbbbedce[m fixing chats section functions
+[33m14db08a[m Merge pull request #42 from amalfertoul/master
+[33mb11f891[m fixing a little problem in images backend
+[33mce03789[m Merge pull request #41 from amalfertoul/master
+[33ma69c238[m chatttts
+[33m3cd0e5d[m chats
+[33med9d4c2[m chatssss
+[33m7173e99[m chats
+[33m7e92724[m Merge pull request #40 from amalfertoul/master
+[33mb03623d[m friends list
+[33m191a49f[m Merge pull request #39 from amalfertoul/master
+[33m28915b0[m friend request section testing
+[33md8a1ee4[m Merge pull request #38 from amalfertoul/master
+[33m838fd5e[m Merge pull request #37 from amalfertoul/master
+[33m7f40026[m friend suggestions explanaition
+[33m2ecae98[m suggestions done
+[33mb3f5f7a[m Merge pull request #36 from amalfertoul/master
+[33m938560f[m gameuser test done properly + id
+[33m11c5b17[m modificatios chats
+[33m417bd0d[m Merge pull request #35 from amalfertoul/master
+[33m2695824[m redirect to profile after login or register
+[33me10aa17[m Merge pull request #34 from amalfertoul/master
+[33md183aba[m work with register pls ch7fttt wana kneawt les erreur gha d navbar pls man
+[33md6ac8a6[m chats convi
+[33m3676516[m chats
+[33m8c92533[m interface de minigame
+[33m172050c[m Merge pull request #33 from amalfertoul/master
+[33m8bfc2b7[m last slice
+[33m2ea6e09[m Merge pull request #32 from amalfertoul/master
+[33m60ee8a1[m make sure to call all the slices in the store
+[33m507065d[m Merge pull request #31 from amalfertoul/master
+[33md6bd0b5[m friend Request slice first version / if not last
+[33me1eff52[m Merge pull request #30 from amalfertoul/master
+[33m22bd22c[m fixing game and game user slices
+[33mb84df97[m Merge pull request #29 from amalfertoul/master
+[33m2cbbab3[m final touches , only messages and friend request slices lasts
+[33m632bf9f[m slices mini games
+[33m4c8a7bc[m Merge pull request #28 from amalfertoul/master
+[33m7ebbd34[m first collection of explained slices
+[33m3ce6418[m controller mini games
+[33m2a17791[m ajouter image a mini games
+[33md1597f6[m seeder mini games
+[33mbaa4f26[m mini jeux
+[33m81de7bb[m Merge pull request #27 from amalfertoul/master
+[33mb123892[m user performance slice
+[33mba00779[m taskSlice
+[33m9d32f78[m userId stored in the userSlice
+[33m63e47c9[m Merge branch 'main' of https://github.com/amalfertoul/BetterVersion
+[33mf6163be[m Merge pull request #26 from amalfertoul/master
+[33m8e89b0e[m Merge pull request #25 from amalfertoul/master
+[33m2cd1380[m Update composer.lock
+[33mb6ca9ff[m Create AuthSlice.jsx
+[33m0f1926d[m Merge pull request #24 from amalfertoul/master
+[33m118ec32[m last test
+[33m7a02b8a[m login testing 2
+[33ma34a4ae[m Merge pull request #23 from amalfertoul/master
+[33mc496494[m login testing
+[33mb66865d[m Merge pull request #22 from amalfertoul/master
+[33m4e6a825[m fixing the main jsx
+[33mf2888a6[m removed pfp from register
+[33m332080d[m renamed profile route to match component
+[33mef192cb[m Update main.jsx
+[33m944f224[m Merge pull request #21 from amalfertoul/master
+[33m85a3ed2[m i don t know what in the actual hell
+[33m3bfe0c0[m navbar
+[33me459081[m footer
+[33m364c37a[m page profile
+[33mfe68a15[m Merge pull request #20 from amalfertoul/master
+[33me5fcce7[m register worked yey
+[33m2416067[m Merge pull request #19 from amalfertoul/master
+[33mf0cbf74[m adding user slice , login and register pages ; its need navbar to work
+[33m90514ca[m Merge pull request #18 from amalfertoul/master
+[33md2b17ea[m removing authentification middle ware to make work easier ,

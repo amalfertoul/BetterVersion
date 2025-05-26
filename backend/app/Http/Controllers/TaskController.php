@@ -22,6 +22,7 @@ class TaskController extends Controller
             'title' => 'required|string',
             'status' => 'required|in:pending,in_progress,completed',
             'description' => 'required|string',
+            'category' => 'required|in:daily,weekly,monthly,yearly',
             'user_id' => 'required|exists:users,id',
             'due_date' => 'required|date',
         ]);
@@ -42,20 +43,31 @@ class TaskController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Validate the incoming request
-        $request->validate([
-            'title' => 'required|string',
-            'status' => 'required|in:pending,in_progress,completed',
-            'description' => 'required|string',
-            'user_id' => 'required|exists:users,id',
-            'due_date' => 'required|date',
+         $request->validate([
+            'title' => 'sometimes|string', // Optional
+            'status' => 'sometimes|in:pending,in_progress,completed', // Optional
+            'description' => 'sometimes|string', // Optional
+            'category' => 'sometimes|in:daily,weekly,monthly,yearly', // Optional
+            'due_date' => 'sometimes|date', // Optional
+            // Remove 'user_id' since it shouldn't change
         ]);
 
         // Find the task and update it
         $task = Task::findOrFail($id);
-        $task->update($request->all());
-
+        $task->update($request->only([
+                'title',
+                'status',
+                'description',
+                'category',
+                'due_date',
+        ]));
         return response()->json($task);
+    }
+
+    public function getTasksByUserId($userId)
+    {
+        $tasks = Task::with('user')->where('user_id', $userId)->get();
+        return response()->json($tasks);
     }
 
     public function destroy($id)

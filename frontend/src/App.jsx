@@ -10,6 +10,9 @@ import Home from './components/Home';
 import Profile from './components/profile';
 import FirstPage from './components/firstPage';
 import Socialize from './components/socialize';
+import RenderMessages from './sections/conversation';
+import AdminOnly from './components/AdminOnly';
+import FriendPfp from './components/FriendProfile';
 function App() {
   const userId = useSelector((state) => state.users.userId);
 
@@ -20,11 +23,15 @@ function App() {
         <Route path="/" element={<FirstPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/AdminOnly" element={<AdminOnly />} />
+        {/* Add other routes here */}
         <Route path="/home" element={<Home />} />
         <Route path="/explore" element={<Explore />} />
         <Route path="/games" element={<Games />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/socialize" element={<Socialize />} />
+        <Route path="/conversation/:userId" element={<RenderMessages />} />
+        <Route path="/friend/:id" element={<FriendPfp />} />
         {/* Add other routes here */}
 
       </Routes>
