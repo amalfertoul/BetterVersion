@@ -8,7 +8,7 @@ import { useEffect } from "react";
 const FriendRequest = () => {
     const dispatch = useDispatch(); 
 
-    const currentUserId = useSelector((state) => state.users.userId); // hna kanjibo userId dyal user li da5el bach nfiltriw bih ela table pending
+    const currentUserId = useSelector((state) => state.users.user?.id); // hna kanjibo userId dyal user li da5el bach nfiltriw bih ela table pending
     const { pending, status: requestStatus } = useSelector((state) => state.friendRequests); // hna kanjibo pending requests o status dyalom 
     const users = useSelector((state) => state.users.users);// table users mn UserSlice bach ntaleo les info d senders
 

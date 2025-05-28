@@ -20,6 +20,7 @@ class ImageController extends Controller
             'category_id' => 'required|exists:categories,id',
             'description' => 'nullable|string',
             'user_id' => 'required|exists:users,id',
+            'vision_board_id' => 'nullable|exists:vision_boards,id', // Optional vision board ID
         ]);
     
         // Store the uploaded image
@@ -30,6 +31,7 @@ class ImageController extends Controller
             'description' => $request->description,
             'user_id' => $request->user_id,
             'category_id' => $request->category_id,
+            'vision_board_id' => $request->vision_board_id, // Save the vision board ID if provided
         ];
     
         return Image::create($data);
@@ -50,6 +52,7 @@ class ImageController extends Controller
             'category_id' => 'required|exists:categories,id',
             'description' => 'nullable|string',
             'user_id' => 'required|exists:users,id',
+            'vision_board_id' => 'nullable|exists:vision_boards,id', // Optional vision board ID
         ]);
 
         $image = Image::findOrFail($id);
@@ -76,9 +79,30 @@ class ImageController extends Controller
         return response()->json($image);
     }
 
+    /**
+     * Assign an image to a vision board.
+     */
+    public function addToVisionBoard(Request $request, $id)
+    {
+        $request->validate([
+            'vision_board_id' => 'required|exists:vision_boards,id',
+        ]);
+
+        $image = Image::findOrFail($id);
+        $image->vision_board_id = $request->vision_board_id;
+        $image->save();
+
+        return response()->json([
+            'message' => 'Image added to vision board successfully',
+            'image' => $image
+        ]);
+    }
+
     public function destroy($id)
     {
         Image::destroy($id);
         return response()->json(['message' => 'Image deleted successfully']);
     }
+
+
 }

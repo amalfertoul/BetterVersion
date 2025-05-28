@@ -3,18 +3,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchUsers } from '../slices/UserSlice';
 import { fetchTasks, createTask, updateTask, deleteTask } from '../slices/taskSlice';
 
-const MODES = ['yearly', 'monthly', 'weekly', 'daily'];
+// Define your categories here
+const CATEGORIES = ['yearly', 'monthly', 'weekly', 'daily'];
 
 const TodoListPage = () => {
     const dispatch = useDispatch();
-    const userId = useSelector((state) => state.users.user?.id); //
+    const userId = useSelector((state) => state.users.user?.id);
     const { tasks, loading, error } = useSelector((state) => state.tasks);
 
     const [taskTitle, setTaskTitle] = useState('');
     const [taskDescription, setTaskDescription] = useState('');
     const [dueDate, setDueDate] = useState('');
     const [status, setStatus] = useState('pending');
-    const [mode, setMode] = useState('daily');
+    const [category, setCategory] = useState('daily');
     const [search, setSearch] = useState('');
     const [expandedTaskId, setExpandedTaskId] = useState(null);
 
@@ -23,16 +24,19 @@ const TodoListPage = () => {
     const [editTitle, setEditTitle] = useState('');
     const [editDescription, setEditDescription] = useState('');
     const [editStatus, setEditStatus] = useState('pending');
-    const [editMode, setEditMode] = useState('daily');
+    const [editCategory, setEditCategory] = useState('daily');
 
+    // Active category for filtering
+    const [activeCategory, setActiveCategory] = useState('all'); // 'all' par défaut
+
+    // Fetch tasks on mount and when userId changes
     useEffect(() => {
         dispatch(fetchUsers());
+        dispatch(fetchTasks());
     }, [dispatch]);
 
     useEffect(() => {
-        if (userId) {
-            dispatch(fetchTasks());
-        }
+        if (userId) dispatch(fetchTasks());
     }, [dispatch, userId]);
 
     const handleCreateTask = (e) => {
@@ -44,51 +48,49 @@ const TodoListPage = () => {
             description: taskDescription,
             due_date: dueDate,
             status,
-            mode,
+            category,
             user_id: userId,
         };
 
         dispatch(createTask(newTask));
+        // Reset form
         setTaskTitle('');
         setTaskDescription('');
         setDueDate('');
         setStatus('pending');
-        setMode('daily');
+        setCategory('daily');
     };
 
-    // Commencer l'édition
+    // Edit handlers
     const startEdit = (task) => {
         setEditTaskId(task.id);
         setEditTitle(task.title);
         setEditDescription(task.description);
         setEditStatus(task.status);
-        setEditMode(task.mode || 'daily');
+        setEditCategory(task.category || 'daily');
     };
 
     // Sauvegarder l'édition
     const handleUpdateTask = (e) => {
         e.preventDefault();
+        const taskToUpdate = tasks.find(task => task.id === editTaskId); // Find the original task
         dispatch(updateTask({
             id: editTaskId,
             taskData: {
                 title: editTitle,
                 description: editDescription,
                 status: editStatus,
-                mode: editMode,
+                category: editCategory,
+                due_date: taskToUpdate.due_date, // Preserve original due date
             }
         }));
-        setEditTaskId(null);
-        setEditTitle('');
-        setEditDescription('');
-        setEditStatus('pending');
-        setEditMode('daily');
+        setEditTaskId(null); // Exit edit mode
     };
 
     const handleDeleteTask = (taskId) => {
         dispatch(deleteTask(taskId));
     };
 
-    // Marquer comme complétée
     const markAsCompleted = (task) => {
         dispatch(updateTask({
             id: task.id,
@@ -101,26 +103,28 @@ const TodoListPage = () => {
         setExpandedTaskId(expandedTaskId === taskId ? null : taskId);
     };
 
-    // Filtrer les tâches de l'utilisateur connecté par titre
+    // Filtrer les tâches selon la catégorie sélectionnée
     const filteredTasks = Array.isArray(tasks)
         ? tasks.filter(
             (task) =>
                 Number(task.user_id) === Number(userId) &&
+                (activeCategory === 'all' || task.category === activeCategory) &&
                 task.title.toLowerCase().includes(search.toLowerCase())
         )
         : [];
 
-    // Progression
+    // Progress calculation
     const totalTasks = filteredTasks.length;
     const completedTasks = filteredTasks.filter(task => task.status === 'completed').length;
     const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
     if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error}</div>;
+    if (error) return <div>Error: {typeof error === 'string' ? error : error.message || JSON.stringify(error)}</div>;
 
     return (
         <div className="todo-list-page">
             <h1>Your Tasks</h1>
+            
             {/* Progress Bar */}
             <div style={{ margin: '20px 0' }}>
                 <div style={{ background: '#eee', borderRadius: 8, height: 24, width: 300 }}>
@@ -130,13 +134,14 @@ const TodoListPage = () => {
                             background: '#4caf50',
                             height: '100%',
                             borderRadius: 8,
-                            transition: 'width 0.3s'
+                            transition: 'width 0.3s',
                         }}
                     />
                 </div>
                 <div style={{ marginTop: 4 }}>{progress}% completed</div>
             </div>
 
+            {/* Task Creation Form */}
             <form onSubmit={handleCreateTask}>
                 <div>
                     <input
@@ -144,6 +149,7 @@ const TodoListPage = () => {
                         placeholder="Task Title"
                         value={taskTitle}
                         onChange={(e) => setTaskTitle(e.target.value)}
+                        required
                     />
                 </div>
                 <div>
@@ -151,13 +157,15 @@ const TodoListPage = () => {
                         placeholder="Task Description"
                         value={taskDescription}
                         onChange={(e) => setTaskDescription(e.target.value)}
-                    ></textarea>
+                        required
+                    />
                 </div>
                 <div>
                     <input
                         type="datetime-local"
                         value={dueDate}
                         onChange={(e) => setDueDate(e.target.value)}
+                        required
                     />
                 </div>
                 <div>
@@ -168,31 +176,71 @@ const TodoListPage = () => {
                     </select>
                 </div>
                 <div>
-                    <select value={mode} onChange={e => setMode(e.target.value)}>
-                        {MODES.map(m => (
-                            <option key={m} value={m}>{m.charAt(0).toUpperCase() + m.slice(1)}</option>
+                    <select value={category} onChange={(e) => setCategory(e.target.value)}>
+                        {CATEGORIES.map(cat => (
+                            <option key={cat} value={cat}>
+                                {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                            </option>
                         ))}
                     </select>
                 </div>
                 <button type="submit">Create Task</button>
             </form>
 
-            {/* Champ de recherche */}
+            {/* Search */}
             <div style={{ margin: '20px 0' }}>
                 <input
                     type="text"
                     placeholder="Search by title..."
                     value={search}
-                    onChange={e => setSearch(e.target.value)}
+                    onChange={(e) => setSearch(e.target.value)}
                 />
             </div>
 
-            {/* Tableau unique pour toutes les tâches */}
+            {/* Navbar de catégories */}
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginBottom: 24 }}>
+                <button
+                    key="all"
+                    onClick={() => setActiveCategory('all')}
+                    style={{
+                        padding: '8px 18px',
+                        borderRadius: 20,
+                        border: 'none',
+                        background: activeCategory === 'all' ? '#1976d2' : '#eee',
+                        color: activeCategory === 'all' ? '#fff' : '#333',
+                        fontWeight: activeCategory === 'all' ? 'bold' : 'normal',
+                        cursor: 'pointer',
+                        boxShadow: activeCategory === 'all' ? '0 2px 8px #1976d233' : 'none'
+                    }}
+                >
+                    All
+                </button>
+                {CATEGORIES.map(cat => (
+                    <button
+                        key={cat}
+                        onClick={() => setActiveCategory(cat)}
+                        style={{
+                            padding: '8px 18px',
+                            borderRadius: 20,
+                            border: 'none',
+                            background: activeCategory === cat ? '#1976d2' : '#eee',
+                            color: activeCategory === cat ? '#fff' : '#333',
+                            fontWeight: activeCategory === cat ? 'bold' : 'normal',
+                            cursor: 'pointer',
+                            boxShadow: activeCategory === cat ? '0 2px 8px #1976d233' : 'none'
+                        }}
+                    >
+                        {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                    </button>
+                ))}
+            </div>
+
+            {/* Tasks Table */}
             <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 30 }}>
                 <thead>
                     <tr style={{ background: '#f0f0f0' }}>
                         <th style={{ border: '1px solid #ccc', padding: 8 }}>Task</th>
-                        <th style={{ border: '1px solid #ccc', padding: 8 }}>Frequency</th>
+                        <th style={{ border: '1px solid #ccc', padding: 8 }}>Category</th>
                         <th style={{ border: '1px solid #ccc', padding: 8 }}>Status</th>
                         <th style={{ border: '1px solid #ccc', padding: 8 }}>Actions</th>
                     </tr>
@@ -203,30 +251,42 @@ const TodoListPage = () => {
                             editTaskId === task.id ? (
                                 <tr key={task.id} style={{ background: '#fffbe0' }}>
                                     <td colSpan={4}>
-                                        <form onSubmit={handleUpdateTask} style={{ display: 'flex', gap: 8 }}>
+                                        <form onSubmit={handleUpdateTask} style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                                             <input
                                                 type="text"
                                                 value={editTitle}
-                                                onChange={e => setEditTitle(e.target.value)}
+                                                onChange={(e) => setEditTitle(e.target.value)}
                                                 required
+                                                style={{ flex: 1 }}
                                             />
                                             <textarea
                                                 value={editDescription}
-                                                onChange={e => setEditDescription(e.target.value)}
+                                                onChange={(e) => setEditDescription(e.target.value)}
                                                 required
+                                                style={{ flex: 1 }}
                                             />
-                                            <select value={editStatus} onChange={e => setEditStatus(e.target.value)}>
+                                            <select 
+                                                value={editStatus} 
+                                                onChange={(e) => setEditStatus(e.target.value)}
+                                            >
                                                 <option value="pending">Pending</option>
                                                 <option value="in_progress">In Progress</option>
                                                 <option value="completed">Completed</option>
                                             </select>
-                                            <select value={editMode} onChange={e => setEditMode(e.target.value)}>
-                                                {MODES.map(m => (
-                                                    <option key={m} value={m}>{m.charAt(0).toUpperCase() + m.slice(1)}</option>
+                                            <select 
+                                                value={editCategory} 
+                                                onChange={(e) => setEditCategory(e.target.value)}
+                                            >
+                                                {CATEGORIES.map(cat => (
+                                                    <option key={cat} value={cat}>
+                                                        {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                                                    </option>
                                                 ))}
                                             </select>
                                             <button type="submit">Save</button>
-                                            <button type="button" onClick={() => setEditTaskId(null)}>Cancel</button>
+                                            <button type="button" onClick={() => setEditTaskId(null)}>
+                                                Cancel
+                                            </button>
                                         </form>
                                     </td>
                                 </tr>
@@ -247,9 +307,11 @@ const TodoListPage = () => {
                                         )}
                                     </td>
                                     <td style={{ border: '1px solid #ccc', padding: 8 }}>
-                                        {(task.mode || 'daily').charAt(0).toUpperCase() + (task.mode || 'daily').slice(1)}
+                                        {(task.category || 'daily').charAt(0).toUpperCase() + (task.category || 'daily').slice(1)}
                                     </td>
-                                    <td style={{ border: '1px solid #ccc', padding: 8 }}>{task.status}</td>
+                                    <td style={{ border: '1px solid #ccc', padding: 8 }}>
+                                        {task.status}
+                                    </td>
                                     <td style={{ border: '1px solid #ccc', padding: 8 }}>
                                         <button onClick={() => startEdit(task)}>Edit</button>
                                         {task.status !== 'completed' && (
@@ -262,7 +324,9 @@ const TodoListPage = () => {
                         )
                     ) : (
                         <tr>
-                            <td colSpan={4} style={{ textAlign: 'center', color: '#888' }}>No tasks found.</td>
+                            <td colSpan={4} style={{ textAlign: 'center', color: '#888' }}>
+                                No tasks found.
+                            </td>
                         </tr>
                     )}
                 </tbody>

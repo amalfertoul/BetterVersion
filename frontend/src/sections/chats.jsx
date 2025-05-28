@@ -9,7 +9,7 @@ const ChatsTesting = () => {
     const navigate = useNavigate(); // Initialize useNavigate
     const { messages, status, error } = useSelector((state) => state.messages);
     const users = useSelector((state) => state.users.users);
-    const currentUserId = useSelector((state) => state.users.userId);
+    const currentUserId = useSelector((state) => state.users.user?.id);
 
     useEffect(() => {
         dispatch(fetchMessages());

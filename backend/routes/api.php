@@ -35,6 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/users/{id}/update-profile-picture', [UserController::class, 'updateProfilePicture']);
 
+    Route::get('/tasks/user/{userId}', [TaskController::class, 'getTasksByUserId']);
     
     // Vision Boards Routes
     Route::prefix('vision-boards')->group(function () {

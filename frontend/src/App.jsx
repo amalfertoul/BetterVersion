@@ -12,7 +12,6 @@ import FirstPage from './components/firstPage';
 import Socialize from './components/socialize';
 import RenderMessages from './sections/conversation';
 import AdminOnly from './components/AdminOnly';
-import TodoListPage from './sections/todolist';
 
 function App() {
   const userId = useSelector((state) => state.users.userId);
@@ -31,7 +30,6 @@ function App() {
         <Route path="/games" element={<Games />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/socialize" element={<Socialize />} />
-        <Route path="/todolist" element={<TodoListPage />} />
          <Route path="/conversation/:userId" element={<RenderMessages />} />
         {/* Add other routes here */}
 

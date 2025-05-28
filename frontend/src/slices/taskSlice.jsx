@@ -44,6 +44,17 @@ export const fetchTaskById = createAsyncThunk('tasks/fetchTaskById', async (id) 
     return response.data;
 });
 
+export const fetchTasksByUser = createAsyncThunk('tasks/fetchTasksByUser', async (userId, { rejectWithValue }) => {
+    try {
+        const response = await axios.get(`${API_URL}/user/${userId}`, {
+            headers: getAuthHeaders(),
+        });
+        return response.data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data || 'Failed to fetch user tasks');
+    }
+});
+
 export const updateTask = createAsyncThunk('tasks/updateTask', async ({ id, taskData }, { rejectWithValue }) => {
     try {
         const response = await axios.put(`${API_URL}/${id}`, taskData, {

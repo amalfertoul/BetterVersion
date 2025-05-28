@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'; 
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchImages, createImage } from '../slices/imagesSlice';
+import { fetchImages, createImage, addImageToVisionBoard } from '../slices/imagesSlice';
 import { fetchCategories } from '../slices/categorySlice';
+import { fetchVisionBoards } from '../slices/visionBoardSlice';
 import { useNavigate } from 'react-router-dom';
 
 const Explore = () => {
@@ -12,12 +13,15 @@ const Explore = () => {
   const loading = useSelector((state) => state.images.loading);
   const error = useSelector((state) => state.images.error);
   const categories = useSelector((state) => state.categories.categories);
+  const visionBoards = useSelector((state) => state.visionBoard.visionBoards);
 
   const [filter, setFilter] = useState('');
   const [showAdd, setShowAdd] = useState(false);
   const [newFile, setNewFile] = useState(null);
   const [newDesc, setNewDesc] = useState('');
   const [newCategory, setNewCategory] = useState('');
+  const [showVisionBoardModal, setShowVisionBoardModal] = useState(false);
+  const [selectedImageId, setSelectedImageId] = useState(null);
 
   useEffect(() => {
     if (!userId) {
@@ -27,6 +31,7 @@ const Explore = () => {
     }
     dispatch(fetchImages());
     dispatch(fetchCategories());
+    dispatch(fetchVisionBoards());
   }, [dispatch, userId, navigate]);
 
   // Ajout d'image avec fichier
@@ -57,11 +62,28 @@ const Explore = () => {
     setNewCategory('');
   };
 
-  // Filtrage par nom de catégorie
-  const filteredImages = images.filter(img => {
-    const cat = categories.find(c => c.id === img.category_id);
-    return cat && cat.name.toLowerCase().includes(filter.toLowerCase());
-  });
+  // Show all images if filter is empty, otherwise filter by category name
+  const filteredImages = filter.trim() === ''
+    ? images
+    : images.filter(img => {
+        const cat = categories.find(c => c.id === img.category_id);
+        return cat && cat.name.toLowerCase().includes(filter.toLowerCase());
+      });
+
+  // Filter vision boards to only those created by the current user
+  const userVisionBoards = visionBoards.filter(board => board.user_id === userId);
+
+  // Handle add to vision board
+  const handleAddToVisionBoard = (imageId) => {
+    setSelectedImageId(imageId);
+    setShowVisionBoardModal(true);
+  };
+
+  const handleSelectVisionBoard = async (visionBoardId) => {
+    await dispatch(addImageToVisionBoard({ id: selectedImageId, vision_board_id: visionBoardId }));
+    setShowVisionBoardModal(false);
+    setSelectedImageId(null);
+  };
 
   if (loading) return <div className="loading-message">Chargement des images...</div>;
   if (error) return <div className="error-message">{error}</div>;
@@ -117,6 +139,29 @@ const Explore = () => {
         </div>
       )}
 
+      {/* Modal pour choisir un vision board */}
+      {showVisionBoardModal && (
+        <div className="modal">
+          <div className="modal-form">
+            <h3>Choisir un vision board</h3>
+            {userVisionBoards.length === 0 ? (
+              <p>Vous n'avez pas encore de vision board.</p>
+            ) : (
+              userVisionBoards.map(board => (
+                <button
+                  key={board.id}
+                  style={{ margin: '5px 0' }}
+                  onClick={() => handleSelectVisionBoard(board.id)}
+                >
+                  {board.name}
+                </button>
+              ))
+            )}
+            <button type="button" onClick={() => setShowVisionBoardModal(false)}>Annuler</button>
+          </div>
+        </div>
+      )}
+
       <div className="images-grid">
         {filteredImages.map((image, index) => {
           const cat = categories.find(c => c.id === image.category_id);
@@ -137,6 +182,12 @@ const Explore = () => {
                 <p style={{ fontSize: 12, color: '#888' }}>
                   Catégorie : {cat ? cat.name : 'Aucune'}
                 </p>
+                <button
+                  style={{ marginTop: 8 }}
+                  onClick={() => handleAddToVisionBoard(image.id)}
+                >
+                  Ajouter au vision board
+                </button>
               </div>
             </div>
           );

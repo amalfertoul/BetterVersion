@@ -5,7 +5,7 @@ import { fetchUsers } from '../slices/UserSlice';
 
 const FriendsList = () => {
     const dispatch = useDispatch();
-    const currentUserId = useSelector((state) => state.users.userId);
+    const currentUserId = useSelector((state) => state.users.user?.id);
     const users = useSelector((state) => state.users.users);
     const { accepted, status, error } = useSelector((state) => state.friendRequests);
     const [searchTerm, setSearchTerm] = useState('');

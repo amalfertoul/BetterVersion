@@ -1,296 +1,99 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createVisionBoard, fetchVisionBoards, deleteVisionBoard, updateVisionBoard } from '../slices/visionBoardSlice';
+import { fetchVisionBoards } from '../slices/visionBoardSlice';
+import { fetchImages, updateImage } from '../slices/imagesSlice';
+import { useParams, useNavigate } from 'react-router-dom';
 
-const visionboard = () => {
+const VisionBoardDetail = () => {
     const dispatch = useDispatch();
-    const userId = useSelector((state) => state.users.userId);
+    const navigate = useNavigate();
+    const { id } = useParams(); // vision board id from route
     const { visionBoards, loading, error } = useSelector((state) => state.visionBoard);
+    const { images } = useSelector((state) => state.images);
 
-    const [showForm, setShowForm] = useState(false);
-    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-    const [showEditForm, setShowEditForm] = useState(false);
-    const [boardToDelete, setBoardToDelete] = useState(null);
-    const [boardToEdit, setBoardToEdit] = useState(null);
-    const [boardName, setBoardName] = useState('');
-    const [visibility, setVisibility] = useState(true); // true = public, false = private
-    const [searchTerm, setSearchTerm] = useState('');
+    const [deleteError, setDeleteError] = useState('');
 
     useEffect(() => {
-        if (userId) {
-            dispatch(fetchVisionBoards());
-        }
-    }, [dispatch, userId]);
+        dispatch(fetchVisionBoards());
+        dispatch(fetchImages());
+    }, [dispatch]);
 
-    const handleCreateVisionBoard = async (e) => {
-        e.preventDefault();
-        if (!boardName) return;
+    // Find the vision board by id
+    const visionBoard = visionBoards.find(board => board.id === parseInt(id));
 
-        const visionBoardData = {
-            name: boardName,
-            user_id: userId,
-            visibility: visibility
-        };
+    // Get all images belonging to this vision board
+    const boardImages = images.filter(img => img.vision_board_id === parseInt(id));
 
+    const handleRemoveImage = async (imageId) => {
         try {
-            await dispatch(createVisionBoard(visionBoardData)).unwrap();
-            setShowForm(false);
-            setBoardName('');
-            setVisibility(true);
-            dispatch(fetchVisionBoards());
+            // Remove the image from the vision board by setting vision_board_id to null
+            await dispatch(updateImage({
+                id: imageId,
+                imageData: { vision_board_id: null }
+            })).unwrap();
+            setDeleteError('');
+            dispatch(fetchImages());
         } catch (err) {
-            console.error('Error creating vision board:', err);
+            setDeleteError('Failed to remove image from vision board.');
         }
     };
-
-    const handleEditClick = (board) => {
-        setBoardToEdit(board);
-        setBoardName(board.name);
-        setVisibility(board.visibility);
-        setShowEditForm(true);
-    };
-
-    const handleUpdateVisionBoard = async (e) => {
-        e.preventDefault();
-        if (!boardToEdit || !boardName) return;
-
-        const visionBoardData = {
-            name: boardName,
-            user_id: userId,
-            visibility: visibility
-        };
-
-        try {
-            await dispatch(updateVisionBoard({ id: boardToEdit.id, visionBoardData })).unwrap();
-            setShowEditForm(false);
-            setBoardToEdit(null);
-            setBoardName('');
-            setVisibility(true);
-            dispatch(fetchVisionBoards());
-        } catch (err) {
-            console.error('Error updating vision board:', err);
-        }
-    };
-
-    const handleDeleteClick = (board) => {
-        setBoardToDelete(board);
-        setShowDeleteConfirm(true);
-    };
-
-    const handleConfirmDelete = async () => {
-        if (!boardToDelete) return;
-
-        try {
-            await dispatch(deleteVisionBoard(boardToDelete.id)).unwrap();
-            setShowDeleteConfirm(false);
-            setBoardToDelete(null);
-            dispatch(fetchVisionBoards());
-        } catch (err) {
-            console.error('Error deleting vision board:', err);
-        }
-    };
-
-    // Filtrer les vision boards de l'utilisateur connecté et par terme de recherche
-    const userVisionBoards = visionBoards
-        .filter(board => board.user_id === userId)
-        .filter(board => 
-            board.name.toLowerCase().includes(searchTerm.toLowerCase())
-        );
 
     if (loading) return <div>Chargement...</div>;
     if (error) return <div>Erreur: {error}</div>;
+    if (!visionBoard) return <div>Vision board introuvable.</div>;
 
     return (
-        <div >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-                <h1>Mes Vision Boards</h1>
-                <button
-                    onClick={() => setShowForm(true)}
-                  
-                >
-                    + Nouveau Vision Board
-                </button>
-            </div>
-
-            {/* Barre de recherche */}
-            <div style={{ marginBottom: '20px' }}>
-                <input
-                    type="text"
-                    placeholder="Rechercher un vision board..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    
-                />
-            </div>
-
-            {showForm && (
-                <div>
-                    <h2 style={{ marginTop: 0, marginBottom: '20px' }}>Créer un Vision Board</h2>
-                    <form onSubmit={handleCreateVisionBoard}>
-                        <div >
-                            <label >
-                                Nom du Vision Board:
-                            </label>
-                            <input
-                                type="text"
-                                value={boardName}
-                                onChange={(e) => setBoardName(e.target.value)}
-                               
-                                required
+        <div style={{ maxWidth: 900, margin: '0 auto', padding: 24 }}>
+            <button onClick={() => navigate(-1)} style={{ marginBottom: 20 }}>← Retour</button>
+            <h1>{visionBoard.name}</h1>
+            <p><strong>Visibilité:</strong> {visionBoard.visibility ? 'Public' : 'Privé'}</p>
+            <hr style={{ margin: '20px 0' }} />
+            <h2>Images dans ce Vision Board</h2>
+            {deleteError && <div style={{ color: 'red', marginBottom: 10 }}>{deleteError}</div>}
+            {boardImages.length === 0 ? (
+                <div>Aucune image dans ce vision board.</div>
+            ) : (
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                    gap: 20,
+                    marginTop: 20
+                }}>
+                    {boardImages.map(img => (
+                        <div key={img.id} style={{
+                            background: '#fff',
+                            borderRadius: 8,
+                            boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+                            padding: 12,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center'
+                        }}>
+                            <img
+                                src={`http://127.0.0.1:8000/storage/${img.url}`}
+                                alt={img.description}
+                                style={{ width: '100%', maxWidth: 150, borderRadius: 6, marginBottom: 10 }}
                             />
-                        </div>
-                        <div style={{ marginBottom: '20px' }}>
-                            <label >
-                                Visibilité:
-                            </label>
-                            <select
-                                value={visibility}
-                                onChange={(e) => setVisibility(e.target.value === 'true')}
-                              
-                            >
-                                <option value="true">Public</option>
-                                <option value="false">Privé</option>
-                            </select>
-                        </div>
-                        <div >
+                            <div style={{ fontSize: 14, color: '#444', marginBottom: 8 }}>{img.description}</div>
                             <button
-                                type="button"
-                                onClick={() => {
-                                    setShowForm(false);
-                                    setBoardName('');
-                                    setVisibility(true);
+                                onClick={() => handleRemoveImage(img.id)}
+                                style={{
+                                    background: '#f44336',
+                                    color: '#fff',
+                                    border: 'none',
+                                    borderRadius: 4,
+                                    padding: '6px 14px',
+                                    cursor: 'pointer'
                                 }}
-                              
                             >
-                                Annuler
+                                Retirer du vision board
                             </button>
-                            <button
-                                type="submit"
-                                
-                            >
-                                Créer
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            )}
-
-            {showEditForm && boardToEdit && (
-                <div >
-                    <h2 style={{ marginTop: 0, marginBottom: '20px' }}>Modifier le Vision Board</h2>
-                    <form onSubmit={handleUpdateVisionBoard}>
-                        <div >
-                            <label >
-                                Nom du Vision Board:
-                            </label>
-                            <input
-                                type="text"
-                                value={boardName}
-                                onChange={(e) => setBoardName(e.target.value)}
-                               
-                                required
-                            />
-                        </div>
-                        <div >
-                            <label>
-                                Visibilité:
-                            </label>
-                            <select
-                                value={visibility}
-                                onChange={(e) => setVisibility(e.target.value === 'true')}
-                              
-                            >
-                                <option value="true">Public</option>
-                                <option value="false">Privé</option>
-                            </select>
-                        </div>
-                        <div>
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setShowEditForm(false);
-                                    setBoardToEdit(null);
-                                    setBoardName('');
-                                    setVisibility(true);
-                                }}
-                               
-                            >
-                                Annuler
-                            </button>
-                            <button
-                                type="submit"
-                               
-                            >
-                                Mettre à jour
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            )}
-
-            {showDeleteConfirm && boardToDelete && (
-                <div>
-                    <h2 >Confirmer la suppression</h2>
-                    <p >
-                        Êtes-vous sûr de vouloir supprimer le vision board "{boardToDelete.name}" ?
-                        Cette action est irréversible.
-                    </p>
-                    <div>
-                        <button
-                            onClick={() => {
-                                setShowDeleteConfirm(false);
-                                setBoardToDelete(null);
-                            }}
-                          
-                        >
-                            Annuler
-                        </button>
-                        <button
-                            onClick={handleConfirmDelete}
-                            
-                        >
-                            Supprimer
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {userVisionBoards.length > 0 ? (
-                <div>
-                    {userVisionBoards.map((board) => (
-                        <div 
-                            key={board.id}
-                           
-                        >
-                            <div>
-                                <button
-                                    onClick={() => handleEditClick(board)}
-                                   
-                                >
-                                    ✎
-                                </button>
-                                <button
-                                    onClick={() => handleDeleteClick(board)}
-                                   
-                                >
-                                    ×
-                                </button>
-                            </div>
-                            <h3 >{board.name}</h3>
-                            <p >
-                                <strong>Visibilité:</strong> {board.visibility ? 'Public' : 'Privé'}
-                            </p>
                         </div>
                     ))}
-                </div>
-            ) : (
-                <div >
-                    <p >Vous n'avez pas encore de vision boards.</p>
-                    <p >Cliquez sur "Nouveau Vision Board" pour en créer un.</p>
                 </div>
             )}
         </div>
     );
 };
 
-export default visionboard;
+export default VisionBoardDetail;

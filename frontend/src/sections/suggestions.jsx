@@ -6,7 +6,7 @@ import { createFriendRequest } from '../slices/friendRequestSlice';
 const Suggestions = () => {
     const dispatch = useDispatch();
     const users = useSelector((state) => state.users.users);
-    const currentUserId = useSelector((state) => state.users.userId);
+    const currentUserId = useSelector((state) => state.users.user?.id);
     const pendingRequests = useSelector((state) => state.friendRequests.pending);
     const acceptedRequests = useSelector((state) => state.friendRequests.accepted);
     const loading = useSelector((state) => state.users.loading);

@@ -9,12 +9,13 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+     public function up(): void
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id('id');
             $table->string('title');
             $table->enum('status', ['pending', 'in_progress', 'completed'])->default('pending');
+            $table->enum('category', ['daily', 'weekly', 'monthly' , 'yearly'])->default('daily');
             $table->text('description');
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

@@ -31,7 +31,7 @@ const Profile = () => {
     const [showUploadForm, setShowUploadForm] = useState(false);
     const [uploadError, setUploadError] = useState('');
     const [isUploading, setIsUploading] = useState(false);
-    
+
     const token = localStorage.getItem('token');
 
     const [showVBForm, setShowVBForm] = useState(false);
@@ -47,13 +47,20 @@ const Profile = () => {
         }
         dispatch(fetchImages());
         dispatch(fetchCategories());
-        dispatch(fetchUserPerformance());
+        if (currentUser?.id) dispatch(fetchUserPerformance(currentUser.id));
         dispatch(fetchVisionBoards());
     }, [dispatch, currentUser]);
 
     // Filter images for the current user
     const userImages = images.filter((img) => img.user_id === currentUser?.id);
     const userVisionBoards = visionBoards.filter(vb => vb.user_id === currentUser?.id);
+
+    // Helper to get up to 3 images for a vision board
+    const getVisionBoardImages = (visionBoardId) => {
+        return images
+            .filter(img => img.vision_board_id === visionBoardId)
+            .slice(0, 3);
+    };
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -63,14 +70,12 @@ const Profile = () => {
                 setSelectedFile(null);
                 return;
             }
-
             const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
             if (!allowedTypes.includes(file.type)) {
                 setUploadError('Please select a valid image file (JPEG, PNG, GIF, or WebP)');
                 setSelectedFile(null);
                 return;
             }
-
             setSelectedFile(file);
             setUploadError('');
         }
@@ -81,10 +86,8 @@ const Profile = () => {
             setUploadError('Please provide a description, an image, and select a category');
             return;
         }
-
         setIsUploading(true);
         setUploadError('');
-
         try {
             const formData = new FormData();
             formData.append('image', selectedFile);
@@ -113,17 +116,14 @@ const Profile = () => {
         setSelectedCategory(image.category_id); 
         setShowUploadForm(true); 
     };
-    
+
     const handleUpdate = async (imageId) => {
         if (!imageDescription.trim() || !selectedCategory) {
             setUploadError('Please provide a description and select a category');
             return;
         }
-
         try {
             const formData = new FormData();
-
-            // Append fields to FormData
             if (imageDescription.trim()) {
                 formData.append('description', imageDescription.trim());
             }
@@ -136,16 +136,12 @@ const Profile = () => {
             if (selectedFile) {
                 formData.append('image', selectedFile);
             }
-
-            // Dispatch the updateImage thunk
             await dispatch(
                 updateImage({
                     id: imageId,
                     imageData: formData,
                 })
             ).unwrap();
-
-            // Reset state after successful update
             setEditingImage(null);
             setImageDescription('');
             setSelectedCategory('');
@@ -171,22 +167,18 @@ const Profile = () => {
     const handlePfpChange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-    
         if (file.size > 5 * 1024 * 1024) {
             alert('Image must be under 5MB');
             return;
         }
-    
         const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
         if (!allowedTypes.includes(file.type)) {
             alert('Only JPG, PNG, or WEBP images allowed');
             return;
         }
-    
         const formData = new FormData();
         formData.append('profile_picture', file);
         formData.append('user_id', currentUser.id);
-    
         try {
             const response = await axios.post(
                 `http://127.0.0.1:8000/api/users/${currentUser.id}/update-profile-picture`,
@@ -198,12 +190,9 @@ const Profile = () => {
                     },
                 }
             );
-    
             if (response.status !== 200) {
                 throw new Error('Failed to upload');
             }
-    
-            // Re-fetch user data to update the picture
             dispatch(fetchUsers());
         } catch (err) {
             console.error(err);
@@ -441,16 +430,52 @@ const Profile = () => {
                             ) : userVisionBoards.length === 0 ? (
                                 <div>No vision boards yet.</div>
                             ) : (
-                                userVisionBoards.map(vb => (
-                                    <div key={vb.id} className="visionboard-card">
-                                        <h4>{vb.name}</h4>
-                                        <p>Visibility: {vb.visibility ? 'Public' : 'Private'}</p>
-                                        <div>
-                                            <button onClick={() => handleEditVB(vb)}>Edit</button>
-                                            <button onClick={() => handleDeleteVB(vb.id)} style={{color:'red'}}>Delete</button>
+                                userVisionBoards.map(vb => {
+                                    const vbImages = getVisionBoardImages(vb.id);
+                                    const placeholders = 3 - vbImages.length;
+                                    return (
+                                        <div key={vb.id} className="visionboard-card">
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <h4>{vb.name}</h4>
+                                                <Link
+                                                    to={`/vision-board/${vb.id}`}
+                                                    style={{
+                                                        marginLeft: 10,
+                                                        background: '#2196F3',
+                                                        color: '#fff',
+                                                        padding: '4px 12px',
+                                                        borderRadius: 4,
+                                                        textDecoration: 'none',
+                                                        fontSize: 13
+                                                    }}
+                                                >
+                                                    View
+                                                </Link>
+                                            </div>
+                                            <p>Visibility: {vb.visibility ? 'Public' : 'Private'}</p>
+                                            <div className="vb-images-preview">
+                                                {vbImages.map(img => (
+                                                    <img
+                                                        key={img.id}
+                                                        src={`http://127.0.0.1:8000/storage/${img.url}`}
+                                                        alt={img.description}
+                                                        className="vb-preview-img"
+                                                    />
+                                                ))}
+                                                {[...Array(placeholders)].map((_, idx) => (
+                                                    <div
+                                                        key={`placeholder-${idx}`}
+                                                        className="vb-preview-placeholder"
+                                                    />
+                                                ))}
+                                            </div>
+                                            <div>
+                                                <button onClick={() => handleEditVB(vb)}>Edit</button>
+                                                <button onClick={() => handleDeleteVB(vb.id)} style={{color:'red'}}>Delete</button>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))
+                                    );
+                                })
                             )}
                         </div>
                     </div>
@@ -563,14 +588,12 @@ const Profile = () => {
                     max-width: 1200px;
                     margin: 0 auto;
                 }
-
                 .profile-card {
                     background: white;
                     border-radius: 8px;
                     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
                     padding: 20px;
                 }
-
                 .profile-header {
                     display: flex;
                     justify-content: space-between;
@@ -579,7 +602,6 @@ const Profile = () => {
                     padding-bottom: 10px;
                     border-bottom: 1px solid #eee;
                 }
-
                 .logout-btn, .register-link {
                     padding: 8px 16px;
                     background-color: #f44336;
@@ -590,24 +612,20 @@ const Profile = () => {
                     border: none;
                     cursor: pointer;
                 }
-
                 .logout-btn:hover, .register-link:hover {
                     background-color: #d32f2f;
                 }
-
                 .profile-content {
                     display: flex;
                     flex-direction: column;
                     gap: 20px;
                 }
-
                 .profile-avatar {
                     display: flex;
                     flex-direction: column;
                     align-items: center;
                     gap: 10px;
                 }
-
                 .profile-avatar img, .default-avatar {
                     width: 150px;
                     height: 150px;
@@ -620,7 +638,6 @@ const Profile = () => {
                     font-size: 60px;
                     color: #666;
                 }
-
                 .change-pfp-btn {
                     padding: 8px 16px;
                     background-color: #2196F3;
@@ -630,11 +647,9 @@ const Profile = () => {
                     cursor: pointer;
                     transition: background-color 0.3s;
                 }
-
                 .change-pfp-btn:hover {
                     background-color: #0b7dda;
                 }
-
                 .performance-section {
                     margin: 20px 0;
                     padding: 20px;
@@ -642,27 +657,23 @@ const Profile = () => {
                     border-radius: 8px;
                     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
                 }
-
                 .performance-stats {
                     display: grid;
                     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
                     gap: 20px;
                     margin-top: 15px;
                 }
-
                 .stat-item {
                     background: white;
                     padding: 20px;
                     border-radius: 8px;
                     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
                 }
-
                 .stat-item h4 {
                     color: #333;
                     margin-bottom: 15px;
                     font-size: 1.1em;
                 }
-
                 .progress-bar {
                     width: 100%;
                     height: 20px;
@@ -671,13 +682,11 @@ const Profile = () => {
                     overflow: hidden;
                     margin: 10px 0;
                 }
-
                 .progress-fill {
                     height: 100%;
                     background: linear-gradient(90deg, #4CAF50, #45a049);
                     transition: width 0.3s ease;
                 }
-
                 .status {
                     font-weight: bold;
                     padding: 8px 12px;
@@ -685,61 +694,50 @@ const Profile = () => {
                     display: inline-block;
                     margin-bottom: 10px;
                 }
-
                 .status.excellent {
                     background: #d4edda;
                     color: #155724;
                 }
-
                 .status.good {
                     background: #fff3cd;
                     color: #856404;
                 }
-
                 .status.needs-improvement {
                     background: #f8d7da;
                     color: #721c24;
                 }
-
                 .tasks-breakdown {
                     display: grid;
                     grid-template-columns: repeat(3, 1fr);
                     gap: 10px;
                     text-align: center;
                 }
-
                 .task-count {
                     padding: 10px;
                     border-radius: 6px;
                     background: #f8f9fa;
                 }
-
                 .task-count .count {
                     display: block;
                     font-size: 1.5em;
                     font-weight: bold;
                     color: #333;
                 }
-
                 .task-count .label {
                     font-size: 0.9em;
                     color: #666;
                 }
-
                 .task-count.completed {
                     background: #d4edda;
                 }
-
                 .task-count.incomplete {
                     background: #f8d7da;
                 }
-
                 .loading {
                     text-align: center;
                     padding: 20px;
                     color: #666;
                 }
-
                 .visionboard-section, .images-section {
                     margin: 20px 0;
                     padding: 20px;
@@ -747,14 +745,12 @@ const Profile = () => {
                     border-radius: 8px;
                     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
                 }
-
                 .section-header {
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
                     margin-bottom: 15px;
                 }
-
                 .add-vb-btn, .upload-btn {
                     padding: 8px 16px;
                     background-color: #4CAF50;
@@ -764,37 +760,52 @@ const Profile = () => {
                     cursor: pointer;
                     transition: background-color 0.3s;
                 }
-
                 .add-vb-btn:hover, .upload-btn:hover {
                     background-color: #45a049;
                 }
-
                 .visionboard-list, .user-images-list {
                     display: grid;
                     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
                     gap: 20px;
                     margin-top: 15px;
                 }
-
                 .visionboard-card, .user-image-card {
                     background: white;
                     padding: 15px;
                     border-radius: 8px;
                     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
                 }
-
+                .vb-images-preview {
+                    display: flex;
+                    gap: 6px;
+                    margin: 10px 0 15px 0;
+                }
+                .vb-preview-img {
+                    width: 60px;
+                    height: 60px;
+                    object-fit: cover;
+                    border-radius: 6px;
+                    background: #f2f2f2;
+                    border: 1px solid #eee;
+                }
+                .vb-preview-placeholder {
+                    width: 60px;
+                    height: 60px;
+                    border-radius: 6px;
+                    background: #f7f7f7;
+                    border: 1px solid #eee;
+                    opacity: 0.7;
+                }
                 .vb-form, .upload-form, .edit-image-form {
                     display: grid;
                     grid-template-columns: 1fr;
                     gap: 15px;
                     margin-bottom: 20px;
                 }
-
                 .vb-form label, .upload-form label, .edit-image-form label {
                     font-weight: bold;
                     margin-bottom: 5px;
                 }
-
                 .vb-form input, .vb-form select,
                 .upload-form input, .upload-form textarea, .upload-form select,
                 .edit-image-form input, .edit-image-form textarea, .edit-image-form select {
@@ -803,7 +814,6 @@ const Profile = () => {
                     border-radius: 4px;
                     font-size: 1em;
                 }
-
                 .vb-form button, .upload-form button, .edit-image-form button {
                     padding: 10px;
                     background-color: #007bff;
@@ -814,17 +824,14 @@ const Profile = () => {
                     font-size: 1em;
                     transition: background-color 0.3s;
                 }
-
                 .vb-form button:hover, .upload-form button:hover, .edit-image-form button:hover {
                     background-color: #0056b3;
                 }
-
                 .error-message {
                     color: red;
                     font-size: 0.9em;
                     margin-top: 10px;
                 }
-
                 .user-image-card img {
                     max-width: 100%;
                     height: auto;

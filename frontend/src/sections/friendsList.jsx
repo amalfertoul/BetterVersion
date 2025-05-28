@@ -2,17 +2,24 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchFriendRequests, deleteFriendRequest } from '../slices/friendRequestSlice';
 import { fetchUsers } from '../slices/UserSlice';
+import { useNavigate } from 'react-router-dom';
 
 const FriendsList = () => {
     const dispatch = useDispatch();
-    const currentUserId = useSelector((state) => state.users.userId);
+    const currentUserId = useSelector((state) => state.users.user?.id);
     const users = useSelector((state) => state.users.users);
     const acceptedRequests = useSelector((state) => state.friendRequests.accepted);
-
+    const navigate = useNavigate();
+    
     useEffect(() => {
         dispatch(fetchFriendRequests());
         dispatch(fetchUsers());
     }, [dispatch]);
+
+
+    const handleMessage = (friendId) => {
+        navigate(`/conversation/${friendId}`);
+    };
 
     const handleDelete = (requestId) => {
         dispatch(deleteFriendRequest(requestId));
@@ -36,8 +43,9 @@ const FriendsList = () => {
                         const friend = users.find(user => user.id === friendId);
                         return (
                             <li key={request.id}>
-                                {friend ? friend.fullname : 'Unknown Friend'}
-                                <button onClick={() => handleDelete(request.id)}>Remove Friend</button>
+                                <span>{friend ? friend.fullname : 'Unknown Friend'}</span>
+                                 <button onClick={(e) => { e.stopPropagation(); handleDelete(request.id); }}>Remove Friend </button>
+                                 <button onClick={(e) => { e.stopPropagation(); handleMessage(friendId); }}>Message</button>
                             </li>
                         );
                     })}

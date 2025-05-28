@@ -74,6 +74,26 @@ export const updateImage = createAsyncThunk('images/updateImage', async ({ id, i
     }
 });
 
+//=== hnaya kfch anzido image f vision board ===
+export const addImageToVisionBoard = createAsyncThunk(
+    'images/addImageToVisionBoard',
+    async ({ id, vision_board_id }, { rejectWithValue }) => {
+        try {
+            const response = await axios.patch(
+                `${API_URL}/${id}/add-to-vision-board`,
+                { vision_board_id },
+                { headers: getAuthHeaders() }
+            );
+            return response.data.image; // assuming your backend returns { image: ... }
+        } catch (error) {
+            if (error.response?.status === 401) {
+                return rejectWithValue('Unauthorized: Please log in.');
+            }
+            return rejectWithValue(error.response?.data || 'Failed to add image to vision board.');
+        }
+    }
+);
+
 export const deleteImage = createAsyncThunk('images/deleteImage', async (id, { rejectWithValue }) => {
     try {
         const response = await axios.delete(`${API_URL}/${id}`, {
@@ -137,6 +157,16 @@ const imagesSlice = createSlice({
                 }
             })
             .addCase(updateImage.rejected, (state, action) => {
+                state.error = action.payload;
+            })
+            // Add image to vision board
+            .addCase(addImageToVisionBoard.fulfilled, (state, action) => {
+                const index = state.images.findIndex((img) => img.id === action.payload.id);
+                if (index !== -1) {
+                    state.images[index] = action.payload;
+                }
+            })
+            .addCase(addImageToVisionBoard.rejected, (state, action) => {
                 state.error = action.payload;
             })
             // Delete image

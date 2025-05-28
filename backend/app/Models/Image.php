@@ -23,6 +23,7 @@ class Image extends Model
         'description',
         'user_id',
         'category_id',
+        'vision_board_id',
     ];
 
     /**
@@ -45,6 +46,6 @@ class Image extends Model
      */
     public function visionBoard()
     {
-        return $this->belongsToMany(VisionBoard::class, 'vision_board_id', 'id');
+        return $this->belongsTo(VisionBoard::class, 'vision_board_id');
     }
 }

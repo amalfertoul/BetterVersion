@@ -11,7 +11,7 @@ const RenderMessages = () => {
     const [showDeleteButton, setShowDeleteButton] = useState(null); // Track which message shows the delete button
 
     const { messages, status, error } = useSelector((state) => state.messages);
-    const currentUserId = useSelector((state) => state.users.userId);
+    const currentUserId = useSelector((state) => state.users.user?.id);
 
     useEffect(() => {
         dispatch(fetchMessages(userId));

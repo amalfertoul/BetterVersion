@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000/api/user-performance';
+const API_URL = 'http://localhost:8000/api/tasks/user'; 
 
 // Helper function to get the token from localStorage
 const getAuthHeaders = () => {
@@ -13,10 +13,10 @@ const getAuthHeaders = () => {
 
 // Async thunk to fetch user performance data
 export const fetchUserPerformance = createAsyncThunk(
-    'userPerformance/fetchUserPerformance',
-    async (_, { rejectWithValue }) => {
+    'tasks/fetchTasks',
+    async (userId , { rejectWithValue }) => {
         try {
-            const response = await axios.get(API_URL, {
+            const response = await axios.get(`${API_URL}/${userId}`, {
                 headers: getAuthHeaders(),
             });
             return response.data;
@@ -29,11 +29,11 @@ export const fetchUserPerformance = createAsyncThunk(
     }
 );
  
-const TASKS_API_URL = 'http://localhost:8000/api/tasks'; 
-export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async () => {
-    const response = await axios.get(TASKS_API_URL);
-    return response.data;
-});
+// const TASKS_API_URL = 'http://localhost:8000/api/tasks'; 
+// export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async () => {
+//     const response = await axios.get(TASKS_API_URL);
+//     return response.data;
+// });
 
 const initialState = {
     completedTasks: [],
