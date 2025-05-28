@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUsers } from '../slices/UserSlice';
-import { fetchTasks, createTask, updateTask, deleteTask } from '../slices/taskSlice';
+import { fetchTasksByUser, createTask, updateTask, deleteTask } from '../slices/taskSlice';
 
-// Define your categories here
-const CATEGORIES = ['yearly', 'monthly', 'weekly', 'daily'];
+// Categories must match your DB
+const CATEGORIES = ['daily', 'weekly', 'monthly', 'yearly'];
 
 const TodoListPage = () => {
     const dispatch = useDispatch();
@@ -19,7 +19,7 @@ const TodoListPage = () => {
     const [search, setSearch] = useState('');
     const [expandedTaskId, setExpandedTaskId] = useState(null);
 
-    // Pour l'édition
+    // For editing
     const [editTaskId, setEditTaskId] = useState(null);
     const [editTitle, setEditTitle] = useState('');
     const [editDescription, setEditDescription] = useState('');
@@ -27,16 +27,17 @@ const TodoListPage = () => {
     const [editCategory, setEditCategory] = useState('daily');
 
     // Active category for filtering
-    const [activeCategory, setActiveCategory] = useState('all'); // 'all' par défaut
+    const [activeCategory, setActiveCategory] = useState('all');
 
-    // Fetch tasks on mount and when userId changes
+    // Fetch users and tasks for the current user
     useEffect(() => {
         dispatch(fetchUsers());
-        dispatch(fetchTasks());
     }, [dispatch]);
 
     useEffect(() => {
-        if (userId) dispatch(fetchTasks());
+        if (userId) {
+            dispatch(fetchTasksByUser(userId));
+        }
     }, [dispatch, userId]);
 
     const handleCreateTask = (e) => {
@@ -52,8 +53,9 @@ const TodoListPage = () => {
             user_id: userId,
         };
 
-        dispatch(createTask(newTask));
-        // Reset form
+        dispatch(createTask(newTask)).then(() => {
+            dispatch(fetchTasksByUser(userId));
+        });
         setTaskTitle('');
         setTaskDescription('');
         setDueDate('');
@@ -61,7 +63,6 @@ const TodoListPage = () => {
         setCategory('daily');
     };
 
-    // Edit handlers
     const startEdit = (task) => {
         setEditTaskId(task.id);
         setEditTitle(task.title);
@@ -70,10 +71,8 @@ const TodoListPage = () => {
         setEditCategory(task.category || 'daily');
     };
 
-    // Sauvegarder l'édition
     const handleUpdateTask = (e) => {
         e.preventDefault();
-        const taskToUpdate = tasks.find(task => task.id === editTaskId); // Find the original task
         dispatch(updateTask({
             id: editTaskId,
             taskData: {
@@ -81,33 +80,36 @@ const TodoListPage = () => {
                 description: editDescription,
                 status: editStatus,
                 category: editCategory,
-                due_date: taskToUpdate.due_date, // Preserve original due date
             }
-        }));
-        setEditTaskId(null); // Exit edit mode
+        })).then(() => {
+            dispatch(fetchTasksByUser(userId));
+        });
+        setEditTaskId(null);
     };
 
     const handleDeleteTask = (taskId) => {
-        dispatch(deleteTask(taskId));
+        dispatch(deleteTask(taskId)).then(() => {
+            dispatch(fetchTasksByUser(userId));
+        });
     };
 
     const markAsCompleted = (task) => {
         dispatch(updateTask({
             id: task.id,
             taskData: { ...task, status: 'completed' }
-        }));
+        })).then(() => {
+            dispatch(fetchTasksByUser(userId));
+        });
     };
 
-    // Toggle l'affichage de la description
     const toggleDescription = (taskId) => {
         setExpandedTaskId(expandedTaskId === taskId ? null : taskId);
     };
 
-    // Filtrer les tâches selon la catégorie sélectionnée
+    // Filter tasks by category and search
     const filteredTasks = Array.isArray(tasks)
         ? tasks.filter(
             (task) =>
-                Number(task.user_id) === Number(userId) &&
                 (activeCategory === 'all' || task.category === activeCategory) &&
                 task.title.toLowerCase().includes(search.toLowerCase())
         )
@@ -197,7 +199,7 @@ const TodoListPage = () => {
                 />
             </div>
 
-            {/* Navbar de catégories */}
+            {/* Category Navbar */}
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginBottom: 24 }}>
                 <button
                     key="all"
@@ -307,7 +309,9 @@ const TodoListPage = () => {
                                         )}
                                     </td>
                                     <td style={{ border: '1px solid #ccc', padding: 8 }}>
-                                        {(task.category || 'daily').charAt(0).toUpperCase() + (task.category || 'daily').slice(1)}
+                                        {task.category
+                                            ? task.category.charAt(0).toUpperCase() + task.category.slice(1)
+                                            : 'Daily'}
                                     </td>
                                     <td style={{ border: '1px solid #ccc', padding: 8 }}>
                                         {task.status}
