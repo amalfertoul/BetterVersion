@@ -1,0 +1,24 @@
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--body-color);
+  transition: var(--tran-05);
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 250px;
+  padding: 20px;
+  transition: var(--tran-05);
+  min-height: 100vh;
+}
+
+@media (max-width: 500px) {
+  .main-content {
+    margin-left: 88px;
+  }
+  
+  .sidebar.close ~ .main-content {
+    margin-left: 0;
+  }
+} 
