@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import Quotes from '../sections/Quotes';
 import TodoListPage from '../sections/todolist';
 import FirstPage from './firstPage';
+import '../style/home.css';
 
 const Home = () => {
     const navigate = useNavigate();
     const isAuthenticated = useSelector((state) => state.users.isAuthenticated);
+    const user = useSelector((state) => state.users.user);
 
     useEffect(() => {
         if (!isAuthenticated) {
@@ -20,10 +22,18 @@ const Home = () => {
     }
 
     return (
-        <div style={{ textAlign: 'center', marginTop: '50px' }}>
-            <h1>Welcome to the Home Page</h1>
-            <Quotes />
-            <TodoListPage />
+        <div className="home-container">
+            <div className="home-welcome">
+                <h1>Welcome{user?.username ? `, ${user.username}` : ''}!</h1>
+            </div>
+            <div className="home-content">
+                <div className="home-section">
+                    <Quotes />
+                </div>
+                <div className="home-section">
+                    <TodoListPage />
+                </div>
+            </div>
         </div>
     );
 };
