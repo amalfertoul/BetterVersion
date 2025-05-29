@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -12,6 +12,11 @@ const Sidebar = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.users.user);
   const isAuthenticated = useSelector((state) => state.users.isAuthenticated);
+  const [prevAuthState, setPrevAuthState] = useState(isAuthenticated);
+
+  useEffect(() => {
+    setPrevAuthState(isAuthenticated);
+  }, [isAuthenticated]);
 
   const handleLogout = () => {
     dispatch(logoutUser());
@@ -22,14 +27,12 @@ const Sidebar = () => {
     document.body.classList.toggle('dark');
   };
 
-  const routes = [
+  const allRoutes = [
     { path: '/home', icon: 'bx-home-alt', text: 'Home' },
     { path: '/explore', icon: 'bx-compass', text: 'Explore' },
-    ...(isAuthenticated ? [
-      { path: '/games', icon: 'bx-game', text: 'Games' },
-      { path: '/socialize', icon: 'bx-message-square-dots', text: 'Socialize' },
-      { path: '/profile', icon: 'bx-user', text: 'Profile' },
-    ] : []),
+    { path: '/games', icon: 'bx-game', text: 'Games', requiresAuth: true },
+    { path: '/socialize', icon: 'bx-message-square-dots', text: 'Socialize', requiresAuth: true },
+    { path: '/profile', icon: 'bx-user', text: 'Profile', requiresAuth: true },
   ];
 
   return (
@@ -66,8 +69,12 @@ const Sidebar = () => {
           )}
 
           <ul className="menu-links">
-            {routes.map((route) => (
-              <li className={`nav-link ${location.pathname === route.path ? 'active' : ''}`} key={route.path}>
+            {allRoutes.map((route) => (
+              <li 
+                className={`nav-link ${location.pathname === route.path ? 'active' : ''} 
+                  ${route.requiresAuth && !isAuthenticated ? 'hidden' : ''}`} 
+                key={route.path}
+              >
                 <Link to={route.path}>
                   <i className={`bx ${route.icon} icon`}></i>
                   <span className="text nav-text">{route.text}</span>

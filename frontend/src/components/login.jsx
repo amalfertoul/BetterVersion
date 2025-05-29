@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser, resetError } from '../slices/UserSlice';
 import { useNavigate } from 'react-router-dom';
+import { useNotification } from '../context/NotificationContext';
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -11,6 +12,7 @@ const Login = () => {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const { showSuccess, showError } = useNotification();
 
     const { loading, error, user, isAuthenticated } = useSelector((state) => state.users);
 
@@ -39,10 +41,10 @@ const Login = () => {
         const result = await dispatch(loginUser({ username, password }));
 
         if (result?.payload?.user?.id) {
-            alert('Login successful!');
-            navigate('/profile'); // Redirect to the profile page after login
+            showSuccess('Login successful!');
+            navigate('/profile');
         } else {
-            alert('Login failed. Please check your credentials.');
+            showError('Login failed. Please check your credentials.');
         }
     };
 
@@ -62,29 +64,30 @@ const Login = () => {
 
     return (
         <div className="login-container">
-            <h2>Login</h2>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Username:</label>
+            <form onSubmit={handleSubmit} className="login-form">
+                <h2>Login</h2>
+                <div className="form-group">
+                    <label htmlFor="username">Username</label>
                     <input
                         type="text"
+                        id="username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        required
+                        className={usernameError ? 'error' : ''}
                     />
-                    {usernameError && <p className="error">{usernameError}</p>}
+                    {usernameError && <span className="error-message">{usernameError}</span>}
                 </div>
-                <div>
-                    <label>Password:</label>
+                <div className="form-group">
+                    <label htmlFor="password">Password</label>
                     <input
                         type="password"
+                        id="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        required
+                        className={passwordError ? 'error' : ''}
                     />
-                    {passwordError && <p className="error">{passwordError}</p>}
+                    {passwordError && <span className="error-message">{passwordError}</span>}
                 </div>
-                {error && <p className="error">{error.message || error}</p>}
                 <button type="submit" disabled={loading}>
                     {loading ? 'Logging in...' : 'Login'}
                 </button>
