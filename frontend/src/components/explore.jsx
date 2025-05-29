@@ -50,7 +50,7 @@ const Explore = () => {
       return;
     }
     const formData = new FormData();
-    formData.append('file', newFile);
+    formData.append('image', newFile); // <-- FIXED: must be 'image' for Laravel
     formData.append('description', newDesc);
     formData.append('user_id', userId);
     formData.append('category_id', newCategory);
@@ -86,13 +86,14 @@ const Explore = () => {
   };
 
   if (loading) return <div className="loading-message">Chargement des images...</div>;
-if (error) return (
-  <div className="error-message">
-    {typeof error === 'string'
-      ? error
-      : error.message || JSON.stringify(error)}
-  </div>
-);
+  if (error) return (
+    <div className="error-message">
+      {typeof error === 'string'
+        ? error
+        : error.message || JSON.stringify(error)}
+    </div>
+  );
+
   return (
     <div className="explore-container">
       <h1 className="explore-title">Galerie d'Images</h1>
