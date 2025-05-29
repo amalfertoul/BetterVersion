@@ -86,8 +86,13 @@ const Explore = () => {
   };
 
   if (loading) return <div className="loading-message">Chargement des images...</div>;
-  if (error) return <div className="error-message">{error}</div>;
-
+if (error) return (
+  <div className="error-message">
+    {typeof error === 'string'
+      ? error
+      : error.message || JSON.stringify(error)}
+  </div>
+);
   return (
     <div className="explore-container">
       <h1 className="explore-title">Galerie d'Images</h1>

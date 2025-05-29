@@ -12,6 +12,7 @@ import FirstPage from './components/firstPage';
 import Socialize from './components/socialize';
 import RenderMessages from './sections/conversation';
 import AdminOnly from './components/AdminOnly';
+import VisionBoardDetail from './sections/VisionBoard';
 
 function App() {
   const userId = useSelector((state) => state.users.userId);
@@ -30,7 +31,8 @@ function App() {
         <Route path="/games" element={<Games />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/socialize" element={<Socialize />} />
-         <Route path="/conversation/:userId" element={<RenderMessages />} />
+        <Route path="/conversation/:userId" element={<RenderMessages />} />
+        <Route path="/vision-board/:id" element={<VisionBoardDetail />} />
         {/* Add other routes here */}
 
       </Routes>

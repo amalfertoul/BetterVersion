@@ -79,7 +79,7 @@ export const addImageToVisionBoard = createAsyncThunk(
     'images/addImageToVisionBoard',
     async ({ id, vision_board_id }, { rejectWithValue }) => {
         try {
-            const response = await axios.patch(
+            const response = await axios.post(
                 `${API_URL}/${id}/add-to-vision-board`,
                 { vision_board_id },
                 { headers: getAuthHeaders() }
