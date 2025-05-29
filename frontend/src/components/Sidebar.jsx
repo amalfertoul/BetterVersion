@@ -25,9 +25,11 @@ const Sidebar = () => {
   const routes = [
     { path: '/home', icon: 'bx-home-alt', text: 'Home' },
     { path: '/explore', icon: 'bx-compass', text: 'Explore' },
-    { path: '/games', icon: 'bx-game', text: 'Games' },
-    { path: '/socialize', icon: 'bx-message-square-dots', text: 'Socialize' },
-    { path: '/profile', icon: 'bx-user', text: 'Profile' },
+    ...(isAuthenticated ? [
+      { path: '/games', icon: 'bx-game', text: 'Games' },
+      { path: '/socialize', icon: 'bx-message-square-dots', text: 'Socialize' },
+      { path: '/profile', icon: 'bx-user', text: 'Profile' },
+    ] : []),
   ];
 
   return (
@@ -76,13 +78,28 @@ const Sidebar = () => {
         </div>
 
         <div className="bottom-content">
-          {isAuthenticated && (
+          {isAuthenticated ? (
             <li>
               <a href="#" onClick={handleLogout}>
                 <i className='bx bx-log-out icon'></i>
                 <span className="text nav-text">Logout</span>
               </a>
             </li>
+          ) : (
+            <>
+              <li>
+                <Link to="/login">
+                  <i className='bx bx-log-in icon'></i>
+                  <span className="text nav-text">Login</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/register">
+                  <i className='bx bx-user-plus icon'></i>
+                  <span className="text nav-text">Register</span>
+                </Link>
+              </li>
+            </>
           )}
 
           <li className="mode">
