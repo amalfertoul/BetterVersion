@@ -170,6 +170,11 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         if ($request->hasFile('profile_picture')) {
+            // Delete old profile picture if it exists
+            if ($user->profile_picture && $user->profile_picture !== 'pfp/defaultpfp.jpg') {
+                Storage::disk('public')->delete($user->profile_picture);
+            }
+
             $file = $request->file('profile_picture');
             $filename = time() . '_' . $file->getClientOriginalName();
             $path = $file->storeAs('pfp', $filename, 'public');

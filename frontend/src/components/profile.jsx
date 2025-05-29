@@ -1,18 +1,17 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
-import { fetchUsers, logoutUser, updateUser, fetchCurrentUser, updateUserSuccess } from '../slices/UserSlice';
+import { fetchUsers, updateUser, fetchCurrentUser, updateUserSuccess } from '../slices/UserSlice';
 import { fetchImages, createImage, updateImage, deleteImage } from '../slices/imagesSlice';
 import { fetchCategories } from '../slices/categorySlice';
 import { fetchUserPerformance } from '../slices/userPerformanceSlice';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import '../style/profile.css';
 import { fetchVisionBoards, createVisionBoard, updateVisionBoard, deleteVisionBoard } from '../slices/visionBoardSlice';
 import { useNotification } from '../context/NotificationContext';
 
 const Profile = () => {
     const dispatch = useDispatch();
-    const navigate = useNavigate();
     const currentUser = useSelector((state) => state.users.user);
     const { images } = useSelector((state) => state.images);
     const { categories } = useSelector((state) => state.categories);
@@ -246,15 +245,6 @@ const Profile = () => {
         }
     };
 
-    const handleLogout = async () => {
-        try {
-            await dispatch(logoutUser()).unwrap();
-            navigate('/login');
-        } catch (error) {
-            console.error('Logout failed:', error);
-        }
-    };
-
     const handleAddVisionBoard = async (e) => {
         e.preventDefault();
         if (!vbName.trim() || !vbCategory) {
@@ -370,15 +360,6 @@ const Profile = () => {
             <div className="profile-card">
                 <div className="profile-header">
                     <h2>My Profile</h2>
-                    {currentUser ? (
-                        <button className="logout-btn" onClick={handleLogout}>
-                            Logout
-                        </button>
-                    ) : (
-                        <Link to="/register" className="register-link">
-                            Register
-                        </Link>
-                    )}
                 </div>
 
                 <div className="profile-content">
@@ -697,19 +678,6 @@ const Profile = () => {
                     margin-bottom: 20px;
                     padding-bottom: 10px;
                     border-bottom: 1px solid #eee;
-                }
-                .logout-btn, .register-link {
-                    padding: 8px 16px;
-                    background-color: #f44336;
-                    color: white;
-                    text-decoration: none;
-                    border-radius: 4px;
-                    transition: background-color 0.3s;
-                    border: none;
-                    cursor: pointer;
-                }
-                .logout-btn:hover, .register-link:hover {
-                    background-color: #d32f2f;
                 }
                 .profile-content {
                     display: flex;
