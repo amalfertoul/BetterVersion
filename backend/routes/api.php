@@ -37,6 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/tasks/user/{userId}', [TaskController::class, 'getTasksByUserId']);
     
+    Route::post('/tasks/{task_id}/vision-boards/attach', [VisionBoardController::class, 'attachToTask']);
 
     Route::post('/images/{id}/add-to-vision-board', [ImageController::class, 'addToVisionBoard']);
     // Vision Boards Routes

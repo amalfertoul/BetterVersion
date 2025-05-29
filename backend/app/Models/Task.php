@@ -37,6 +37,6 @@ class Task extends Model
      */
     public function visionBoards()
     {
-        return $this->hasMany(VisionBoard::class, 'task_id', 'id'); // Ensure 'task_id' matches the foreign key in VisionBoard
+        return $this->hasMany(VisionBoard::class, 'task_id', 'id');
     }
 }
