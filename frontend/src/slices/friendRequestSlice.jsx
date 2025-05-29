@@ -17,7 +17,7 @@ export const fetchFriendRequests = createAsyncThunk(
     'friendRequests/fetchFriendRequests',
     async (_, { rejectWithValue }) => {
         try {
-            const response = await axios.get(`${API_BASE_URL}`, {
+            const response = await axios.get(API_BASE_URL, {
                 headers: getAuthHeaders(),
             });
             return response.data;
@@ -27,12 +27,30 @@ export const fetchFriendRequests = createAsyncThunk(
     }
 );
 
+// Send friend request
+export const sendFriendRequest = createAsyncThunk(
+    'friendRequests/sendFriendRequest',
+    async (requestData, { rejectWithValue }) => {
+        try {
+            const response = await axios.post(API_BASE_URL, requestData, {
+                headers: {
+                    ...getAuthHeaders(),
+                    'Content-Type': 'application/json',
+                },
+            });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || 'Failed to send friend request');
+        }
+    }
+);
+
 // Create a new friend request
 export const createFriendRequest = createAsyncThunk(
     'friendRequests/createFriendRequest',
     async (requestData, { rejectWithValue }) => {
         try {
-            const response = await axios.post(`${API_BASE_URL}`, requestData, {
+            const response = await axios.post(API_BASE_URL, requestData, {
                 headers: {
                     ...getAuthHeaders(),
                     'Content-Type': 'application/json',
@@ -108,6 +126,22 @@ const friendRequestsSlice = createSlice({
                 state.accepted = action.payload.filter((req) => req.status === 'accepted');
             })
             .addCase(fetchFriendRequests.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.payload;
+            })
+
+            // Send friend request
+            .addCase(sendFriendRequest.pending, (state) => {
+                state.status = 'loading';
+                state.error = null;
+            })
+            .addCase(sendFriendRequest.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                if (action.payload.status === 'pending') {
+                    state.pending.push(action.payload);
+                }
+            })
+            .addCase(sendFriendRequest.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.payload;
             })

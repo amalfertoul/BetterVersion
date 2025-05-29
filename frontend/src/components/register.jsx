@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { registerUser, resetError } from '../slices/UserSlice';
 import { useNavigate } from 'react-router-dom';
+import { useNotification } from '../context/NotificationContext';
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -9,12 +10,14 @@ const Register = () => {
         fullname: '',
         email: '',
         password: '',
+        confirmPassword: '',
         // profile_picture: '',
     });
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { loading, error } = useSelector((state) => state.users);
+    const { showSuccess, showError } = useNotification();
 
     const handleChange = (e) => {
         setFormData({
@@ -25,13 +28,16 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const result = await dispatch(registerUser(formData));
-        if (result.meta.requestStatus === 'fulfilled') {
-            const userId = result.payload.id; // Assuming the payload contains the user ID
-            alert('Registration successful! Please log in.');
-            navigate('/profile'); // Redirect to the profile page after registration
-        } else {
-            alert('Registration failed. Please check your details and try again.');
+        if (formData.password !== formData.confirmPassword) {
+            showError('Passwords do not match');
+            return;
+        }
+        try {
+            const result = await dispatch(registerUser(formData)).unwrap();
+            showSuccess('Registration successful!');
+            navigate('/profile');
+        } catch (error) {
+            showError(error.message || 'Registration failed');
         }
     };
 
@@ -60,6 +66,10 @@ const Register = () => {
                 <div>
                     <label>Password:</label>
                     <input type="password" name="password" value={formData.password} onChange={handleChange} required />
+                </div>
+                <div>
+                    <label>Confirm Password:</label>
+                    <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required />
                 </div>
                 {/* <div>
                     <label>Profile Picture URL (optional):</label>

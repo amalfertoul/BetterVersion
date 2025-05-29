@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUsers } from '../slices/UserSlice';
-import { createFriendRequest } from '../slices/friendRequestSlice';
+import { createFriendRequest, sendFriendRequest } from '../slices/friendRequestSlice';
+import { useNotification } from '../context/NotificationContext';
 
 const Suggestions = () => {
     const dispatch = useDispatch();
+    const { showSuccess, showError, showInfo } = useNotification();
     const users = useSelector((state) => state.users.users);
     const currentUserId = useSelector((state) => state.users.user?.id);
     const pendingRequests = useSelector((state) => state.friendRequests.pending);
@@ -16,28 +18,15 @@ const Suggestions = () => {
         dispatch(fetchUsers());
     }, [dispatch]);
 
-
-    const handleSendFriendRequest = (receiverId) => {
-        const requestData = {
-          sender_id: currentUserId,
-          receiver_id: receiverId,
-          status: 'pending'
-        };
-      
-        alert('Sending friend request...');
-      
-        dispatch(createFriendRequest(requestData))
-          .unwrap()
-          .then((response) => {
-            alert('Friend request sent successfully!');
-          })
-          .catch((error) => {
-            alert('Failed to send friend request. Please try again.');
-          });
-      };
-      
-      
-    
+    const handleSendRequest = async (userId) => {
+        try {
+            showInfo('Sending friend request...');
+            await dispatch(sendFriendRequest({ sender_id: currentUserId, receiver_id: userId }));
+            showSuccess('Friend request sent successfully!');
+        } catch (error) {
+            showError('Failed to send friend request. Please try again.');
+        }
+    };
 
     const filteredUsers = users
         .filter(user => user.id !== currentUserId)
@@ -70,7 +59,7 @@ const Suggestions = () => {
                             alt={user.username}
                         />
                         <p>{user.fullname}</p>
-                        <button onClick={() => handleSendFriendRequest(user.id)}>request</button> 
+                        <button onClick={() => handleSendRequest(user.id)}>request</button> 
                     </div>
                 ))}
         </div>

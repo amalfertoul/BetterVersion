@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
-import { fetchUsers, logoutUser } from '../slices/UserSlice';
+import { fetchUsers, logoutUser, updateUser, fetchCurrentUser, updateUserSuccess } from '../slices/UserSlice';
 import { fetchImages, createImage, updateImage, deleteImage } from '../slices/imagesSlice';
 import { fetchCategories } from '../slices/categorySlice';
 import { fetchUserPerformance } from '../slices/userPerformanceSlice';
 import { Link, useNavigate } from 'react-router-dom';
 import '../style/profile.css';
 import { fetchVisionBoards, createVisionBoard, updateVisionBoard, deleteVisionBoard } from '../slices/visionBoardSlice';
+import { useNotification } from '../context/NotificationContext';
 
 const Profile = () => {
     const dispatch = useDispatch();
@@ -31,8 +32,7 @@ const Profile = () => {
     const [showUploadForm, setShowUploadForm] = useState(false);
     const [uploadError, setUploadError] = useState('');
     const [isUploading, setIsUploading] = useState(false);
-
-    const token = localStorage.getItem('token');
+    const { showSuccess, showError } = useNotification();
 
     const [showVBForm, setShowVBForm] = useState(false);
     const [vbName, setVBName] = useState('');
@@ -41,14 +41,31 @@ const Profile = () => {
     const [editingVB, setEditingVB] = useState(null);
     const [vbError, setVBError] = useState('');
 
+    const [formData, setFormData] = useState({
+        fullname: '',
+        email: '',
+        profile_picture: ''
+    });
+
+    const isUpdatingProfilePicture = useRef(false);
+
     useEffect(() => {
         if (!currentUser) {
             dispatch(fetchUsers());
         }
         dispatch(fetchImages());
         dispatch(fetchCategories());
-        if (currentUser?.id) dispatch(fetchUserPerformance(currentUser.id));
+        if (currentUser?.id && !isUpdatingProfilePicture.current) {
+            dispatch(fetchUserPerformance(currentUser.id));
+        }
         dispatch(fetchVisionBoards());
+        if (currentUser) {
+            setFormData({
+                fullname: currentUser.fullname || '',
+                email: currentUser.email || '',
+                profile_picture: currentUser.profile_picture || ''
+            });
+        }
     }, [dispatch, currentUser]);
 
     // Filter images for the current user
@@ -168,35 +185,64 @@ const Profile = () => {
         const file = e.target.files[0];
         if (!file) return;
         if (file.size > 5 * 1024 * 1024) {
-            alert('Image must be under 5MB');
+            showError('Image must be under 5MB');
             return;
         }
         const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
         if (!allowedTypes.includes(file.type)) {
-            alert('Only JPG, PNG, or WEBP images allowed');
+            showError('Only JPG, PNG, or WEBP images allowed');
             return;
         }
         const formData = new FormData();
         formData.append('profile_picture', file);
         formData.append('user_id', currentUser.id);
         try {
+            isUpdatingProfilePicture.current = true;
+            console.log('Sending profile picture update request...');
             const response = await axios.post(
                 `http://127.0.0.1:8000/api/users/${currentUser.id}/update-profile-picture`,
                 formData,
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`,
+                        Authorization: `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'multipart/form-data',
                     },
                 }
             );
-            if (response.status !== 200) {
+            console.log('Profile picture update response:', response.data);
+            if (response.status === 200) {
+                showSuccess('Profile picture updated successfully!');
+                
+                // Create the full URL for the new profile picture
+                const newProfilePictureUrl = `/storage/${response.data.path}`;
+                
+                // Update the user object with the new profile picture URL
+                const updatedUser = {
+                    ...currentUser,
+                    profile_picture_url: newProfilePictureUrl
+                };
+                
+                // Update Redux store immediately
+                dispatch(updateUserSuccess(updatedUser));
+                
+                // Preload the image
+                const img = new Image();
+                img.src = `http://127.0.0.1:8000${newProfilePictureUrl}`;
+                
+                // Only fetch users list after a short delay
+                setTimeout(() => {
+                    dispatch(fetchUsers());
+                    isUpdatingProfilePicture.current = false;
+                }, 1000);
+                
+                console.log('Updated user object:', updatedUser);
+            } else {
                 throw new Error('Failed to upload');
             }
-            dispatch(fetchUsers());
         } catch (err) {
-            console.error(err);
-            alert('Error updating profile picture.');
+            console.error('Profile picture update error:', err);
+            showError('Error updating profile picture.');
+            isUpdatingProfilePicture.current = false;
         }
     };
 
@@ -278,6 +324,43 @@ const Profile = () => {
         }
     };
 
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                showError('Image size should be less than 5MB');
+                return;
+            }
+            if (!file.type.startsWith('image/')) {
+                showError('Please select an image file');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setFormData(prev => ({
+                    ...prev,
+                    profile_picture: reader.result
+                }));
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const result = await dispatch(updateUser({
+                id: currentUser.id,
+                ...formData
+            })).unwrap();
+            showSuccess('Profile updated successfully!');
+            // Refresh user data
+            dispatch(fetchUsers());
+        } catch (error) {
+            showError(error.message || 'Failed to update profile');
+        }
+    };
+
     if (!currentUser) {
         return <div className="loading">Loading profile...</div>;
     }
@@ -302,14 +385,27 @@ const Profile = () => {
                     <div className="profile-avatar">
                         {currentUser.profile_picture_url ? (
                             <img
-                                src={`http://127.0.0.1:8000${currentUser.profile_picture_url}`}
+                                src={`http://127.0.0.1:8000${currentUser.profile_picture_url}?t=${new Date().getTime()}`}
                                 alt="Profile"
+                                key={`profile-${currentUser.profile_picture_url}-${new Date().getTime()}`}
+                                style={{ display: 'block' }}
+                                onError={(e) => {
+                                    e.target.style.display = 'none';
+                                    e.target.parentElement.querySelector('.default-avatar').style.display = 'flex';
+                                }}
                             />
-                        ) : (
-                            <div className="default-avatar">
-                                {currentUser.username?.charAt(0) || 'U'}
-                            </div>
-                        )}
+                        ) : null}
+                        <div 
+                            className="default-avatar" 
+                            style={{ 
+                                display: currentUser.profile_picture_url ? 'none' : 'flex',
+                                position: 'absolute',
+                                top: 0,
+                                left: 0
+                            }}
+                        >
+                            {currentUser.username?.charAt(0) || 'U'}
+                        </div>
 
                         <input
                             type="file"

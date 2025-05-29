@@ -4,6 +4,7 @@ import { fetchImages, createImage, addImageToVisionBoard } from '../slices/image
 import { fetchCategories } from '../slices/categorySlice';
 import { fetchVisionBoards } from '../slices/visionBoardSlice';
 import { useNavigate } from 'react-router-dom';
+import { useNotification } from '../context/NotificationContext';
 
 const Explore = () => {
   const dispatch = useDispatch();
@@ -14,6 +15,7 @@ const Explore = () => {
   const error = useSelector((state) => state.images.error);
   const categories = useSelector((state) => state.categories.categories);
   const visionBoards = useSelector((state) => state.visionBoard.visionBoards);
+  const { showError, showInfo } = useNotification();
 
   const [filter, setFilter] = useState('');
   const [showAdd, setShowAdd] = useState(false);
@@ -25,28 +27,28 @@ const Explore = () => {
 
   useEffect(() => {
     if (!userId) {
-      alert("Vous devez être connecté pour accéder à cette page.");
+      showError('Please log in to access this feature');
       navigate('/login');
       return;
     }
     dispatch(fetchImages());
     dispatch(fetchCategories());
     dispatch(fetchVisionBoards());
-  }, [dispatch, userId, navigate]);
+  }, [dispatch, userId, navigate, showError]);
 
   // Ajout d'image avec fichier
   const handleAddImage = async (e) => {
     e.preventDefault();
     if (!userId) {
-      alert("Vous devez être connecté pour ajouter une image.");
+      showError("Vous devez être connecté pour ajouter une image.");
       return;
     }
     if (!newFile) {
-      alert("Veuillez sélectionner un fichier image.");
+      showError("Veuillez sélectionner un fichier image.");
       return;
     }
     if (!newCategory) {
-      alert("Veuillez sélectionner une catégorie.");
+      showError("Veuillez sélectionner une catégorie.");
       return;
     }
     const formData = new FormData();

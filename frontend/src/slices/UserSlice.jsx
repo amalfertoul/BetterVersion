@@ -4,6 +4,14 @@ import axios from 'axios';
 // Base URL for API
 const API_URL = 'http://localhost:8000/api';
 
+// Helper function to get auth headers
+const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    return {
+        Authorization: `Bearer ${token}`,
+    };
+};
+
 // Async Thunks for CRUD operations
 
 // Register user
@@ -115,6 +123,21 @@ export const deleteUser = createAsyncThunk('users/deleteUser', async (id, { reje
     }
 });
 
+// Update user
+export const updateUser = createAsyncThunk('users/updateUser', async (userData, { rejectWithValue }) => {
+    try {
+        const response = await axios.put(`${API_URL}/users/${userData.id}`, userData, {
+            headers: {
+                ...getAuthHeaders(),
+                'Content-Type': 'application/json',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data || 'Failed to update user');
+    }
+});
+
 // Initial state
 const initialState = {
     user: JSON.parse(localStorage.getItem('user')) || null,
@@ -140,6 +163,13 @@ const userSlice = createSlice({
             localStorage.removeItem('token');
             localStorage.removeItem('user');
         },
+        updateUserSuccess: (state, action) => {
+            state.user = action.payload;
+            state.loading = false;
+            state.error = null;
+            // Update localStorage
+            localStorage.setItem('user', JSON.stringify(action.payload));
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -224,10 +254,25 @@ const userSlice = createSlice({
             .addCase(deleteUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+            })
+            // Update user
+            .addCase(updateUser.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(updateUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.user = action.payload;
+                // Update localStorage
+                localStorage.setItem('user', JSON.stringify(action.payload));
+            })
+            .addCase(updateUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             });
     },
 });
 
 // Export actions and reducer
-export const { resetError, resetUser } = userSlice.actions;
+export const { resetError, resetUser, updateUserSuccess } = userSlice.actions;
 export default userSlice.reducer;
