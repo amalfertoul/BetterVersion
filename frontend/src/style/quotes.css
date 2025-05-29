@@ -1,0 +1,98 @@
+.quotes-container {
+    position: relative;
+    min-height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.quotes-title {
+    font-size: 2rem;
+    color: #6b46c1;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+    opacity: 1;
+    transform: scale(1);
+}
+
+.quotes-title.fade-out {
+    opacity: 0;
+    transform: scale(0.8);
+    pointer-events: none;
+}
+
+.quotes-title:hover {
+    transform: scale(1.05);
+}
+
+.quotes-title:active {
+    transform: scale(0.95);
+}
+
+.quotes-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease;
+    width: 100%;
+    text-align: left;
+    padding: 1rem;
+    pointer-events: none;
+}
+
+.quotes-content.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.quotes-content blockquote {
+    margin: 0;
+    padding: 1rem;
+    border-left: 4px solid #6b46c1;
+    background: rgba(107, 70, 193, 0.1);
+    border-radius: 0 8px 8px 0;
+    transform: translateX(-20px);
+    opacity: 0;
+    transition: all 0.5s ease 0.2s;
+}
+
+.quotes-content.visible blockquote {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.quotes-content p {
+    font-size: 1.1rem;
+    color: #4a5568;
+    margin-bottom: 0.5rem;
+}
+
+.quotes-content footer {
+    font-style: italic;
+    color: #718096;
+}
+
+/* Dark mode styles */
+body.dark .quotes-title {
+    color: #a78bfa;
+}
+
+body.dark .quotes-content blockquote {
+    border-left-color: #a78bfa;
+    background: rgba(167, 139, 250, 0.1);
+}
+
+body.dark .quotes-content p {
+    color: #e2e8f0;
+}
+
+body.dark .quotes-content footer {
+    color: #a0aec0;
+} 
