@@ -44,35 +44,42 @@ class ImageController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Log the incoming request data
         \Log::info('Update request received:', $request->all());
 
         $request->validate([
-            'image' => 'sometimes|file|image|max:2048', // Optional image file
-            'category_id' => 'required|exists:categories,id',
+            'image' => 'sometimes|file|image|max:2048',
+            'category_id' => 'nullable|exists:categories,id',
             'description' => 'nullable|string',
-            'user_id' => 'required|exists:users,id',
-            'vision_board_id' => 'nullable|exists:vision_boards,id', // Optional vision board ID
+            'user_id' => 'nullable|exists:users,id',
+            'vision_board_id' => 'nullable|exists:vision_boards,id',
         ]);
 
         $image = Image::findOrFail($id);
 
         // Handle file upload if a new image is provided
         if ($request->hasFile('image')) {
-            // Delete the old image if it exists
             if ($image->url) {
                 Storage::disk('public')->delete($image->url);
             }
-
-            // Store the new image
             $imagePath = $request->file('image')->store('images', 'public');
             $image->url = $imagePath;
         }
 
-        // Update other fields
-        $image->description = $request->description ?? $image->description;
-        $image->category_id = $request->category_id ?? $image->category_id;
-        $image->user_id = $request->user_id ?? $image->user_id;
+        // Update other fields if present
+        if ($request->has('description')) {
+            $image->description = $request->description;
+        }
+        if ($request->has('category_id')) {
+            $image->category_id = $request->category_id;
+        }
+        if ($request->has('user_id')) {
+            $image->user_id = $request->user_id;
+        }
+        if ($request->has('vision_board_id')) {
+            $image->vision_board_id = ($request->vision_board_id === '' || $request->vision_board_id === 'null')
+                ? null
+                : $request->vision_board_id;
+        }
 
         $image->save();
 

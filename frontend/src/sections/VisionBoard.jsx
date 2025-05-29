@@ -24,12 +24,13 @@ const VisionBoardDetail = () => {
     // Get all images belonging to this vision board
     const boardImages = images.filter(img => img.vision_board_id === parseInt(id));
 
-    const handleRemoveImage = async (imageId) => {
+   const handleRemoveImage = async (imageId) => {
         try {
-            // Remove the image from the vision board by setting vision_board_id to null
+            const formData = new FormData();
+            formData.append('vision_board_id', '');
             await dispatch(updateImage({
                 id: imageId,
-                imageData: { vision_board_id: null }
+                imageData: formData
             })).unwrap();
             setDeleteError('');
             dispatch(fetchImages());
