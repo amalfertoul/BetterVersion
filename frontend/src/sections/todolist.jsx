@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUsers } from '../slices/UserSlice';
 import { fetchTasksByUser, createTask, updateTask, deleteTask } from '../slices/taskSlice';
+import { fetchVisionBoards, addVisionBoardToTask } from '../slices/visionBoardSlice';
 
 // Categories must match your DB
 const CATEGORIES = ['daily', 'weekly', 'monthly', 'yearly'];
@@ -10,6 +11,7 @@ const TodoListPage = () => {
     const dispatch = useDispatch();
     const userId = useSelector((state) => state.users.user?.id);
     const { tasks, loading, error } = useSelector((state) => state.tasks);
+    const { visionBoards } = useSelector((state) => state.visionBoard);
 
     const [taskTitle, setTaskTitle] = useState('');
     const [taskDescription, setTaskDescription] = useState('');
@@ -18,6 +20,8 @@ const TodoListPage = () => {
     const [category, setCategory] = useState('daily');
     const [search, setSearch] = useState('');
     const [expandedTaskId, setExpandedTaskId] = useState(null);
+    const [showVisionBoardsForTask, setShowVisionBoardsForTask] = useState(null);
+    const [availableVisionBoards, setAvailableVisionBoards] = useState([]);
 
     // For editing
     const [editTaskId, setEditTaskId] = useState(null);
@@ -29,7 +33,7 @@ const TodoListPage = () => {
     // Active category for filtering
     const [activeCategory, setActiveCategory] = useState('all');
 
-    // Fetch users and tasks for the current user
+    // Fetch users, tasks, and vision boards
     useEffect(() => {
         dispatch(fetchUsers());
     }, [dispatch]);
@@ -37,8 +41,19 @@ const TodoListPage = () => {
     useEffect(() => {
         if (userId) {
             dispatch(fetchTasksByUser(userId));
+            dispatch(fetchVisionBoards());
         }
     }, [dispatch, userId]);
+
+    // Filter available vision boards when visionBoards changes
+    useEffect(() => {
+        if (visionBoards && userId) {
+            const filtered = visionBoards.filter(
+                board => board.task_id === null && board.user_id === userId
+            );
+            setAvailableVisionBoards(filtered);
+        }
+    }, [visionBoards, userId]);
 
     const handleCreateTask = (e) => {
         e.preventDefault();
@@ -104,6 +119,24 @@ const TodoListPage = () => {
 
     const toggleDescription = (taskId) => {
         setExpandedTaskId(expandedTaskId === taskId ? null : taskId);
+    };
+
+    const toggleVisionBoardsForTask = (taskId) => {
+        setShowVisionBoardsForTask(showVisionBoardsForTask === taskId ? null : taskId);
+    };
+
+    const handleAddVisionBoardToTask = async (taskId, visionBoardId) => {
+        try {
+            await dispatch(addVisionBoardToTask({
+                taskId,
+                visionBoardData: { id: visionBoardId }
+            }));
+            dispatch(fetchTasksByUser(userId));
+            dispatch(fetchVisionBoards());
+            setShowVisionBoardsForTask(null);
+        } catch (error) {
+            console.error('Error adding vision board to task:', error);
+        }
     };
 
     // Filter tasks by category and search
@@ -293,37 +326,77 @@ const TodoListPage = () => {
                                     </td>
                                 </tr>
                             ) : (
-                                <tr key={task.id} style={{ background: task.status === 'completed' ? '#e0ffe0' : '#fff' }}>
-                                    <td style={{ border: '1px solid #ccc', padding: 8 }}>
-                                        <div 
-                                            style={{ cursor: 'pointer', fontWeight: 'bold' }}
-                                            onClick={() => toggleDescription(task.id)}
-                                        >
-                                            {task.title}
-                                        </div>
-                                        {expandedTaskId === task.id && (
-                                            <div style={{ marginTop: '8px', padding: '8px', background: '#f8f8f8' }}>
-                                                <p>{task.description}</p>
-                                                <p>Due: {new Date(task.due_date).toLocaleString()}</p>
+                                <React.Fragment key={task.id}>
+                                    <tr style={{ background: task.status === 'completed' ? '#e0ffe0' : '#fff' }}>
+                                        <td style={{ border: '1px solid #ccc', padding: 8 }}>
+                                            <div 
+                                                style={{ cursor: 'pointer', fontWeight: 'bold' }}
+                                                onClick={() => toggleDescription(task.id)}
+                                            >
+                                                {task.title}
                                             </div>
-                                        )}
-                                    </td>
-                                    <td style={{ border: '1px solid #ccc', padding: 8 }}>
-                                        {task.category
-                                            ? task.category.charAt(0).toUpperCase() + task.category.slice(1)
-                                            : 'Daily'}
-                                    </td>
-                                    <td style={{ border: '1px solid #ccc', padding: 8 }}>
-                                        {task.status}
-                                    </td>
-                                    <td style={{ border: '1px solid #ccc', padding: 8 }}>
-                                        <button onClick={() => startEdit(task)}>Edit</button>
-                                        {task.status !== 'completed' && (
-                                            <button onClick={() => markAsCompleted(task)}>Complete</button>
-                                        )}
-                                        <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
-                                    </td>
-                                </tr>
+                                            {expandedTaskId === task.id && (
+                                                <div style={{ marginTop: '8px', padding: '8px', background: '#f8f8f8' }}>
+                                                    <p>{task.description}</p>
+                                                    <p>Due: {new Date(task.due_date).toLocaleString()}</p>
+                                                    {/* Display attached vision boards */}
+                                                    {task.vision_boards && task.vision_boards.length > 0 && (
+                                                        <div style={{ marginTop: '10px' }}>
+                                                            <h4>Attached Vision Boards:</h4>
+                                                            <ul>
+                                                                {task.vision_boards.map(board => (
+                                                                    <li key={board.id}>{board.name}</li>
+                                                                ))}
+                                                            </ul>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </td>
+                                        <td style={{ border: '1px solid #ccc', padding: 8 }}>
+                                            {task.category
+                                                ? task.category.charAt(0).toUpperCase() + task.category.slice(1)
+                                                : 'Daily'}
+                                        </td>
+                                        <td style={{ border: '1px solid #ccc', padding: 8 }}>
+                                            {task.status}
+                                        </td>
+                                        <td style={{ border: '1px solid #ccc', padding: 8 }}>
+                                            <button onClick={() => startEdit(task)}>Edit</button>
+                                            {task.status !== 'completed' && (
+                                                <button onClick={() => markAsCompleted(task)}>Complete</button>
+                                            )}
+                                            <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
+                                            <button onClick={() => toggleVisionBoardsForTask(task.id)}>
+                                                {showVisionBoardsForTask === task.id ? 'Hide Vision Boards' : 'Add Vision Board'}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {showVisionBoardsForTask === task.id && (
+                                        <tr>
+                                            <td colSpan={4} style={{ padding: '10px', background: '#f5f5f5' }}>
+                                                <h4>Available Vision Boards:</h4>
+                                                {availableVisionBoards.length > 0 ? (
+                                                    <ul style={{ listStyle: 'none', padding: 0 }}>
+                                                        {availableVisionBoards.map(board => (
+                                                            <li key={board.id} style={{ margin: '5px 0' }}>
+                                                                {board.name}
+                                                                <button 
+                                                                    onClick={() => handleAddVisionBoardToTask(task.id, board.id)}
+                                                                    style={{ marginLeft: '10px' }}
+                                                                >
+                                                                    Add to Task
+                                                                </button>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                ) : (
+                                                    <p>No available vision boards. Create one first.</p>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    )}
+                                </React.Fragment>
                             )
                         )
                     ) : (

@@ -90,6 +90,35 @@ class VisionBoardController extends Controller
         }
     }
 
+
+    public function attachToTask(Request $request, $task_id)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'id' => 'required|exists:vision_boards,id',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $visionBoard = VisionBoard::findOrFail($request->id);
+            $visionBoard->task_id = $task_id;
+            $visionBoard->save();
+
+            return response()->json($visionBoard, 200);
+        } catch (\Exception $e) {
+            \Log::error('Attach Vision Board to Task Error: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Failed to attach vision board to task',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function destroy($id)
     {
         try {

@@ -35,7 +35,7 @@ class VisionBoard extends Model
      */
     public function tasks()
     {
-        return $this->hasMany(Task::class, 'id', 'task_id'); // Adjusted to match the foreign key relationship
+        return $this->belongsTo(Task::class, 'id', 'task_id'); // Adjusted to match the foreign key relationship
     }
     /**
      * Get all images associated with the vision board.

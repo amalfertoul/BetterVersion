@@ -27,12 +27,11 @@ export const fetchVisionBoards = createAsyncThunk('visionBoard/fetchAll', async 
 
 export const createVisionBoard = createAsyncThunk('visionBoard/create', async (visionBoardData, { rejectWithValue }) => {
     try {
-        const response = await axios.post(API_URL, visionBoardData, {
-            headers: {
-                ...getAuthHeaders(),
-                'Content-Type': 'application/json',
-            },
-        });
+       const response = await axios.post(
+        `http://127.0.0.1:8000/api/tasks/${taskId}/vision-boards`,
+        visionBoardData,
+        { headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' } }
+      );
         return response.data;
     } catch (error) {
         return rejectWithValue(error.response?.data || 'Failed to create vision board.');
@@ -74,6 +73,28 @@ export const deleteVisionBoard = createAsyncThunk('visionBoard/delete', async (i
         return rejectWithValue(error.response?.data || 'Failed to delete vision board.');
     }
 });
+
+// Add vision board to task
+export const addVisionBoardToTask = createAsyncThunk(
+    'visionBoard/addVisionBoardToTask',
+    async ({ taskId, visionBoardData }, { rejectWithValue }) => {
+        try {
+            const response = await axios.post(
+                `http://127.0.0.1:8000/api/tasks/${taskId}/vision-boards/attach`,
+                visionBoardData,
+                {
+                    headers: {
+                        ...getAuthHeaders(),
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || 'Failed to add vision board to task.');
+        }
+    }
+);
 
 // Initial state
 const initialState = {
@@ -159,6 +180,19 @@ const visionBoardSlice = createSlice({
                 state.visionBoards = state.visionBoards.filter((board) => board.id !== action.payload);
             })
             .addCase(deleteVisionBoard.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            // Add vision board to task
+            .addCase(addVisionBoardToTask.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(addVisionBoardToTask.fulfilled, (state, action) => {
+                state.loading = false;
+                state.visionBoards.push(action.payload);
+            })
+            .addCase(addVisionBoardToTask.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });

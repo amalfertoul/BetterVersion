@@ -18,8 +18,6 @@ return new class extends Migration
             //user_id is the foreign key referencing the users table
             $table->unsignedBigInteger('user_id')->nullable(false);
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            
-
             //task_id is the foreign key referencing the tasks table
             $table->unsignedBigInteger('task_id')->nullable();
             $table->foreign('task_id')->references('id')->on('tasks')->onDelete('set null');
