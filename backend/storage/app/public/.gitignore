@@ -1,0 +1,6 @@
+# Ignore everything
+*
+
+# Except swf folder
+!swf/
+!swf/** 
