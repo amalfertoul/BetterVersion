@@ -14,6 +14,7 @@ import Socialize from './components/socialize';
 import RenderMessages from './sections/conversation';
 import AdminOnly from './components/AdminOnly';
 import VisionBoardDetail from './sections/VisionBoard';
+import ProfileFriends from './sections/ProfileFriends';
 import './style/App.css';
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
             <Route path="/socialize" element={<Socialize />} />
             <Route path="/conversation/:userId" element={<RenderMessages />} />
             <Route path="/vision-board/:id" element={<VisionBoardDetail />} />
+            <Route path="/profile-friend/:id" element={<ProfileFriends />} />
           </Routes>
         </main>
       </div>
