@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { fetchUsers } from '../slices/UserSlice';
 import { fetchTasksByUser, createTask, updateTask, deleteTask } from '../slices/taskSlice';
 import { fetchVisionBoards, addVisionBoardToTask } from '../slices/visionBoardSlice';
@@ -358,7 +359,18 @@ const TodoListPage = () => {
                                                                         const placeholders = 3 - boardImages.length;
                                                                         return (
                                                                             <li key={board.id} style={{ marginBottom: 8 }}>
-                                                                                <div style={{ fontWeight: 'bold' }}>{board.name}</div>
+                                                                                <div style={{ fontWeight: 'bold' }}>
+                                                                                    <Link
+                                                                                        to={`/vision-board/${board.id}`}
+                                                                                        style={{
+                                                                                            color: '#1976d2',
+                                                                                            textDecoration: 'underline',
+                                                                                            cursor: 'pointer'
+                                                                                        }}
+                                                                                    >
+                                                                                        {board.name}
+                                                                                    </Link>
+                                                                                </div>
                                                                                 <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
                                                                                     {boardImages.map(img => (
                                                                                         <img
