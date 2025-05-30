@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use Illuminate\Http\Request;
+use App\Models\VisionBoard;
 
 class TaskController extends Controller
 {
@@ -72,8 +73,10 @@ class TaskController extends Controller
 
     public function destroy($id)
     {
-        // Delete the task by its ID
-        Task::destroy($id);
+        $task = Task::findOrFail($id);
+        // Detach vision boards
+        VisionBoard::where('task_id', $id)->update(['task_id' => null]);
+        $task->delete();
 
         return response()->json(['message' => 'Task deleted successfully']);
     }

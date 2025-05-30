@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { deleteTask } from './taskSlice';
 
 const API_URL = 'http://127.0.0.1:8000/api/vision-boards';
 
@@ -195,7 +196,18 @@ const visionBoardSlice = createSlice({
             .addCase(addVisionBoardToTask.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
-            });
+            })
+            // Handle task deletion to remove associated vision boards
+            .addCase(deleteTask.fulfilled, (state, action) => {
+                // action.meta.arg is the deleted taskId
+                const deletedTaskId = action.meta.arg;
+                state.visionBoards = state.visionBoards.map(board =>
+                    board.task_id === deletedTaskId
+                        ? { ...board, task_id: null }
+                        : board
+                );
+            })
+            ;
     },
 });
 
