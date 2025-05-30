@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchUsers } from '../slices/UserSlice';
 import { fetchTasksByUser, createTask, updateTask, deleteTask } from '../slices/taskSlice';
 import { fetchVisionBoards, addVisionBoardToTask } from '../slices/visionBoardSlice';
+import { fetchImages } from '../slices/imagesSlice';
 
 // Categories must match your DB
 const CATEGORIES = ['daily', 'weekly', 'monthly', 'yearly'];
@@ -12,6 +13,7 @@ const TodoListPage = () => {
     const userId = useSelector((state) => state.users.user?.id);
     const { tasks, loading, error } = useSelector((state) => state.tasks);
     const { visionBoards } = useSelector((state) => state.visionBoard);
+    const { images } = useSelector((state) => state.images);
 
     const [taskTitle, setTaskTitle] = useState('');
     const [taskDescription, setTaskDescription] = useState('');
@@ -33,7 +35,7 @@ const TodoListPage = () => {
     // Active category for filtering
     const [activeCategory, setActiveCategory] = useState('all');
 
-    // Fetch users, tasks, and vision boards
+    // Fetch users, tasks, vision boards, and images
     useEffect(() => {
         dispatch(fetchUsers());
     }, [dispatch]);
@@ -42,6 +44,7 @@ const TodoListPage = () => {
         if (userId) {
             dispatch(fetchTasksByUser(userId));
             dispatch(fetchVisionBoards());
+            dispatch(fetchImages());
         }
     }, [dispatch, userId]);
 
@@ -347,9 +350,48 @@ const TodoListPage = () => {
                                                             <ul>
                                                                 {visionBoards
                                                                     .filter(board => board.task_id === task.id)
-                                                                    .map(board => (
-                                                                        <li key={board.id}>{board.name}</li>
-                                                                    ))}
+                                                                    .map(board => {
+                                                                        // Get up to 3 images for this vision board
+                                                                        const boardImages = images
+                                                                            .filter(img => img.vision_board_id === board.id)
+                                                                            .slice(0, 3);
+                                                                        const placeholders = 3 - boardImages.length;
+                                                                        return (
+                                                                            <li key={board.id} style={{ marginBottom: 8 }}>
+                                                                                <div style={{ fontWeight: 'bold' }}>{board.name}</div>
+                                                                                <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
+                                                                                    {boardImages.map(img => (
+                                                                                        <img
+                                                                                            key={img.id}
+                                                                                            src={`http://127.0.0.1:8000/storage/${img.url}`}
+                                                                                            alt={img.description || ''}
+                                                                                            style={{
+                                                                                                width: 48,
+                                                                                                height: 48,
+                                                                                                objectFit: 'cover',
+                                                                                                borderRadius: 6,
+                                                                                                background: '#f2f2f2',
+                                                                                                border: '1px solid #eee'
+                                                                                            }}
+                                                                                        />
+                                                                                    ))}
+                                                                                    {[...Array(placeholders)].map((_, idx) => (
+                                                                                        <div
+                                                                                            key={`ph-${board.id}-${idx}`}
+                                                                                            style={{
+                                                                                                width: 48,
+                                                                                                height: 48,
+                                                                                                borderRadius: 6,
+                                                                                                background: '#f7f7f7',
+                                                                                                border: '1px solid #eee',
+                                                                                                opacity: 0.7
+                                                                                            }}
+                                                                                        />
+                                                                                    ))}
+                                                                                </div>
+                                                                            </li>
+                                                                        );
+                                                                    })}
                                                             </ul>
                                                         ) : (
                                                             <span style={{ color: '#888' }}>None</span>
