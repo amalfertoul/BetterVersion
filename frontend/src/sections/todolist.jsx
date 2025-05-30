@@ -340,17 +340,21 @@ const TodoListPage = () => {
                                                 <div style={{ marginTop: '8px', padding: '8px', background: '#f8f8f8' }}>
                                                     <p>{task.description}</p>
                                                     <p>Due: {new Date(task.due_date).toLocaleString()}</p>
-                                                    {/* Display attached vision boards */}
-                                                    {task.vision_boards && task.vision_boards.length > 0 && (
-                                                        <div style={{ marginTop: '10px' }}>
-                                                            <h4>Attached Vision Boards:</h4>
+                                                    {/* Display attached vision boards from global state */}
+                                                    <div style={{ marginTop: '10px' }}>
+                                                        <h4>Attached Vision Boards:</h4>
+                                                        {visionBoards.filter(board => board.task_id === task.id).length > 0 ? (
                                                             <ul>
-                                                                {task.vision_boards.map(board => (
-                                                                    <li key={board.id}>{board.name}</li>
-                                                                ))}
+                                                                {visionBoards
+                                                                    .filter(board => board.task_id === task.id)
+                                                                    .map(board => (
+                                                                        <li key={board.id}>{board.name}</li>
+                                                                    ))}
                                                             </ul>
-                                                        </div>
-                                                    )}
+                                                        ) : (
+                                                            <span style={{ color: '#888' }}>None</span>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             )}
                                         </td>
@@ -373,6 +377,7 @@ const TodoListPage = () => {
                                             </button>
                                         </td>
                                     </tr>
+                                    
                                     {showVisionBoardsForTask === task.id && (
                                         <tr>
                                             <td colSpan={4} style={{ padding: '10px', background: '#f5f5f5' }}>
