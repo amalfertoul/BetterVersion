@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { loginUser, resetError } from '../slices/UserSlice';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../context/NotificationContext';
+import '../style/login.css'; // Assuming you have a CSS file for styling
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -63,35 +64,51 @@ const Login = () => {
     }, [dispatch]);
 
     return (
-        <div className="login-container">
-            <form onSubmit={handleSubmit} className="login-form">
-                <h2>Login</h2>
-                <div className="form-group">
-                    <label htmlFor="username">Username</label>
-                    <input
-                        type="text"
-                        id="username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        className={usernameError ? 'error' : ''}
-                    />
-                    {usernameError && <span className="error-message">{usernameError}</span>}
-                </div>
-                <div className="form-group">
-                    <label htmlFor="password">Password</label>
-                    <input
-                        type="password"
-                        id="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className={passwordError ? 'error' : ''}
-                    />
-                    {passwordError && <span className="error-message">{passwordError}</span>}
-                </div>
-                <button type="submit" disabled={loading}>
-                    {loading ? 'Logging in...' : 'Login'}
-                </button>
-            </form>
+        <div className="login-page">
+            {/* Background decoration circles */}
+            <div className="login-decoration">
+                <div className="decoration-circle circle-1"></div>
+                <div className="decoration-circle circle-2"></div>
+                <div className="decoration-circle circle-3"></div>
+                <div className="decoration-circle circle-4"></div>
+            </div>
+            
+            <div className="login-container">
+                <form onSubmit={handleSubmit} className="login-form">
+                    <h2>Welcome Back</h2>
+                    <div className="form-group">
+                        <label htmlFor="username">Username</label>
+                        <input
+                            type="text"
+                            id="username"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            className={usernameError ? 'error' : ''}
+                            placeholder="Enter your username"
+                        />
+                        {usernameError && <span className="error-message">{usernameError}</span>}
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="password">Password</label>
+                        <input
+                            type="password"
+                            id="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className={passwordError ? 'error' : ''}
+                            placeholder="Enter your password"
+                        />
+                        {passwordError && <span className="error-message">{passwordError}</span>}
+                    </div>
+                    <button type="submit" disabled={loading}>
+                        {loading ? 'Logging in...' : 'Login'}
+                    </button>
+                    
+                    <div className="form-footer">
+                        <p>Don't have an account? <a href="#">Sign Up</a></p>
+                    </div>
+                </form>
+            </div>
         </div>
     );
 };
