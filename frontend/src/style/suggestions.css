@@ -1,121 +1,204 @@
-/* Suggestions Container */
+/* Suggestions.css */
 .suggestions-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 20px;
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
+    background-color: var(--sidebar-color);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    width: 80%;
 }
 
-/* User Card */
-.user-card {
-    background: white;
+.suggestions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.suggestions-header h2 {
+    color: var(--text-dark);
+    font-size: 1.4rem;
+    margin: 0;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.header-actions span {
+    color: var(--text-color);
+    font-size: 0.9rem;
+    background-color: var(--primary-color-light);
+    padding: 4px 10px;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
+}
+
+.suggestions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.suggestion-card {
+    background-color: var(--body-color);
+    border-radius: 12px;
+    padding: 16px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
     flex-direction: column;
+    gap: 16px;
+}
+
+.suggestion-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(107, 70, 193, 0.1);
+}
+
+.user-info {
+    display: flex;
     align-items: center;
-    padding: 16px;
+    gap: 12px;
 }
 
-.user-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-}
-
-/* Profile Image */
-.user-card img {
-    width: 80px;
-    height: 80px;
+.user-avatar {
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
     object-fit: cover;
-    border: 3px solid white;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 12px;
+    cursor: pointer;
+    border: 2px solid var(--primary-color-light-2);
+    transition: border-color 0.3s ease;
 }
 
-/* User Name */
-.user-card p {
-    font-size: 14px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 12px;
-    text-align: center;
+.user-avatar:hover {
+    border-color: var(--primary-color);
+}
+
+.user-details {
+    flex: 1;
+    overflow: hidden;
+}
+
+.user-details h3 {
+    color: var(--text-dark);
+    margin: 0 0 4px 0;
+    font-size: 1rem;
+    cursor: pointer;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 100%;
+    transition: color 0.2s;
 }
 
-/* Friend Request Button */
-.user-card button {
-    background-color: #e60023;
+.user-details h3:hover {
+    color: var(--primary-color);
+}
+
+.username {
+    color: var(--text-color);
+    margin: 0;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.add-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color 0.3s, transform 0.2s;
+    width: 100%;
+}
+
+.add-button:hover {
+    background-color: #5a3cad;
+    transform: scale(1.02);
+}
+
+.add-button:active {
+    transform: scale(0.98);
+}
+
+.plus-icon {
+    font-size: 1.2rem;
+    font-weight: 400;
+}
+
+/* Loading State */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px;
+    text-align: center;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--primary-color-light-2);
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Error State */
+.error-container {
+    padding: 24px;
+    text-align: center;
+    background-color: #fff0f0;
+    border-radius: 12px;
+    color: #d32f2f;
+}
+
+.retry-button {
+    background-color: var(--primary-color);
     color: white;
     border: none;
     border-radius: 20px;
     padding: 8px 16px;
-    font-size: 14px;
-    font-weight: 600;
+    margin-top: 12px;
     cursor: pointer;
-    transition: background-color 0.2s ease;
-    width: 100%;
+    font-weight: 500;
 }
 
-.user-card button:hover {
-    background-color: #ad081b;
-}
-
-/* Loading and Error States */
-.loading-state, .error-state {
+/* Empty State */
+.empty-state {
     text-align: center;
-    padding: 40px;
-    font-size: 16px;
-    color: #555;
+    padding: 40px 20px;
+    background-color: var(--primary-color-light);
+    border-radius: 12px;
 }
 
-.error-state {
-    color: #e60023;
+.empty-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    color: var(--primary-color);
 }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    .suggestions-container {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 15px;
-        padding: 15px;
-    }
-    
-    .user-card img {
-        width: 70px;
-        height: 70px;
-    }
+.empty-state p {
+    color: var(--text-dark);
+    font-size: 1.1rem;
+    margin-bottom: 4px;
 }
 
-@media (max-width: 480px) {
-    .suggestions-container {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 12px;
-        padding: 10px;
-    }
-    
-    .user-card {
-        padding: 12px;
-    }
-    
-    .user-card img {
-        width: 60px;
-        height: 60px;
-    }
-    
-    .user-card p {
-        font-size: 13px;
-    }
-    
-    .user-card button {
-        padding: 6px 12px;
-        font-size: 13px;
-    }
+.empty-state small {
+    color: var(--text-color);
+    font-size: 0.9rem;
 }

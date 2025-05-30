@@ -1,0 +1,408 @@
+/* iPhone-style Conversation Interface */
+:root {
+
+  --iphone-bg: ##f5f0ff;
+  --header-bg: #f6f6f6;
+  --header-border: #e5e5e5;
+  --chat-bg: #ffffff;
+  --sent-bubble: #0b84fe;
+  --sent-text: #ffffff;
+  --received-bubble: #e5e5ea;
+  --received-text: #000000;
+  --input-bg: #f6f6f6;
+  --input-border: #e0e0e0;
+  --text-primary: #000000;
+  --text-secondary: #8e8e93;
+  --text-tertiary: #aeaeb2;
+  --separator: #c6c6c8;
+  --iphone-black: #000;
+  --iphone-white: #fff;
+  --iphone-gray: #8e8e93;
+  --error-red: #ff3b30;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.iphone-container {
+  background-color: var(--iphone-bg);
+  max-width: 500px;
+  height: 100vh;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 50px rgba(0, 0, 0, 0.1);
+}
+
+.iphone-header {
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--header-border);
+  padding-top: 5px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.iphone-status-bar {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px 5px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.status-icons span {
+  margin-left: 5px;
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  margin-right: 15px;
+  color: var(--sent-bubble);
+  font-weight: bold;
+}
+
+.contact-info {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.contact-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--sent-bubble);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+  margin-right: 10px;
+}
+
+.contact-details {
+  flex: 1;
+}
+
+.contact-details h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.contact-details p {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.header-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.header-actions button {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--iphone-white);
+}
+
+.date-indicator {
+  text-align: center;
+  margin: 10px 0 20px;
+}
+
+.date-indicator span {
+  background-color: #d1d1d6;
+  color: var(--text-primary);
+  font-size: 13px;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.message-bubble {
+  max-width: 75%;
+  margin-bottom: 15px;
+  position: relative;
+  align-self: flex-start;
+}
+
+.message-bubble.sent {
+  align-self: flex-end;
+}
+
+.bubble-content {
+  padding: 12px 16px;
+  border-radius: 18px;
+  position: relative;
+  word-wrap: break-word;
+}
+
+.message-bubble.received .bubble-content {
+  background-color: var(--received-bubble);
+  border-bottom-left-radius: 5px;
+  color: var(--received-text);
+}
+
+.message-bubble.sent .bubble-content {
+  background-color: var(--sent-bubble);
+  border-bottom-right-radius: 5px;
+  color: var(--sent-text);
+}
+
+.bubble-content p {
+  margin-bottom: 5px;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.timestamp {
+  font-size: 11px;
+  opacity: 0.8;
+  text-align: right;
+  display: block;
+}
+
+.message-bubble.sent .timestamp {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.message-bubble.received .timestamp {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.delete-button {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background-color: var(--error-red);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.message-input-container {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: var(--iphone-white);
+  border-top: 1px solid var(--input-border);
+}
+
+.input-actions {
+  margin-right: 10px;
+}
+
+.input-actions button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--sent-bubble);
+}
+
+.text-input-container {
+  flex: 1;
+  background-color: var(--input-bg);
+  border-radius: 22px;
+  padding: 8px 15px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.text-input-container textarea {
+  width: 100%;
+  border: none;
+  background: transparent;
+  resize: none;
+  outline: none;
+  font-size: 16px;
+  max-height: 100px;
+  overflow-y: auto;
+  padding: 0;
+  line-height: 1.4;
+}
+
+.send-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--sent-bubble);
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.send-button:disabled {
+  background-color: var(--text-tertiary);
+  cursor: default;
+}
+
+.sending-indicator {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.iphone-footer {
+  padding: 10px 0;
+  background-color: var(--iphone-white);
+  border-top: 1px solid var(--separator);
+}
+
+.home-indicator {
+  width: 140px;
+  height: 5px;
+  background-color: var(--iphone-black);
+  border-radius: 3px;
+  margin: 0 auto;
+}
+
+/* Loading states */
+.skeleton-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  margin-right: 10px;
+}
+
+.skeleton-name {
+  width: 120px;
+  height: 16px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+}
+
+.skeleton-message {
+  margin-bottom: 15px;
+  max-width: 70%;
+}
+
+.skeleton-sent {
+  align-self: flex-end;
+}
+
+.skeleton-received {
+  align-self: flex-start;
+}
+
+.skeleton-content {
+  height: 40px;
+  background-color: #e0e0e0;
+  border-radius: 18px;
+}
+
+.skeleton-sent .skeleton-content {
+  border-bottom-right-radius: 5px;
+}
+
+.skeleton-received .skeleton-content {
+  border-bottom-left-radius: 5px;
+}
+
+.skeleton-input {
+  flex: 1;
+  height: 44px;
+  background-color: #e0e0e0;
+  border-radius: 22px;
+}
+
+.skeleton-send-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  margin-left: 10px;
+}
+
+.error-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  background-color: var(--iphone-white);
+}
+
+.error-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+  color: var(--error-red);
+}
+
+.error-screen h2 {
+  font-size: 22px;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+}
+
+.error-screen p {
+  color: var(--text-secondary);
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.error-screen button {
+  background-color: var(--sent-bubble);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
