@@ -14,6 +14,7 @@ class VisionBoardController extends Controller
         return response()->json($visionBoards);
     }
 
+
     public function store(Request $request)
     {
         try {
@@ -30,10 +31,14 @@ class VisionBoardController extends Controller
                 ], 422);
             }
 
-            // Convert string 'true'/'false' to boolean if needed
             $data = $request->all();
             if (is_string($data['visibility'])) {
                 $data['visibility'] = $data['visibility'] === 'true';
+            }
+
+            // Ensure vision_board_id is set to null if not provided
+            if (!array_key_exists('vision_board_id', $data)) {
+                $data['vision_board_id'] = null;
             }
 
             $visionBoard = VisionBoard::create($data);
@@ -47,7 +52,6 @@ class VisionBoardController extends Controller
             ], 500);
         }
     }
-
     public function show($id)
     {
         $visionBoard = VisionBoard::findOrFail($id);
