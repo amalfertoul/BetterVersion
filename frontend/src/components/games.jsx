@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchGames } from '../slices/gamesSlice';
 import { createMiniGameUser } from '../slices/gameUserSlice';
 import { useNavigate } from 'react-router-dom';
+import '../style/Games.css'; // Import your CSS styles for the games component
 
 const Games = () => {
   const dispatch = useDispatch();
