@@ -1,24 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { useEffect } from 'react';
 import { fetchMessages, sendMessage, deleteMessage } from '../slices/messageSlice';
-
+import { motion, AnimatePresence } from 'framer-motion';
+import '../style/conversation.css'; // Ensure you have the correct path to your CSS file
 const RenderMessages = () => {
     const dispatch = useDispatch();
     const { userId } = useParams();
     const [newMessage, setNewMessage] = useState('');
-    const [showDeleteButton, setShowDeleteButton] = useState(null); // Track which message shows the delete button
+    const [showDeleteButton, setShowDeleteButton] = useState(null);
+    const [contactName, setContactName] = useState('Contact');
+    const [isSending, setIsSending] = useState(false);
+    const messagesEndRef = useRef(null);
 
     const { messages, status, error } = useSelector((state) => state.messages);
     const currentUserId = useSelector((state) => state.users.user?.id);
+    const users = useSelector((state) => state.users.users);
+
+    // Scroll to bottom when messages change
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
 
     useEffect(() => {
         dispatch(fetchMessages(userId));
     }, [dispatch, userId]);
 
+    // Get contact name
+    useEffect(() => {
+        if (users && userId) {
+            const contact = users.find(user => user.id === parseInt(userId));
+            if (contact) {
+                setContactName(contact.fullname || 'Contact');
+            }
+        }
+    }, [users, userId]);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
     const handleSendMessage = () => {
-        if (newMessage.trim()) {
+        if (newMessage.trim() && !isSending) {
+            setIsSending(true);
             const messageData = {
                 sender_id: currentUserId,
                 receiver_id: parseInt(userId),
@@ -31,11 +55,13 @@ const RenderMessages = () => {
             dispatch(sendMessage(messageData))
                 .unwrap()
                 .then(() => {
-                    console.log('Message sent successfully');
                     setNewMessage('');
                 })
                 .catch((err) => {
                     console.error('Failed to send message:', err);
+                })
+                .finally(() => {
+                    setIsSending(false);
                 });
         }
     };
@@ -44,124 +70,200 @@ const RenderMessages = () => {
         dispatch(deleteMessage(messageId))
             .unwrap()
             .then(() => {
-                console.log('Message deleted successfully');
-                setShowDeleteButton(null); // Hide the delete button after deletion
+                setShowDeleteButton(null);
             })
             .catch((err) => {
                 console.error('Failed to delete message:', err);
             });
     };
 
+    const formatTime = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    };
+
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSendMessage();
+        }
+    };
+
+    const filteredMessages = messages
+        .filter(
+            (message) =>
+                (message.sender_id === currentUserId && message.receiver_id === parseInt(userId)) ||
+                (message.sender_id === parseInt(userId) && message.receiver_id === currentUserId)
+        )
+        .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
     if (status === 'loading') {
-        return <p>Loading messages...</p>;
+        return (
+            <div className="iphone-container">
+                <div className="iphone-header">
+                    <div className="iphone-status-bar">
+                        <span>9:41</span>
+                        
+                    </div>
+                    <div className="chat-header">
+                        <button className="back-button" onClick={() => window.history.back()}>←</button>
+                        <div className="contact-info">
+                            <div className="skeleton-avatar"></div>
+                            <div className="skeleton-name"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div className="messages-container">
+                    {[...Array(6)].map((_, i) => (
+                        <div 
+                            key={i} 
+                            className={`skeleton-message ${i % 2 === 0 ? 'skeleton-sent' : 'skeleton-received'}`}
+                        >
+                            <div className="skeleton-content"></div>
+                        </div>
+                    ))}
+                </div>
+                
+                <div className="message-input-container">
+                    <div className="skeleton-input"></div>
+                    <div className="skeleton-send-button"></div>
+                </div>
+                
+                <div className="iphone-footer">
+                    <div className="home-indicator"></div>
+                </div>
+            </div>
+        );
     }
 
     if (status === 'failed') {
         return (
-            <div style={{ color: 'red' }}>
-                <p>Error: {error?.message}</p>
-                {error?.errors &&
-                    Object.entries(error.errors).map(([field, messages]) =>
-                        messages.map((msg, idx) => <p key={`${field}-${idx}`}>{field}: {msg}</p>)
-                    )}
+            <div className="iphone-container">
+                <div className="iphone-header">
+                    <div className="iphone-status-bar">
+                       
+                    </div>
+                    <div className="chat-header">
+                        <button className="back-button" onClick={() => window.history.back()}>←</button>
+                        <h1>Error</h1>
+                    </div>
+                </div>
+                
+                <div className="error-screen">
+                    <div className="error-icon">⚠️</div>
+                    <h2>Error Loading Messages</h2>
+                    <p>{error?.message || 'An error occurred'}</p>
+                    <button onClick={() => window.location.reload()}>Retry</button>
+                </div>
+                
+                <div className="iphone-footer">
+                    <div className="home-indicator"></div>
+                </div>
             </div>
         );
     }
 
     return (
-        <div>
-            <div>
-                {messages
-                    .filter(
-                        (message) =>
-                            (message.sender_id === currentUserId && message.receiver_id === parseInt(userId)) ||
-                            (message.sender_id === parseInt(userId) && message.receiver_id === currentUserId)
-                    )
-                    .slice()
-                    .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
-                    .map((message) => (
-                        <div
-                            key={message.id}
-                            style={{
-                                display: 'flex',
-                                justifyContent: message.sender_id === currentUserId ? 'flex-end' : 'flex-start',
-                                marginBottom: '10px',
-                            }}
-                            onDoubleClick={() =>
-                                message.sender_id === currentUserId ? setShowDeleteButton(message.id) : null
-                            } // Show delete button on double-click for messages on the right
-                        >
-                            <div
-                                style={{
-                                    border: '1px solid #ccc',
-                                    padding: '10px',
-                                    maxWidth: '60%',
-                                    backgroundColor: message.sender_id === currentUserId ? '#e0f7fa' : '#f1f8e9',
-                                    position: 'relative',
-                                }}
-                            >
-                                <p style={{ margin: 0 }}>{message.content}</p>
-                                <p
-                                    style={{
-                                        margin: 0,
-                                        fontSize: '0.8em',
-                                        color: '#888',
-                                        textAlign: 'right',
-                                    }}
-                                >
-                                    {new Date(message.timestamp).toLocaleString()}
-                                </p>
-                                {showDeleteButton === message.id && (
-                                    <button
-                                        onClick={() => handleDeleteMessage(message.id)}
-                                        style={{
-                                            position: 'absolute',
-                                            top: '-10px',
-                                            right: '-10px',
-                                            backgroundColor: '#ff4d4d',
-                                            color: '#fff',
-                                            border: 'none',
-                                            borderRadius: '50%',
-                                            width: '30px',
-                                            height: '30px',
-                                            cursor: 'pointer',
-                                        }}
-                                    >
-                                        X
-                                    </button>
-                                )}
-                            </div>
+        <div className="iphone-container">
+            <div className="iphone-header">
+                <div className="iphone-status-bar">
+                   
+                </div>
+                <div className="chat-header">
+                    <button className="back-button" onClick={() => window.history.back()}>←</button>
+                    
+                    <div className="contact-info">
+                        <div className="contact-avatar">
+                            {contactName.charAt(0)}
                         </div>
-                    ))}
+                        <div className="contact-details">
+                            <h2>{contactName}</h2>
+                            <p>Online</p>
+                        </div>
+                    </div>
+                    
+                    <div className="header-actions">
+                       
+                    </div>
+                </div>
             </div>
-            <div style={{ marginTop: '20px', display: 'flex', alignItems: 'center' }}>
-                <input
-                    type="text"
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Type your message..."
-                    style={{
-                        flex: 1,
-                        padding: '10px',
-                        border: '1px solid #ccc',
-                        borderRadius: '4px',
-                        marginRight: '10px',
-                    }}
-                />
-                <button
+            
+            <div className="messages-container">
+                <div className="date-indicator">
+                    <span>Today</span>
+                </div>
+                
+                <AnimatePresence>
+                    {filteredMessages.map((message) => {
+                        const isSent = message.sender_id === currentUserId;
+                        
+                        return (
+                            <motion.div
+                                key={message.id}
+                                className={`message-bubble ${isSent ? 'sent' : 'received'}`}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.9 }}
+                                transition={{ duration: 0.3 }}
+                                onDoubleClick={() => isSent && setShowDeleteButton(message.id)}
+                                whileTap={{ scale: isSent ? 0.98 : 1 }}
+                            >
+                                <div className="bubble-content">
+                                    <p>{message.content}</p>
+                                    <span className="timestamp">{formatTime(message.timestamp)}</span>
+                                </div>
+                                
+                                {showDeleteButton === message.id && isSent && (
+                                    <motion.button
+                                        className="delete-button"
+                                        onClick={() => handleDeleteMessage(message.id)}
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        exit={{ scale: 0 }}
+                                        whileHover={{ scale: 1.1 }}
+                                        whileTap={{ scale: 0.9 }}
+                                    >
+                                        ✕
+                                    </motion.button>
+                                )}
+                            </motion.div>
+                        );
+                    })}
+                </AnimatePresence>
+                
+                <div ref={messagesEndRef} />
+            </div>
+            
+            <div className="message-input-container">
+                
+                
+                <div className="text-input-container">
+                    <textarea
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        placeholder="Message"
+                        onKeyPress={handleKeyPress}
+                        rows={1}
+                    />
+                </div>
+                
+                <motion.button
+                    className="send-button"
                     onClick={handleSendMessage}
-                    style={{
-                        padding: '10px 20px',
-                        backgroundColor: '#007bff',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                    }}
+                    disabled={!newMessage.trim() || isSending}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                 >
-                    Send
-                </button>
+                    {isSending ? (
+                        <div className="sending-indicator"></div>
+                    ) : (
+                        <span>↑</span>
+                    )}
+                </motion.button>
             </div>
+            
+           
         </div>
     );
 };
