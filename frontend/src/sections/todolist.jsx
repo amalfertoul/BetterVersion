@@ -5,8 +5,8 @@ import { fetchUsers } from '../slices/UserSlice';
 import { fetchTasksByUser, createTask, updateTask, deleteTask } from '../slices/taskSlice';
 import { fetchVisionBoards, addVisionBoardToTask } from '../slices/visionBoardSlice';
 import { fetchImages } from '../slices/imagesSlice';
+import '../style/todolist.css'; // Ou './TodoListPage.css' selon votre structure
 
-// Categories must match your DB
 const CATEGORIES = ['daily', 'weekly', 'monthly', 'yearly'];
 
 const TodoListPage = () => {
@@ -36,7 +36,6 @@ const TodoListPage = () => {
     // Active category for filtering
     const [activeCategory, setActiveCategory] = useState('all');
 
-    // Fetch users, tasks, vision boards, and images
     useEffect(() => {
         dispatch(fetchUsers());
     }, [dispatch]);
@@ -49,7 +48,6 @@ const TodoListPage = () => {
         }
     }, [dispatch, userId]);
 
-    // Filter available vision boards when visionBoards changes
     useEffect(() => {
         if (visionBoards && userId) {
             const filtered = visionBoards.filter(
@@ -162,312 +160,298 @@ const TodoListPage = () => {
     if (error) return <div>Error: {typeof error === 'string' ? error : error.message || JSON.stringify(error)}</div>;
 
     return (
-        <div className="todo-list-page">
-            <h1>Your Tasks</h1>
-            
-            {/* Progress Bar */}
-            <div style={{ margin: '20px 0' }}>
-                <div style={{ background: '#eee', borderRadius: 8, height: 24, width: 300 }}>
-                    <div
-                        style={{
-                            width: `${progress}%`,
-                            background: '#4caf50',
-                            height: '100%',
-                            borderRadius: 8,
-                            transition: 'width 0.3s',
-                        }}
-                    />
+        <div className="todo-container">
+            {/* Header Section */}
+            <header className="app-header">
+                <div className="logo-section">
+                    <div className="logo">TaskFlow</div>
+                    <div className="progress-container">
+                        <div className="progress-label">Your Progress</div>
+                        <div className="progress-bar">
+                            <div 
+                                className="progress-fill" 
+                                style={{ width: `${progress}%` }}
+                            ></div>
+                        </div>
+                        <div className="progress-percent">{progress}% completed</div>
+                    </div>
                 </div>
-                <div style={{ marginTop: 4 }}>{progress}% completed</div>
-            </div>
+                <div className="search-section">
+                    <div className="search-box">
+                        <i className="search-icon">🔍</i>
+                        <input
+                            type="text"
+                            placeholder="Search tasks..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </div>
+                </div>
+            </header>
 
-            {/* Task Creation Form */}
-            <form onSubmit={handleCreateTask}>
-                <div>
+            {/* Category Navigation */}
+            <nav className="category-nav">
+                <div className="category-tabs">
+                    <button
+                        className={`tab-item ${activeCategory === 'all' ? 'active' : ''}`}
+                        onClick={() => setActiveCategory('all')}
+                    >
+                        All Tasks
+                    </button>
+                    {CATEGORIES.map(cat => (
+                        <button
+                            key={cat}
+                            className={`tab-item ${activeCategory === cat ? 'active' : ''}`}
+                            onClick={() => setActiveCategory(cat)}
+                        >
+                            {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                        </button>
+                    ))}
+                </div>
+            </nav>
+
+            {/* Main Content */}
+            <main className="content-area">
+                {/* Task Creation Panel */}
+                <section className="task-creation-panel">
+                    <h2>Create New Task</h2>
+                    <form onSubmit={handleCreateTask} className="task-form">
+                        <div className="form-grid">
+                            <div className="form-group">
+                                <label>Title</label>
+                                <input
+                                    type="text"
+                                    placeholder="Task title"
+                                    value={taskTitle}
+                                    onChange={(e) => setTaskTitle(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Due Date</label>
+                                <input
+                                    type="datetime-local"
+                                    value={dueDate}
+                                    onChange={(e) => setDueDate(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Status</label>
+                                <select value={status} onChange={(e) => setStatus(e.target.value)}>
+                                    <option value="pending">Pending</option>
+                                    <option value="in_progress">In Progress</option>
+                                    <option value="completed">Completed</option>
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label>Category</label>
+                                <select value={category} onChange={(e) => setCategory(e.target.value)}>
+                                    {CATEGORIES.map(cat => (
+                                        <option key={cat} value={cat}>
+                                            {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="form-group full-width">
+                                <label>Description</label>
+                                <textarea
+                                    placeholder="Task details..."
+                                    value={taskDescription}
+                                    onChange={(e) => setTaskDescription(e.target.value)}
+                                    required
+                                    rows="3"
+                                />
+                            </div>
+                        </div>
+                        <button type="submit" className="create-btn">
+                            + Add Task
+                        </button>
+                    </form>
+                </section>
+
+                {/* Tasks List */}
+                <section className="tasks-section">
+                    <div className="tasks-header">
+                        <h2>{activeCategory === 'all' 
+                            ? 'All Tasks' 
+                            : `${activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)} Tasks`}
+                        </h2>
+                        <div className="tasks-count">{filteredTasks.length} tasks</div>
+                    </div>
+                    <div className="tasks-list">
+                        {filteredTasks.length > 0 ? (
+                            filteredTasks.map((task) =>
+                                <TaskItem
+                                    key={task.id}
+                                    task={task}
+                                    editTaskId={editTaskId}
+                                    editTitle={editTitle}
+                                    editDescription={editDescription}
+                                    editStatus={editStatus}
+                                    editCategory={editCategory}
+                                    expandedTaskId={expandedTaskId}
+                                    showVisionBoardsForTask={showVisionBoardsForTask}
+                                    availableVisionBoards={availableVisionBoards}
+                                    visionBoards={visionBoards}
+                                    images={images}
+                                    startEdit={startEdit}
+                                    setEditTitle={setEditTitle}
+                                    setEditDescription={setEditDescription}
+                                    setEditStatus={setEditStatus}
+                                    setEditCategory={setEditCategory}
+                                    setEditTaskId={setEditTaskId}
+                                    handleUpdateTask={handleUpdateTask}
+                                    handleDeleteTask={handleDeleteTask}
+                                    markAsCompleted={markAsCompleted}
+                                    toggleDescription={toggleDescription}
+                                    toggleVisionBoardsForTask={toggleVisionBoardsForTask}
+                                    handleAddVisionBoardToTask={handleAddVisionBoardToTask}
+                                />
+                            )
+                        ) : (
+                            <div className="empty-state">
+                                <div className="empty-icon">📋</div>
+                                <h3>No tasks found</h3>
+                                <p>Create your first task to get started!</p>
+                            </div>
+                        )}
+                    </div>
+                </section>
+            </main>
+        </div>
+    );
+};
+
+// TaskItem component
+const TaskItem = ({
+    task, editTaskId, editTitle, editDescription, editStatus, editCategory,
+    expandedTaskId, showVisionBoardsForTask, availableVisionBoards, visionBoards, images,
+    startEdit, setEditTitle, setEditDescription, setEditStatus, setEditCategory, setEditTaskId,
+    handleUpdateTask, handleDeleteTask, markAsCompleted, toggleDescription, toggleVisionBoardsForTask,
+    handleAddVisionBoardToTask
+}) => {
+    if (editTaskId === task.id) {
+        return (
+            <div className="task-card editing">
+                <form onSubmit={handleUpdateTask} className="edit-task-form">
                     <input
                         type="text"
-                        placeholder="Task Title"
-                        value={taskTitle}
-                        onChange={(e) => setTaskTitle(e.target.value)}
+                        value={editTitle}
+                        onChange={(e) => setEditTitle(e.target.value)}
                         required
                     />
-                </div>
-                <div>
                     <textarea
-                        placeholder="Task Description"
-                        value={taskDescription}
-                        onChange={(e) => setTaskDescription(e.target.value)}
+                        value={editDescription}
+                        onChange={(e) => setEditDescription(e.target.value)}
                         required
                     />
-                </div>
-                <div>
-                    <input
-                        type="datetime-local"
-                        value={dueDate}
-                        onChange={(e) => setDueDate(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <select value={status} onChange={(e) => setStatus(e.target.value)}>
+                    <select value={editStatus} onChange={(e) => setEditStatus(e.target.value)}>
                         <option value="pending">Pending</option>
                         <option value="in_progress">In Progress</option>
                         <option value="completed">Completed</option>
                     </select>
-                </div>
-                <div>
-                    <select value={category} onChange={(e) => setCategory(e.target.value)}>
+                    <select value={editCategory} onChange={(e) => setEditCategory(e.target.value)}>
                         {CATEGORIES.map(cat => (
                             <option key={cat} value={cat}>
                                 {cat.charAt(0).toUpperCase() + cat.slice(1)}
                             </option>
                         ))}
                     </select>
+                    <button type="submit">Save</button>
+                    <button type="button" onClick={() => setEditTaskId(null)}>Cancel</button>
+                </form>
+            </div>
+        );
+    }
+
+    return (
+        <div className={`task-card ${task.status === 'completed' ? 'completed' : ''}`}>
+            <div className="task-main">
+                <div className="task-title" onClick={() => toggleDescription(task.id)}>
+                    {task.title}
                 </div>
-                <button type="submit">Create Task</button>
-            </form>
-
-            {/* Search */}
-            <div style={{ margin: '20px 0' }}>
-                <input
-                    type="text"
-                    placeholder="Search by title..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
-            </div>
-
-            {/* Category Navbar */}
-            <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginBottom: 24 }}>
-                <button
-                    key="all"
-                    onClick={() => setActiveCategory('all')}
-                    style={{
-                        padding: '8px 18px',
-                        borderRadius: 20,
-                        border: 'none',
-                        background: activeCategory === 'all' ? '#1976d2' : '#eee',
-                        color: activeCategory === 'all' ? '#fff' : '#333',
-                        fontWeight: activeCategory === 'all' ? 'bold' : 'normal',
-                        cursor: 'pointer',
-                        boxShadow: activeCategory === 'all' ? '0 2px 8px #1976d233' : 'none'
-                    }}
-                >
-                    All
-                </button>
-                {CATEGORIES.map(cat => (
-                    <button
-                        key={cat}
-                        onClick={() => setActiveCategory(cat)}
-                        style={{
-                            padding: '8px 18px',
-                            borderRadius: 20,
-                            border: 'none',
-                            background: activeCategory === cat ? '#1976d2' : '#eee',
-                            color: activeCategory === cat ? '#fff' : '#333',
-                            fontWeight: activeCategory === cat ? 'bold' : 'normal',
-                            cursor: 'pointer',
-                            boxShadow: activeCategory === cat ? '0 2px 8px #1976d233' : 'none'
-                        }}
-                    >
-                        {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                    </button>
-                ))}
-            </div>
-
-            {/* Tasks Table */}
-            <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 30 }}>
-                <thead>
-                    <tr style={{ background: '#f0f0f0' }}>
-                        <th style={{ border: '1px solid #ccc', padding: 8 }}>Task</th>
-                        <th style={{ border: '1px solid #ccc', padding: 8 }}>Category</th>
-                        <th style={{ border: '1px solid #ccc', padding: 8 }}>Status</th>
-                        <th style={{ border: '1px solid #ccc', padding: 8 }}>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {filteredTasks.length > 0 ? (
-                        filteredTasks.map((task) =>
-                            editTaskId === task.id ? (
-                                <tr key={task.id} style={{ background: '#fffbe0' }}>
-                                    <td colSpan={4}>
-                                        <form onSubmit={handleUpdateTask} style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                                            <input
-                                                type="text"
-                                                value={editTitle}
-                                                onChange={(e) => setEditTitle(e.target.value)}
-                                                required
-                                                style={{ flex: 1 }}
-                                            />
-                                            <textarea
-                                                value={editDescription}
-                                                onChange={(e) => setEditDescription(e.target.value)}
-                                                required
-                                                style={{ flex: 1 }}
-                                            />
-                                            <select 
-                                                value={editStatus} 
-                                                onChange={(e) => setEditStatus(e.target.value)}
-                                            >
-                                                <option value="pending">Pending</option>
-                                                <option value="in_progress">In Progress</option>
-                                                <option value="completed">Completed</option>
-                                            </select>
-                                            <select 
-                                                value={editCategory} 
-                                                onChange={(e) => setEditCategory(e.target.value)}
-                                            >
-                                                {CATEGORIES.map(cat => (
-                                                    <option key={cat} value={cat}>
-                                                        {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                            <button type="submit">Save</button>
-                                            <button type="button" onClick={() => setEditTaskId(null)}>
-                                                Cancel
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            ) : (
-                                <React.Fragment key={task.id}>
-                                    <tr style={{ background: task.status === 'completed' ? '#e0ffe0' : '#fff' }}>
-                                        <td style={{ border: '1px solid #ccc', padding: 8 }}>
-                                            <div 
-                                                style={{ cursor: 'pointer', fontWeight: 'bold' }}
-                                                onClick={() => toggleDescription(task.id)}
-                                            >
-                                                {task.title}
-                                            </div>
-                                            {expandedTaskId === task.id && (
-                                                <div style={{ marginTop: '8px', padding: '8px', background: '#f8f8f8' }}>
-                                                    <p>{task.description}</p>
-                                                    <p>Due: {new Date(task.due_date).toLocaleString()}</p>
-                                                    {/* Display attached vision boards from global state */}
-                                                    <div style={{ marginTop: '10px' }}>
-                                                        <h4>Attached Vision Boards:</h4>
-                                                        {visionBoards.filter(board => board.task_id === task.id).length > 0 ? (
-                                                            <ul>
-                                                                {visionBoards
-                                                                    .filter(board => board.task_id === task.id)
-                                                                    .map(board => {
-                                                                        // Get up to 3 images for this vision board
-                                                                        const boardImages = images
-                                                                            .filter(img => img.vision_board_id === board.id)
-                                                                            .slice(0, 3);
-                                                                        const placeholders = 3 - boardImages.length;
-                                                                        return (
-                                                                            <li key={board.id} style={{ marginBottom: 8 }}>
-                                                                                <div style={{ fontWeight: 'bold' }}>
-                                                                                    <Link
-                                                                                        to={`/vision-board/${board.id}`}
-                                                                                        style={{
-                                                                                            color: '#1976d2',
-                                                                                            textDecoration: 'underline',
-                                                                                            cursor: 'pointer'
-                                                                                        }}
-                                                                                    >
-                                                                                        {board.name}
-                                                                                    </Link>
-                                                                                </div>
-                                                                                <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
-                                                                                    {boardImages.map(img => (
-                                                                                        <img
-                                                                                            key={img.id}
-                                                                                            src={`http://127.0.0.1:8000/storage/${img.url}`}
-                                                                                            alt={img.description || ''}
-                                                                                            style={{
-                                                                                                width: 48,
-                                                                                                height: 48,
-                                                                                                objectFit: 'cover',
-                                                                                                borderRadius: 6,
-                                                                                                background: '#f2f2f2',
-                                                                                                border: '1px solid #eee'
-                                                                                            }}
-                                                                                        />
-                                                                                    ))}
-                                                                                    {[...Array(placeholders)].map((_, idx) => (
-                                                                                        <div
-                                                                                            key={`ph-${board.id}-${idx}`}
-                                                                                            style={{
-                                                                                                width: 48,
-                                                                                                height: 48,
-                                                                                                borderRadius: 6,
-                                                                                                background: '#f7f7f7',
-                                                                                                border: '1px solid #eee',
-                                                                                                opacity: 0.7
-                                                                                            }}
-                                                                                        />
-                                                                                    ))}
-                                                                                </div>
-                                                                            </li>
-                                                                        );
-                                                                    })}
-                                                            </ul>
-                                                        ) : (
-                                                            <span style={{ color: '#888' }}>None</span>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </td>
-                                        <td style={{ border: '1px solid #ccc', padding: 8 }}>
-                                            {task.category
-                                                ? task.category.charAt(0).toUpperCase() + task.category.slice(1)
-                                                : 'Daily'}
-                                        </td>
-                                        <td style={{ border: '1px solid #ccc', padding: 8 }}>
-                                            {task.status}
-                                        </td>
-                                        <td style={{ border: '1px solid #ccc', padding: 8 }}>
-                                            <button onClick={() => startEdit(task)}>Edit</button>
-                                            {task.status !== 'completed' && (
-                                                <button onClick={() => markAsCompleted(task)}>Complete</button>
-                                            )}
-                                            <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
-                                            <button onClick={() => toggleVisionBoardsForTask(task.id)}>
-                                                {showVisionBoardsForTask === task.id ? 'Hide Vision Boards' : 'Add Vision Board'}
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    
-                                    {showVisionBoardsForTask === task.id && (
-                                        <tr>
-                                            <td colSpan={4} style={{ padding: '10px', background: '#f5f5f5' }}>
-                                                <h4>Available Vision Boards:</h4>
-                                                {availableVisionBoards.length > 0 ? (
-                                                    <ul style={{ listStyle: 'none', padding: 0 }}>
-                                                        {availableVisionBoards.map(board => (
-                                                            <li key={board.id} style={{ margin: '5px 0' }}>
-                                                                {board.name}
-                                                                <button 
-                                                                    onClick={() => handleAddVisionBoardToTask(task.id, board.id)}
-                                                                    style={{ marginLeft: '10px' }}
-                                                                >
-                                                                    Add to Task
-                                                                </button>
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                ) : (
-                                                    <p>No available vision boards. Create one first.</p>
-                                                )}
-                                            </td>
-                                        </tr>
-                                    )}
-                                </React.Fragment>
-                            )
-                        )
-                    ) : (
-                        <tr>
-                            <td colSpan={4} style={{ textAlign: 'center', color: '#888' }}>
-                                No tasks found.
-                            </td>
-                        </tr>
+                <div className="task-meta">
+                    <span className="task-category">
+                        {task.category ? task.category.charAt(0).toUpperCase() + task.category.slice(1) : 'Daily'}
+                    </span>
+                    <span className="task-status">{task.status}</span>
+                </div>
+                <div className="task-actions">
+                    <button onClick={() => startEdit(task)}>Edit</button>
+                    {task.status !== 'completed' && (
+                        <button onClick={() => markAsCompleted(task)}>Complete</button>
                     )}
-                </tbody>
-            </table>
+                    <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
+                    <button onClick={() => toggleVisionBoardsForTask(task.id)}>
+                        {showVisionBoardsForTask === task.id ? 'Hide Vision Boards' : 'Add Vision Board'}
+                    </button>
+                </div>
+            </div>
+            {expandedTaskId === task.id && (
+                <div className="task-details">
+                    <p>{task.description}</p>
+                    <p>Due: {new Date(task.due_date).toLocaleString()}</p>
+                    <div className="attached-vision-boards">
+                        <h4>Attached Vision Boards:</h4>
+                        {visionBoards.filter(board => board.task_id === task.id).length > 0 ? (
+                            <ul>
+                                {visionBoards
+                                    .filter(board => board.task_id === task.id)
+                                    .map(board => {
+                                        const boardImages = images
+                                            .filter(img => img.vision_board_id === board.id)
+                                            .slice(0, 3);
+                                        const placeholders = 3 - boardImages.length;
+                                        return (
+                                            <li key={board.id}>
+                                                <div className="vision-board-title">
+                                                    <Link to={`/vision-board/${board.id}`}>
+                                                        {board.name}
+                                                    </Link>
+                                                </div>
+                                                <div className="vision-board-images">
+                                                    {boardImages.map(img => (
+                                                        <img
+                                                            key={img.id}
+                                                            src={`http://127.0.0.1:8000/storage/${img.url}`}
+                                                            alt={img.description || ''}
+                                                        />
+                                                    ))}
+                                                    {[...Array(placeholders)].map((_, idx) => (
+                                                        <div key={`ph-${board.id}-${idx}`} className="vision-board-placeholder" />
+                                                    ))}
+                                                </div>
+                                            </li>
+                                        );
+                                    })}
+                            </ul>
+                        ) : (
+                            <span className="no-vision-boards">None</span>
+                        )}
+                    </div>
+                </div>
+            )}
+            {showVisionBoardsForTask === task.id && (
+                <div className="available-vision-boards">
+                    <h4>Available Vision Boards:</h4>
+                    {availableVisionBoards.length > 0 ? (
+                        <ul>
+                            {availableVisionBoards.map(board => (
+                                <li key={board.id}>
+                                    {board.name}
+                                    <button onClick={() => handleAddVisionBoardToTask(task.id, board.id)}>
+                                        Add to Task
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p>No available vision boards. Create one first.</p>
+                    )}
+                </div>
+            )}
         </div>
     );
 };
