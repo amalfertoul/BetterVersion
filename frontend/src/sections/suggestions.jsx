@@ -21,7 +21,7 @@ const Suggestions = () => {
     const handleSendRequest = async (userId) => {
         try {
             showInfo('Sending friend request...');
-            await dispatch(sendFriendRequest({ sender_id: currentUserId, receiver_id: userId }));
+            await dispatch(sendFriendRequest({ sender_id: currentUserId, receiver_id: userId , status: 'pending' }));
             showSuccess('Friend request sent successfully!');
         } catch (error) {
             showError('Failed to send friend request. Please try again.');
