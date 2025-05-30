@@ -105,6 +105,7 @@ const TodoListPage = () => {
     const handleDeleteTask = (taskId) => {
         dispatch(deleteTask(taskId)).then(() => {
             dispatch(fetchTasksByUser(userId));
+            dispatch(fetchVisionBoards());
         });
     };
 
