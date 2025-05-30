@@ -27,11 +27,11 @@ export const fetchVisionBoards = createAsyncThunk('visionBoard/fetchAll', async 
 
 export const createVisionBoard = createAsyncThunk('visionBoard/create', async (visionBoardData, { rejectWithValue }) => {
     try {
-       const response = await axios.post(
-        `http://127.0.0.1:8000/api/tasks/${taskId}/vision-boards`,
-        visionBoardData,
-        { headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' } }
-      );
+        const response = await axios.post(
+            'http://127.0.0.1:8000/api/vision-boards',
+            visionBoardData,
+            { headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' } }
+        );
         return response.data;
     } catch (error) {
         return rejectWithValue(error.response?.data || 'Failed to create vision board.');
