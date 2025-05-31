@@ -36,8 +36,9 @@ body.dark {
   width: 250px;
   padding: 10px 14px;
   background: var(--sidebar-color);
-  transition: all 0.3s ease;
+  transition: var(--tran-05);
   z-index: 100;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   transform-origin: left;
 }
 

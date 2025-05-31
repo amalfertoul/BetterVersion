@@ -11,14 +11,22 @@
   padding: 20px;
   transition: var(--tran-05);
   min-height: 100vh;
+  width: calc(100% - 250px);
+}
+
+.sidebar.close ~ .main-content {
+  margin-left: 88px;
+  width: calc(100% - 88px);
 }
 
 @media (max-width: 500px) {
   .main-content {
     margin-left: 88px;
+    width: calc(100% - 88px);
   }
   
   .sidebar.close ~ .main-content {
     margin-left: 0;
+    width: 100%;
   }
 } 
