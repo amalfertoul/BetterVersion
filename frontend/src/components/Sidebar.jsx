@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { logoutUser } from '../slices/userSlice';
+import { logoutUser } from '../slices/UserSlice';
 import '../style/sidebar.css';
 
 const Sidebar = () => {
