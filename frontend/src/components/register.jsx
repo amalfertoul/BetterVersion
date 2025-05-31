@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { registerUser, resetError } from '../slices/UserSlice';
+import { registerUser, resetError, loginUser } from '../slices/UserSlice';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../context/NotificationContext';
 import '../style/Register.css'; // Assuming you have a CSS file for styling
@@ -113,7 +113,16 @@ const Register = () => {
         try {
             const result = await dispatch(registerUser(formData)).unwrap();
             showSuccess('Registration successful!');
-            navigate('/profile');
+            
+            // Automatically log in after successful registration
+            const loginResult = await dispatch(loginUser({
+                username: formData.username,
+                password: formData.password
+            })).unwrap();
+            
+            if (loginResult?.user?.id) {
+                navigate('/profile');
+            }
         } catch (error) {
             showError(error.message || 'Registration failed');
         }
