@@ -21,7 +21,7 @@ const Sidebar = () => {
   }, [isAuthenticated]);
 
   useEffect(() => {
-    if (location.pathname !== '/home') {
+    if (location.pathname !== '/home' && location.pathname !== '/socialize') {
       dispatch(clearSearchQuery());
     }
   }, [location.pathname, dispatch]);
@@ -37,7 +37,7 @@ const Sidebar = () => {
 
   const handleSearch = (e) => {
     const query = e.target.value;
-    if (location.pathname === '/home') {
+    if (location.pathname === '/home' || location.pathname === '/socialize') {
       dispatch(setSearchQuery(query));
     }
   };
@@ -81,7 +81,11 @@ const Sidebar = () => {
               <i className='bx bx-search icon'></i>
               <input 
                 type="text" 
-                placeholder={location.pathname === '/home' ? "Search tasks..." : "Search..."}
+                placeholder={
+                  location.pathname === '/home' ? "Search tasks..." :
+                  location.pathname === '/socialize' ? "Search chats..." :
+                  "Search..."
+                }
                 value={searchQuery}
                 onChange={handleSearch}
               />

@@ -11,7 +11,7 @@ const ChatsTesting = () => {
     const { messages, status, error } = useSelector((state) => state.messages);
     const users = useSelector((state) => state.users.users);
     const currentUserId = useSelector((state) => state.users.user?.id);
-    const [searchTerm, setSearchTerm] = useState('');
+    const searchQuery = useSelector((state) => state.tasks.searchQuery);
     const [activeChat, setActiveChat] = useState(null);
 
     useEffect(() => {
@@ -61,8 +61,8 @@ const ChatsTesting = () => {
         const user = users.find(u => String(u.id) === String(userId));
         if (!user) return false;
         
-        return user.fullname?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-               user.username?.toLowerCase().includes(searchTerm.toLowerCase());
+        return user.fullname?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+               user.username?.toLowerCase().includes(searchQuery.toLowerCase());
     });
 
     // Sort chats by most recent message
@@ -74,22 +74,6 @@ const ChatsTesting = () => {
 
     return (
         <div className="chats-container">
-            {/* Header */}
-            <div className="chats-header">
-                <div className="header-content">
-                    <div className="search-container">
-                        <input
-                            type="text"
-                            placeholder="Search chats..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                        <div className="search-icon">🔍</div>
-                    </div>
-                </div>
-            </div>
-            
-            {/* Chat List */}
             <div className="chats-list">
                 {sortedChats.length === 0 ? (
                     <div className="empty-state">
@@ -162,9 +146,6 @@ const ChatsTesting = () => {
                     </table>
                 )}
             </div>
-            
-            {/* Bottom Navigation */}
-           
         </div>
     );
 };
