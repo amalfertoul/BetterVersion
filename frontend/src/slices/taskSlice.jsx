@@ -114,6 +114,17 @@ const taskSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
+            .addCase(fetchTasksByUser.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(fetchTasksByUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.tasks = action.payload;
+            })
+            .addCase(fetchTasksByUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
             .addCase(createTask.fulfilled, (state, action) => {
                 state.tasks.push(action.payload);
             })

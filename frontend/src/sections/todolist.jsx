@@ -44,6 +44,11 @@ const TodoListPage = () => {
     useEffect(() => {
         if (userId) {
             dispatch(fetchTasksByUser(userId));
+        }
+    }, [dispatch, userId]);
+
+    useEffect(() => {
+        if (userId) {
             dispatch(fetchVisionBoards());
             dispatch(fetchImages());
         }
