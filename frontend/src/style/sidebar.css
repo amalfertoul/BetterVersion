@@ -7,6 +7,7 @@
   --primary-color-light: #f5f0ff; /* Light purple */
   --toggle-color: #ddd;         /* Light gray */
   --text-color: #707070;        /* Gray text */
+  --text-color-light: #999;      /* Light text */
   --tran-03: all 0.2s ease;
   --tran-04: all 0.3s ease;
   --tran-05: all 0.3s ease;
@@ -26,6 +27,7 @@ body.dark {
   --primary-color-light: #2d3748; /* Darker purple for dark mode */
   --toggle-color: #fff;
   --text-color: #ccc;
+  --text-color-light: #666;      /* Darker light text */
 }
 
 .sidebar {
@@ -103,12 +105,14 @@ header .image-text .name {
   margin-top: 2px;
   font-size: 18px;
   font-weight: 600;
+  color: var(--text-color);
 }
 
 header .image-text .profession {
   font-size: 16px;
   margin-top: -2px;
   display: block;
+  color: var(--text-color-light);
 }
 
 .sidebar header .image {
@@ -184,8 +188,8 @@ header .image-text .profession {
 }
 
 .sidebar li.search-box input::placeholder {
-  color: var(--text-color);
-  opacity: 0.7;
+  color: var(--text-color-light);
+  opacity: 0.8;
 }
 
 .sidebar li a {
@@ -227,6 +231,7 @@ header .image-text .profession {
   background-color: var(--primary-color-light);
   position: relative;
   transition: var(--tran-05);
+  color: var(--text-color);
 }
 
 .menu-bar .mode .sun-moon {
@@ -236,6 +241,7 @@ header .image-text .profession {
 
 .mode .sun-moon i {
   position: absolute;
+  color: var(--text-color);
 }
 
 .mode .sun-moon i.sun {
@@ -331,6 +337,10 @@ body.dark .switch::before {
 /* Remove the old active styles that were causing square edges */
 .sidebar .menu-links li.active {
   background: none;
+}
+
+.mode-text {
+  color: var(--text-color);
 }
 
 @media (max-width: 500px) {

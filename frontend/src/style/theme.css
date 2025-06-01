@@ -12,10 +12,10 @@
   --primary-color-dark: #55349e;
   --accent-color: #a78bfa;
   
-  /* Text Colors */
-  --text-color: #4a5568;
-  --text-color-light: #718096;
-  --text-color-lighter: #a0aec0;
+  /* Text Colors - Adjusted for better contrast on light backgrounds */
+  --text-color: #2d3748;          /* Darker gray for better contrast on light */
+  --text-color-light: #4a5568;    /* Mid gray for secondary text */
+  --text-color-lighter: #718096;  /* Light gray for tertiary text */
   
   /* UI Colors */
   --border-color: #e2e8f0;
@@ -50,10 +50,10 @@ body.dark {
   --primary-color-dark: #805ad5;
   --accent-color: #6b46c1;
   
-  /* Text Colors */
-  --text-color: #e2e8f0;
-  --text-color-light: #cbd5e0;
-  --text-color-lighter: #a0aec0;
+  /* Text Colors - Adjusted for better contrast on dark backgrounds */
+  --text-color: #f8fafc;          /* Very light gray for primary text */
+  --text-color-light: #e2e8f0;    /* Light gray for secondary text */
+  --text-color-lighter: #cbd5e0;  /* Lighter gray for tertiary text */
   
   /* UI Colors */
   --border-color: #2d3748;
