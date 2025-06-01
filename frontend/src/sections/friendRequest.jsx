@@ -160,7 +160,7 @@ const FriendRequest = () => {
                                             src={
                                                 request.profile_picture
                                                     ? "http://127.0.0.1:8000/storage/" + request.profile_picture
-                                                    : 'http://127.0.0.1:8000/storage/default-profile.png'
+                                                    : 'http://127.0.0.1:8000/storage/pfp/defaultpfp.jpg'
                                             }
                                             alt={request.sender_name}
                                             className="avatar"
