@@ -16,6 +16,7 @@ import AdminOnly from './components/AdminOnly';
 import VisionBoardDetail from './sections/VisionBoard';
 import ProfileFriends from './sections/ProfileFriends';
 import SeeImg from './sections/SeeImg';
+import './style/theme.css';
 import './style/App.css';
 
 function App() {

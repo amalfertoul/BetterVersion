@@ -79,7 +79,7 @@ const Explore = () => {
       return;
     }
     try {
-      const result = await dispatch(createVisionBoard({
+      await dispatch(createVisionBoard({
         name: newVBName,
         visibility: newVBVisibility,
         user_id: userId,
@@ -145,8 +145,6 @@ const Explore = () => {
 
   return (
     <div className="explore-container">
-      
-
       <div className="controls-section">
         <div className="search-container">
           {!showSearch ? (
@@ -352,8 +350,8 @@ const Explore = () => {
               <div 
                 key={image.id} 
                 className="insta-card"
-                style={{ animationDelay: `${index * 0.02}s` }}
-                onClick={() => navigate(`/SeeImg/${image.id}`)} // <-- Add this line
+                style={{ animationDelay: `${index * 0.02}s`, position: 'relative' }}
+                onClick={() => navigate(`/SeeImg/${image.id}`)}
               >
                 <div className="insta-image-wrapper">
                   <img
@@ -361,13 +359,12 @@ const Explore = () => {
                     src={"http://127.0.0.1:8000/storage/"+image.url}
                     alt={image.title || 'Image'}
                   />
-                  
                   <div className="insta-overlay">
                     <div className="insta-actions">
                       <button 
                         className="insta-menu-button"
                         onClick={(e) => {
-                          e.stopPropagation(); // Prevent navigation when clicking menu
+                          e.stopPropagation();
                           toggleMenu(image.id, e);
                         }}
                       >
@@ -375,31 +372,30 @@ const Explore = () => {
                         <span className="dot">•</span>
                         <span className="dot">•</span>
                       </button>
-                      
-                      {activeMenu === image.id && (
-                        <div className="insta-menu-dropdown slide-up">
-                          <button
-                            className="menu-item"
-                            onClick={() => {
-                              closeMenu();
-                              handleAddToVisionBoard(image.id);
-                            }}
-                          >
-                            <svg className="menu-icon" viewBox="0 0 24 24">
-                              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                            </svg>
-                            Add to vision board
-                          </button>
-                        </div>
-                      )}
                     </div>
-                    
                     <div className="insta-info">
                       <h4 className="insta-title">{image.description}</h4>
                       <span className="insta-category">{cat ? cat.name : 'None'}</span>
                     </div>
                   </div>
                 </div>
+                {/* Show the button at the top-right of the card when menu is active */}
+                {activeMenu === image.id && (
+                  <button
+                    className="add-to-vision-btn"
+                    onClick={e => {
+                      e.stopPropagation();
+                      handleAddToVisionBoard(image.id);
+                      closeMenu();
+                    }}
+                    title="Add to vision board"
+                  >
+                    <svg className="menu-icon" viewBox="0 0 24 24">
+                      <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                    </svg>
+                    Add to vision board
+                  </button>
+                )}
               </div>
             );
           })
