@@ -364,28 +364,25 @@ const Profile = () => {
 
                 <div className="profile-content">
                     <div className="profile-avatar">
-                        {currentUser.profile_picture_url ? (
-                            <img
-                                src={`http://127.0.0.1:8000${currentUser.profile_picture_url}?t=${new Date().getTime()}`}
-                                alt="Profile"
-                                key={`profile-${currentUser.profile_picture_url}-${new Date().getTime()}`}
-                                style={{ display: 'block' }}
-                                onError={(e) => {
-                                    e.target.style.display = 'none';
-                                    e.target.parentElement.querySelector('.default-avatar').style.display = 'flex';
-                                }}
-                            />
-                        ) : null}
-                        <div 
-                            className="default-avatar" 
-                            style={{ 
-                                display: currentUser.profile_picture_url ? 'none' : 'flex',
-                                position: 'absolute',
-                                top: 0,
-                                left: 0
-                            }}
-                        >
-                            {currentUser.username?.charAt(0) || 'U'}
+                        <div className="avatar-container">
+                            {currentUser.profile_picture_url ? (
+                                <img
+                                    src={`http://127.0.0.1:8000${currentUser.profile_picture_url}?t=${new Date().getTime()}`}
+                                    alt="Profile"
+                                    key={`profile-${currentUser.profile_picture_url}-${new Date().getTime()}`}
+                                    onError={(e) => {
+                                        e.target.style.display = 'none';
+                                        e.target.parentElement.querySelector('.default-avatar').style.display = 'block';
+                                    }}
+                                />
+                            ) : (
+                                <div className="default-avatar">
+                                    <img
+                                        src="http://127.0.0.1:8000/storage/pfp/defaultpfp.jpg"
+                                        alt="Default Profile"
+                                    />
+                                </div>
+                            )}
                         </div>
 
                         <input
@@ -690,17 +687,21 @@ const Profile = () => {
                     align-items: center;
                     gap: 10px;
                 }
-                .profile-avatar img, .default-avatar {
+                .avatar-container {
                     width: 150px;
                     height: 150px;
+                    position: relative;
                     border-radius: 50%;
+                    overflow: hidden;
+                }
+                .profile-avatar img, .default-avatar {
+                    width: 100%;
+                    height: 100%;
                     object-fit: cover;
-                    background-color: #eee;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 60px;
-                    color: #666;
+                    border-radius: 50%;
+                }
+                .default-avatar {
+                    display: block;
                 }
                 .change-pfp-btn {
                     padding: 8px 16px;

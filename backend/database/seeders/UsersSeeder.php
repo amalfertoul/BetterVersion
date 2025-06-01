@@ -44,6 +44,36 @@ class UsersSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'username' => 'kuro',
+                'fullname' => 'Kuro no Kenshi',
+                'email' => 'kuro@gmail.com',
+                'profile_picture' => null,
+                'password' => Hash::make('1234'),
+                'isAdmin' => false,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'username' => 'shiro',
+                'fullname' => 'Shiro no Neko',
+                'email' => 'shiro@gmail.com',
+                'profile_picture' => null,
+                'password' => Hash::make('1234'),
+                'isAdmin' => false,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'username' => 'hako',
+                'fullname' => 'Hako no Inu',
+                'email' => 'hako@gmail.com',
+                'profile_picture' => null,
+                'password' => Hash::make('1234'),
+                'isAdmin' => false,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }

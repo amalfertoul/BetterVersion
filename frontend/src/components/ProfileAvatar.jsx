@@ -11,9 +11,11 @@ const ProfileAvatar = ({ currentUser, handlePfpChange }) => {
                     alt="Profile"
                 />
             ) : (
-                <div className="default-avatar">
-                    {currentUser.username?.charAt(0) || 'U'}
-                </div>
+                <img
+                    src="http://127.0.0.1:8000/storage/pfp/defaultpfp.jpg"
+                    alt="Default Profile"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
             )}
 
             <input
