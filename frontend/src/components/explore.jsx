@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchImages, createImage, addImageToVisionBoard } from '../slices/imagesSlice';
 import { fetchCategories } from '../slices/categorySlice';
-import { fetchVisionBoards } from '../slices/visionBoardSlice';
+import { fetchVisionBoards, createVisionBoard } from '../slices/visionBoardSlice';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../context/NotificationContext';
 import '../style/Explore.css';
@@ -28,6 +28,10 @@ const Explore = () => {
   const [activeMenu, setActiveMenu] = useState(null);
   const [isMounted, setIsMounted] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [showCreateVB, setShowCreateVB] = useState(false);
+  const [newVBName, setNewVBName] = useState('');
+  const [newVBVisibility, setNewVBVisibility] = useState(true);
+  const [newVBCategory, setNewVBCategory] = useState('');
 
   useEffect(() => {
     setIsMounted(true);
@@ -66,6 +70,31 @@ const Explore = () => {
     setNewFile(null);
     setNewDesc('');
     setNewCategory('');
+  };
+
+  const handleCreateVisionBoard = async (e) => {
+    e.preventDefault();
+    if (!newVBName.trim()) {
+      showError('Please enter a name for your vision board');
+      return;
+    }
+    try {
+      const result = await dispatch(createVisionBoard({
+        name: newVBName,
+        visibility: newVBVisibility,
+        user_id: userId,
+        category_id: newVBCategory
+      })).unwrap();
+      
+      setShowCreateVB(false);
+      setNewVBName('');
+      setNewVBVisibility(true);
+      setNewVBCategory('');
+      dispatch(fetchVisionBoards());
+      showInfo('Vision board created successfully!');
+    } catch (error) {
+      showError('Failed to create vision board');
+    }
   };
 
   const filteredImages = filter.trim() === ''
@@ -222,7 +251,15 @@ const Explore = () => {
               {userVisionBoards.length === 0 ? (
                 <div className="empty-boards">
                   <p>You don't have any vision boards yet.</p>
-                  <button className="create-btn">Create a new vision board</button>
+                  <button 
+                    className="create-btn"
+                    onClick={() => {
+                      setShowCreateVB(true);
+                      setShowVisionBoardModal(false);
+                    }}
+                  >
+                    Create a new vision board
+                  </button>
                 </div>
               ) : (
                 <div className="boards-grid">
@@ -242,6 +279,67 @@ const Explore = () => {
                 <button className="cancel-btn" onClick={() => setShowVisionBoardModal(false)}>Cancel</button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal for creating new vision board */}
+      {showCreateVB && (
+        <div className="modal-overlay" onClick={() => setShowCreateVB(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <form onSubmit={handleCreateVisionBoard} className="modal-form">
+              <h3>Create New Vision Board</h3>
+              
+              <div className="form-group">
+                <label>Name</label>
+                <input
+                  type="text"
+                  value={newVBName}
+                  onChange={e => setNewVBName(e.target.value)}
+                  placeholder="Enter vision board name"
+                  required
+                />
+              </div>
+              
+              <div className="form-group">
+                <label>Visibility</label>
+                <select
+                  value={newVBVisibility}
+                  onChange={e => setNewVBVisibility(e.target.value === 'true')}
+                >
+                  <option value="true">Public</option>
+                  <option value="false">Private</option>
+                </select>
+              </div>
+              
+              <div className="form-group">
+                <label>Category</label>
+                <select
+                  value={newVBCategory}
+                  onChange={e => setNewVBCategory(e.target.value)}
+                  required
+                >
+                  <option value="">Select a category</option>
+                  {categories.map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div className="form-actions">
+                <button type="submit" className="submit-btn">Create</button>
+                <button 
+                  type="button" 
+                  className="cancel-btn" 
+                  onClick={() => {
+                    setShowCreateVB(false);
+                    setShowVisionBoardModal(true);
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
