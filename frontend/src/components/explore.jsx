@@ -353,6 +353,7 @@ const Explore = () => {
                 key={image.id} 
                 className="insta-card"
                 style={{ animationDelay: `${index * 0.02}s` }}
+                onClick={() => navigate(`/SeeImg/${image.id}`)} // <-- Add this line
               >
                 <div className="insta-image-wrapper">
                   <img
@@ -365,7 +366,10 @@ const Explore = () => {
                     <div className="insta-actions">
                       <button 
                         className="insta-menu-button"
-                        onClick={(e) => toggleMenu(image.id, e)}
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent navigation when clicking menu
+                          toggleMenu(image.id, e);
+                        }}
                       >
                         <span className="dot">•</span>
                         <span className="dot">•</span>
