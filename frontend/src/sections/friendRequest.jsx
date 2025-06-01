@@ -81,6 +81,16 @@ const FriendRequest = () => {
                     <p>Manage your incoming connection requests</p>
                 </div>
                 
+                <div className="search-container">
+                    <input
+                        type="text"
+                        placeholder="Search requests..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <div className="search-icon">🔍</div>
+                </div>
+                
                 <div className="stats-container">
                     <div className="stat-card">
                         <div className="stat-number">{receivedRequests.length}</div>

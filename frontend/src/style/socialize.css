@@ -90,6 +90,33 @@
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
+    background-color: var(--body-color);
+}
+
+/* Ensure all pages within socialize have consistent layout */
+.socialize-page > div {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+/* Ensure headers in all pages are consistent */
+.socialize-page .requests-header,
+.socialize-page .friends-header,
+.socialize-page .chats-header {
+    flex-shrink: 0;
+    margin-bottom: 20px;
+}
+
+/* Ensure content grids in all pages are consistent */
+.socialize-page .requests-grid,
+.socialize-page .friends-grid,
+.socialize-page .chats-grid {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
 }
 
 /* Responsive friend item styles */
