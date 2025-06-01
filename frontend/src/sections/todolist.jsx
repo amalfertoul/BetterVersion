@@ -12,7 +12,7 @@ const CATEGORIES = ['daily', 'weekly', 'monthly', 'yearly'];
 const TodoListPage = () => {
     const dispatch = useDispatch();
     const userId = useSelector((state) => state.users.user?.id);
-    const { tasks, loading, error } = useSelector((state) => state.tasks);
+    const { tasks, loading, error, searchQuery } = useSelector((state) => state.tasks);
     const { visionBoards } = useSelector((state) => state.visionBoard);
     const { images } = useSelector((state) => state.images);
 
@@ -21,7 +21,6 @@ const TodoListPage = () => {
     const [dueDate, setDueDate] = useState('');
     const [status, setStatus] = useState('pending');
     const [category, setCategory] = useState('daily');
-    const [search, setSearch] = useState('');
     const [expandedTaskId, setExpandedTaskId] = useState(null);
     const [showVisionBoardsForTask, setShowVisionBoardsForTask] = useState(null);
     const [availableVisionBoards, setAvailableVisionBoards] = useState([]);
@@ -149,7 +148,7 @@ const TodoListPage = () => {
         ? tasks.filter(
             (task) =>
                 (activeCategory === 'all' || task.category === activeCategory) &&
-                task.title.toLowerCase().includes(search.toLowerCase())
+                task.title.toLowerCase().includes(searchQuery.toLowerCase())
         )
         : [];
 
@@ -176,17 +175,6 @@ const TodoListPage = () => {
                             ></div>
                         </div>
                         <div className="progress-percent">{progress}% completed</div>
-                    </div>
-                </div>
-                <div className="search-section">
-                    <div className="search-box">
-                        <i className="search-icon">🔍</i>
-                        <input
-                            type="text"
-                            placeholder="Search tasks..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
                     </div>
                 </div>
             </header>

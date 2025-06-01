@@ -82,17 +82,25 @@ export const deleteTask = createAsyncThunk('tasks/deleteTask', async (id, { reje
 
 // Initial state
 const initialState = {
-    tasks:[],
+    tasks: [],
     task: null,
     loading: false,
     error: null,
+    searchQuery: '',
 };
 
 // Task slice
 const taskSlice = createSlice({
     name: 'tasks',
     initialState,
-    reducers: {},
+    reducers: {
+        setSearchQuery: (state, action) => {
+            state.searchQuery = action.payload;
+        },
+        clearSearchQuery: (state) => {
+            state.searchQuery = '';
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchTasks.pending, (state) => {
@@ -121,4 +129,5 @@ const taskSlice = createSlice({
     },
 });
 
+export const { setSearchQuery, clearSearchQuery } = taskSlice.actions;
 export default taskSlice.reducer;

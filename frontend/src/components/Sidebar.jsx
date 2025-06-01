@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logoutUser } from '../slices/UserSlice';
+import { setSearchQuery, clearSearchQuery } from '../slices/taskSlice';
 import '../style/sidebar.css';
 
 const Sidebar = () => {
@@ -12,11 +13,18 @@ const Sidebar = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.users.user);
   const isAuthenticated = useSelector((state) => state.users.isAuthenticated);
+  const searchQuery = useSelector((state) => state.tasks.searchQuery);
   const [prevAuthState, setPrevAuthState] = useState(isAuthenticated);
 
   useEffect(() => {
     setPrevAuthState(isAuthenticated);
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (location.pathname !== '/home') {
+      dispatch(clearSearchQuery());
+    }
+  }, [location.pathname, dispatch]);
 
   const handleLogout = () => {
     dispatch(logoutUser());
@@ -25,6 +33,13 @@ const Sidebar = () => {
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
     document.body.classList.toggle('dark');
+  };
+
+  const handleSearch = (e) => {
+    const query = e.target.value;
+    if (location.pathname === '/home') {
+      dispatch(setSearchQuery(query));
+    }
   };
 
   const allRoutes = [
@@ -64,7 +79,12 @@ const Sidebar = () => {
           {isAuthenticated && (
             <li className="search-box">
               <i className='bx bx-search icon'></i>
-              <input type="text" placeholder="Search..." />
+              <input 
+                type="text" 
+                placeholder={location.pathname === '/home' ? "Search tasks..." : "Search..."}
+                value={searchQuery}
+                onChange={handleSearch}
+              />
             </li>
           )}
 
