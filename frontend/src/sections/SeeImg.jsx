@@ -10,6 +10,9 @@ const SeeImg = () => {
     const { id } = useParams();
     const { image, status, error } = useSelector((state) => state.images);
     const [scale, setScale] = useState(1);
+    const [position, setPosition] = useState({ x: 0, y: 0 });
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
     useEffect(() => {
         if (id) {
@@ -24,6 +27,65 @@ const SeeImg = () => {
     const handleZoomOut = () => {
         setScale(prev => Math.max(prev - 0.25, 0.5));
     };
+
+    const handleMouseDown = (e) => {
+        e.preventDefault();
+        setIsDragging(true);
+        setDragStart({
+            x: e.clientX - position.x,
+            y: e.clientY - position.y
+        });
+    };
+
+    const handleMouseMove = (e) => {
+        if (isDragging) {
+            e.preventDefault();
+            setPosition({
+                x: e.clientX - dragStart.x,
+                y: e.clientY - dragStart.y
+            });
+        }
+    };
+
+    const handleTouchStart = (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        setIsDragging(true);
+        setDragStart({
+            x: touch.clientX - position.x,
+            y: touch.clientY - position.y
+        });
+    };
+
+    const handleTouchMove = (e) => {
+        if (isDragging) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            setPosition({
+                x: touch.clientX - dragStart.x,
+                y: touch.clientY - dragStart.y
+            });
+        }
+    };
+
+    const handleMouseUp = () => {
+        setIsDragging(false);
+    };
+
+    useEffect(() => {
+        if (isDragging) {
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+            document.addEventListener('touchmove', handleTouchMove, { passive: false });
+            document.addEventListener('touchend', handleMouseUp);
+        }
+        return () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+            document.removeEventListener('touchmove', handleTouchMove);
+            document.removeEventListener('touchend', handleMouseUp);
+        };
+    }, [isDragging, dragStart]);
 
     const buttonStyle = {
         backgroundColor: 'var(--primary-color)',
@@ -88,12 +150,18 @@ const SeeImg = () => {
                             alt={image.title || 'Image'}
                             className="rounded-lg"
                             style={{
-                                transform: `scale(${scale})`,
+                                transform: `scale(${scale}) translate(${position.x}px, ${position.y}px)`,
                                 maxWidth: '100%',
                                 height: 'auto',
                                 objectFit: 'contain',
-                                transformOrigin: 'center center'
+                                transformOrigin: 'center center',
+                                cursor: isDragging ? 'grabbing' : 'grab',
+                                userSelect: 'none',
+                                touchAction: 'none'
                             }}
+                            onMouseDown={handleMouseDown}
+                            onTouchStart={handleTouchStart}
+                            draggable="false"
                         />
                     </div>
                 </div>
