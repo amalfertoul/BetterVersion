@@ -4,12 +4,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchMessages, sendMessage, deleteMessage } from '../slices/messageSlice';
 import { motion, AnimatePresence } from 'framer-motion';
 import '../style/conversation.css'; // Ensure you have the correct path to your CSS file
+
 const RenderMessages = () => {
     const dispatch = useDispatch();
     const { userId } = useParams();
     const [newMessage, setNewMessage] = useState('');
     const [showDeleteButton, setShowDeleteButton] = useState(null);
     const [contactName, setContactName] = useState('Contact');
+    const [contactProfilePic, setContactProfilePic] = useState(null);
     const [isSending, setIsSending] = useState(false);
     const messagesEndRef = useRef(null);
 
@@ -26,12 +28,17 @@ const RenderMessages = () => {
         dispatch(fetchMessages(userId));
     }, [dispatch, userId]);
 
-    // Get contact name
+    // Get contact name and profile picture
     useEffect(() => {
         if (users && userId) {
             const contact = users.find(user => user.id === parseInt(userId));
             if (contact) {
                 setContactName(contact.fullname || 'Contact');
+                setContactProfilePic(
+                    contact.profile_picture 
+                        ? `http://127.0.0.1:8000/storage/${contact.profile_picture}`
+                        : 'http://127.0.0.1:8000/storage/pfp/defaultpfp.jpg'
+                );
             }
         }
     }, [users, userId]);
@@ -99,18 +106,12 @@ const RenderMessages = () => {
 
     if (status === 'loading') {
         return (
-            <div className="iphone-container">
-                <div className="iphone-header">
-                    <div className="iphone-status-bar">
-                        <span>9:41</span>
-                        
-                    </div>
-                    <div className="chat-header">
-                        <button className="back-button" onClick={() => window.history.back()}>←</button>
-                        <div className="contact-info">
-                            <div className="skeleton-avatar"></div>
-                            <div className="skeleton-name"></div>
-                        </div>
+            <div className="chat-container">
+                <div className="chat-header">
+                    <button className="back-button" onClick={() => window.history.back()}>←</button>
+                    <div className="contact-info">
+                        <div className="skeleton-avatar"></div>
+                        <div className="skeleton-name"></div>
                     </div>
                 </div>
                 
@@ -118,7 +119,7 @@ const RenderMessages = () => {
                     {[...Array(6)].map((_, i) => (
                         <div 
                             key={i} 
-                            className={`skeleton-message ${i % 2 === 0 ? 'skeleton-sent' : 'skeleton-received'}`}
+                            className="skeleton-message"
                         >
                             <div className="skeleton-content"></div>
                         </div>
@@ -126,12 +127,7 @@ const RenderMessages = () => {
                 </div>
                 
                 <div className="message-input-container">
-                    <div className="skeleton-input"></div>
-                    <div className="skeleton-send-button"></div>
-                </div>
-                
-                <div className="iphone-footer">
-                    <div className="home-indicator"></div>
+                    <div className="skeleton-content"></div>
                 </div>
             </div>
         );
@@ -139,15 +135,10 @@ const RenderMessages = () => {
 
     if (status === 'failed') {
         return (
-            <div className="iphone-container">
-                <div className="iphone-header">
-                    <div className="iphone-status-bar">
-                       
-                    </div>
-                    <div className="chat-header">
-                        <button className="back-button" onClick={() => window.history.back()}>←</button>
-                        <h1>Error</h1>
-                    </div>
+            <div className="chat-container">
+                <div className="chat-header">
+                    <button className="back-button" onClick={() => window.history.back()}>←</button>
+                    <h1>Error</h1>
                 </div>
                 
                 <div className="error-screen">
@@ -156,35 +147,33 @@ const RenderMessages = () => {
                     <p>{error?.message || 'An error occurred'}</p>
                     <button onClick={() => window.location.reload()}>Retry</button>
                 </div>
-                
-                <div className="iphone-footer">
-                    <div className="home-indicator"></div>
-                </div>
             </div>
         );
     }
 
     return (
-        <div className="iphone-container">
-            <div className="iphone-header">
-                <div className="iphone-status-bar">
-                   
-                </div>
-                <div className="chat-header">
-                    <button className="back-button" onClick={() => window.history.back()}>←</button>
-                    
-                    <div className="contact-info">
-                        <div className="contact-avatar">
-                            {contactName.charAt(0)}
-                        </div>
-                        <div className="contact-details">
-                            <h2>{contactName}</h2>
-                            <p>Online</p>
-                        </div>
+        <div className="chat-container">
+            <div className="chat-header">
+                <button className="back-button" onClick={() => window.history.back()}>←</button>
+                
+                <div className="contact-info">
+                    <div className="contact-avatar">
+                        {contactProfilePic ? (
+                            <img 
+                                src={`${contactProfilePic}?t=${new Date().getTime()}`}
+                                alt={contactName} 
+                                className="profile-picture"
+                                onError={(e) => {
+                                    e.target.src = 'http://127.0.0.1:8000/storage/pfp/defaultpfp.jpg';
+                                }}
+                            />
+                        ) : (
+                            contactName.charAt(0)
+                        )}
                     </div>
-                    
-                    <div className="header-actions">
-                       
+                    <div className="contact-details">
+                        <h2>{contactName}</h2>
+                        <p>Online</p>
                     </div>
                 </div>
             </div>
@@ -236,8 +225,6 @@ const RenderMessages = () => {
             </div>
             
             <div className="message-input-container">
-                
-                
                 <div className="text-input-container">
                     <textarea
                         value={newMessage}
@@ -262,8 +249,6 @@ const RenderMessages = () => {
                     )}
                 </motion.button>
             </div>
-            
-           
         </div>
     );
 };
