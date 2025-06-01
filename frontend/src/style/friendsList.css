@@ -23,89 +23,10 @@
   box-sizing: border-box;
 }
 
-.friends-header {
-  background-color: var(--sidebar-color);
-  border-radius: 16px;
-  padding: 25px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  margin-bottom: 30px;
-  flex-shrink: 0;
-}
-
-.friends-header h1 {
-  color: var(--text-dark);
-  font-size: 2.2rem;
-  margin: 0 0 5px 0;
-  font-weight: 700;
-}
-
-.friends-header p {
-  color: var(--text-color);
-  font-size: 1.1rem;
-  margin: 0 0 20px 0;
-}
-
-.search-container {
-  position: relative;
-  margin-bottom: 25px;
-  max-width: 500px;
-}
-
-.search-container input {
-  width: 100%;
-  padding: 14px 20px 14px 50px;
-  border-radius: 30px;
-  border: 1px solid var(--primary-color-light-2);
-  font-size: 1rem;
-  background-color: var(--primary-color-light);
-  box-sizing: border-box;
-  transition: all 0.3s ease;
-  outline: none;
-}
-
-.search-container input:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.2);
-}
-
-.search-icon {
-  position: absolute;
-  left: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 1.2rem;
-  color: var(--text-color);
-}
-
-.stats-container {
-  display: flex;
-  gap: 15px;
-}
-
-.stat-card {
-  background-color: var(--primary-color-light);
-  border-radius: 12px;
-  padding: 15px 20px;
-  min-width: 120px;
-  text-align: center;
-}
-
-.stat-number {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--primary-color);
-  margin-bottom: 5px;
-}
-
-.stat-label {
-  color: var(--text-color);
-  font-size: 0.9rem;
-}
-
 .friends-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
   flex: 1;
   overflow-y: auto;
   padding-bottom: 20px;
@@ -114,31 +35,39 @@
 
 .friend-card {
   background-color: var(--sidebar-color);
-  border-radius: 16px;
+  border-radius: 12px;
   overflow: hidden;
   display: flex;
-  padding: 20px;
+  flex-direction: column;
+  padding: 15px;
   transition: all 0.3s ease;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   cursor: pointer;
+  width: 100%;
+  max-width: 300px;
+  height: 200px;
+  margin: 0 auto;
 }
 
 .friend-card:hover {
   box-shadow: 0 10px 20px rgba(107, 70, 193, 0.15);
+  transform: translateY(-3px);
 }
 
 .avatar-container {
   position: relative;
-  margin-right: 20px;
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 10px;
   flex-shrink: 0;
 }
 
 .avatar {
-  width: 80px;
-  height: 80px;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid var(--primary-color-light-2);
+  border: 2px solid var(--primary-color-light-2);
   transition: border-color 0.3s ease;
 }
 
@@ -148,30 +77,37 @@
 
 .status-indicator {
   position: absolute;
-  width: 15px;
-  height: 15px;
+  width: 12px;
+  height: 12px;
   background-color: #4CAF50;
   border-radius: 50%;
-  bottom: 5px;
-  right: 5px;
+  bottom: 2px;
+  right: 2px;
   border: 2px solid #fff;
   z-index: 2;
 }
 
 .friend-info {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .friend-info h3 {
   color: var(--text-dark);
   margin: 0 0 5px 0;
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
   transition: color 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .friend-info h3:hover {
@@ -180,27 +116,35 @@
 
 .username {
   color: var(--text-color);
-  margin: 0 0 15px 0;
-  font-size: 0.95rem;
+  margin: 0 0 10px 0;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .actions-container {
   display: flex;
-  gap: 10px;
-  margin-top: 5px;
+  gap: 8px;
+  margin-top: auto;
+  width: 100%;
 }
 
 .action-button {
-  padding: 8px 15px;
-  border-radius: 20px;
+  padding: 6px 12px;
+  border-radius: 15px;
   border: none;
   cursor: pointer;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 5px;
   transition: all 0.2s ease;
+  flex: 1;
+  white-space: nowrap;
 }
 
 .message-button {
@@ -208,9 +152,17 @@
   color: white;
 }
 
+.message-button:hover {
+  background-color: #5a3cad;
+}
+
 .remove-button {
   background-color: var(--primary-color-light);
   color: var(--primary-color);
+}
+
+.remove-button:hover {
+  background-color: #f0e6ff;
 }
 
 .loading-container {
@@ -299,14 +251,20 @@
 
 @media (max-width: 768px) {
   .friends-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
   }
   
-  .stats-container {
+  .friend-card {
+    padding: 12px;
+    height: 180px;
+  }
+  
+  .actions-container {
     flex-direction: column;
   }
   
-  .stat-card {
+  .action-button {
     width: 100%;
   }
 }

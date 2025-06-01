@@ -5,6 +5,7 @@ import { fetchUsers } from '../slices/UserSlice';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import '../style/friendsList.css'; // Ensure you have the correct path to your CSS file
+
 const FriendsList = () => {
     const dispatch = useDispatch();
     const currentUserId = useSelector((state) => state.users.user?.id);
@@ -54,38 +55,6 @@ const FriendsList = () => {
 
     return (
         <div className="friends-page">
-            <motion.div 
-                className="friends-header"
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-            >
-                <div className="header-content">
-                    <p>Your trusted connections</p>
-                </div>
-                
-                <div className="search-container">
-                    <input
-                        type="text"
-                        placeholder="Search friends..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    <div className="search-icon">🔍</div>
-                </div>
-                
-                <div className="stats-container">
-                    <div className="stat-card">
-                        <div className="stat-number">{filteredFriends.length}</div>
-                        <div className="stat-label">Friends</div>
-                    </div>
-                    <div className="stat-card">
-                        <div className="stat-number">{filteredRequests.length - filteredFriends.length}</div>
-                        <div className="stat-label">Pending</div>
-                    </div>
-                </div>
-            </motion.div>
-            
             {loading ? (
                 <div className="loading-container">
                     <motion.div
@@ -103,37 +72,6 @@ const FriendsList = () => {
                     </motion.div>
                     <p>Loading your friends...</p>
                 </div>
-            ) : filteredFriends.length === 0 ? (
-                <motion.div
-                    className="empty-state"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                >
-                    <motion.div
-                        className="empty-icon"
-                        animate={{ 
-                            y: [0, -10, 0],
-                            scale: [1, 1.05, 1]
-                        }}
-                        transition={{ 
-                            duration: 2,
-                            repeat: Infinity,
-                            repeatType: "reverse"
-                        }}
-                    >
-                        👋
-                    </motion.div>
-                    <h3>No Friends Yet</h3>
-                    <p>You haven't added any friends yet. Start connecting with others!</p>
-                    <motion.button 
-                        className="explore-button"
-                        onClick={() => navigate('/suggestions')}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                    >
-                        Explore Suggestions
-                    </motion.button>
-                </motion.div>
             ) : (
                 <motion.div 
                     className="friends-grid"
