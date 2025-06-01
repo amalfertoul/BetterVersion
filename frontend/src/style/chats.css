@@ -15,10 +15,12 @@
 
 .chats-container {
   background-color: var(--body-color);
-  min-height: 100vh;
+  height: 100%;
   padding: 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  width: 85%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .chats-header {
@@ -27,6 +29,7 @@
   padding: 25px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   margin-bottom: 30px;
+  flex-shrink: 0;
 }
 
 .header-content {
@@ -71,7 +74,10 @@
   border-radius: 16px;
   padding: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
+  overflow: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .chats-table {

@@ -3,9 +3,7 @@
 
 .socialize-container {
     width: 100%;
-    max-width: 1200px;
-    height: auto;
-    max-height: 80vh;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     background-color: var(--card-color);
@@ -13,7 +11,7 @@
     box-sizing: border-box;
     border-radius: 12px;
     box-shadow: var(--shadow-md);
-    margin: 20px auto;
+    margin: 0;
     overflow: hidden;
     color: var(--text-color);
     transition: var(--tran-05);
@@ -73,7 +71,7 @@
     display: flex;
     overflow-x: hidden;
     width: 100%;
-    flex-grow: 1;
+    flex: 1;
     background-color: var(--card-color);
     border-radius: 8px;
     box-shadow: var(--shadow-sm);
@@ -90,6 +88,8 @@
     overflow-y: auto;
     height: 100%;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Responsive friend item styles */
