@@ -1,4 +1,14 @@
 /* ../styles/socialize.css */
+:root {
+  --primary-color: #6b46c1;
+  --primary-light: #8a63d2;
+  --primary-dark: #55349e;
+  --background-color: #f8f9fa;
+  --text-light: #f5f0ff;
+  --text-gray: #a0aec0;
+  --transition: all 0.3s ease;
+
+}
 
 .socialize-container {
     width: 100%;
@@ -7,7 +17,9 @@
     max-height: 80vh; /* prevents it from taking full viewport height */
     display: flex;
     flex-direction: column;
-    background: white;
+    background-color: var(--background-color);
+    padding: 20px;
+    box-sizing: border-box;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     margin: 20px auto;
@@ -16,8 +28,13 @@
 
 .socialize-tabs {
     display: flex;
+    justify-content: center;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    overflow: hidden;
     border-bottom: 1px solid #e1e1e1;
-    background: white;
     position: sticky;
     top: 0;
     z-index: 10;
@@ -37,9 +54,15 @@
     font-size: clamp(14px, 2vw, 16px);
 }
 
-.socialize-tab.active {
-    color: #90051a; /* Pinterest red color */
+.socialize-tab:hover {
+    color: var(--primary-light);
+    background-color: rgba(107, 70, 193, 0.05);
 }
+
+.socialize-tab.active {
+    color: var(--text-light);
+    background-color: var(--primary-color);
+    font-weight: 600;}
 
 .socialize-tab.active::after {
     content: '';
@@ -48,15 +71,18 @@
     left: 25%;
     width: 50%;
     height: 3px;
-    background: #90051a;
+    background: #55349e;
     border-radius: 3px 3px 0 0;
 }
 
 .socialize-pages {
     display: flex;
+    overflow-x: hidden;
     width: 100%;
-    flex: 1;
-    overflow-x: auto;
+    flex-grow: 1;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
