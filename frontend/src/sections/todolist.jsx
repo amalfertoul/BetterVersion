@@ -36,6 +36,8 @@ const TodoListPage = () => {
     // Active category for filtering
     const [activeCategory, setActiveCategory] = useState('all');
 
+    const [isTaskFormExpanded, setIsTaskFormExpanded] = useState(false);
+
     useEffect(() => {
         dispatch(fetchUsers());
     }, [dispatch]);
@@ -213,8 +215,14 @@ const TodoListPage = () => {
             {/* Main Content */}
             <main className="content-area">
                 {/* Task Creation Panel */}
-                <section className="task-creation-panel">
+                <section className={`task-creation-panel ${isTaskFormExpanded ? 'expanded' : ''}`}>
                     <h2>Create New Task</h2>
+                    <button 
+                        className="close-task-btn"
+                        onClick={() => setIsTaskFormExpanded(false)}
+                    >
+                        −
+                    </button>
                     <form onSubmit={handleCreateTask} className="task-form">
                         <div className="form-grid">
                             <div className="form-group">
@@ -278,7 +286,14 @@ const TodoListPage = () => {
                             ? 'All Tasks' 
                             : `${activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)} Tasks`}
                         </h2>
-                        <div className="tasks-count">{filteredTasks.length} tasks</div>
+                        {!isTaskFormExpanded && (
+                            <button 
+                                className="add-task-btn"
+                                onClick={() => setIsTaskFormExpanded(true)}
+                            >
+                                +
+                            </button>
+                        )}
                     </div>
                     <div className="tasks-list">
                         {filteredTasks.length > 0 ? (
