@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { fetchMessages } from '../slices/messageSlice'; 
 import { fetchUsers } from '../slices/UserSlice';
+import '../style/chats.css';
 
 const ChatsTesting = () => {
     const dispatch = useDispatch();
@@ -97,60 +98,68 @@ const ChatsTesting = () => {
                         <p>Start a conversation with your friends</p>
                     </div>
                 ) : (
-                    sortedChats.map(([userId, messages]) => {
-                        const user = users.find(u => String(u.id) === String(userId));
-                        if (!user) return null;
-                        
-                        const userName = user.fullname || 'Unknown';
-                        const username = user.username || 'unknown';
-                        const lastMessage = messages.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
-                        const lastMessageText = lastMessage.content.length > 30 
-                            ? lastMessage.content.substring(0, 30) + '...' 
-                            : lastMessage.content;
-                        const isCurrentUserSender = lastMessage.sender_id === currentUserId;
-                        const unreadCount = messages.filter(m => 
-                            m.receiver_id === currentUserId && !m.read
-                        ).length;
-                        
-                        return (
-                            <div 
-                                key={userId} 
-                                className={`chat-item ${activeChat === userId ? 'active' : ''}`}
-                                onClick={() => {
-                                    handleChatClick(userId);
-                                    setActiveChat(userId);
-                                }}
-                            >
-                                <div className="avatar-container">
-                                    <img 
-                                        src={user.profile_picture 
-                                            ? "http://127.0.0.1:8000/storage/" + user.profile_picture 
-                                            : 'http://127.0.0.1:8000/storage/pfp/defaultpfp.jpg'} 
-                                        alt={userName} 
-                                        className="avatar"
-                                    />
-                                    {unreadCount > 0 && (
-                                        <div className="unread-badge">{unreadCount}</div>
-                                    )}
-                                </div>
+                    <table className="chats-table">
+                        <tbody>
+                            {sortedChats.map(([userId, messages]) => {
+                                const user = users.find(u => String(u.id) === String(userId));
+                                if (!user) return null;
                                 
-                                <div className="chat-info">
-                                    <div className="chat-header">
-                                        <div className="user-name">{userName}</div>
-                                        <div className="message-time">
+                                const userName = user.fullname || 'Unknown';
+                                const username = user.username || 'unknown';
+                                const lastMessage = messages.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+                                const lastMessageText = lastMessage.content.length > 30 
+                                    ? lastMessage.content.substring(0, 30) + '...' 
+                                    : lastMessage.content;
+                                const isCurrentUserSender = lastMessage.sender_id === currentUserId;
+                                const unreadCount = messages.filter(m => 
+                                    m.receiver_id === currentUserId && !m.read
+                                ).length;
+                                
+                                return (
+                                    <tr 
+                                        key={userId} 
+                                        className={`chat-item ${activeChat === userId ? 'active' : ''}`}
+                                        onClick={() => {
+                                            handleChatClick(userId);
+                                            setActiveChat(userId);
+                                        }}
+                                    >
+                                        <td className="user-cell">
+                                            <div className="avatar-container">
+                                                <img 
+                                                    src={user.profile_picture 
+                                                        ? "http://127.0.0.1:8000/storage/" + user.profile_picture 
+                                                        : 'http://127.0.0.1:8000/storage/pfp/defaultpfp.jpg'} 
+                                                    alt={userName} 
+                                                    className="avatar"
+                                                />
+                                            </div>
+                                            <div className="user-info">
+                                                <p className="username">@{username}</p>
+                                                <h3 className="user-name">{userName}</h3>
+                                            </div>
+                                        </td>
+                                        <td className="message-cell">
+                                            <div className="last-message large-message">
+                                                {isCurrentUserSender ? 'You: ' : ''}
+                                                {lastMessageText}
+                                            </div>
+                                        </td>
+                                        <td className="time-cell">
                                             {new Date(lastMessage.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="last-message">
-                                        {isCurrentUserSender ? 'You: ' : ''}
-                                        {lastMessageText}
-                                    </div>
-                                    
-                                </div>
-                            </div>
-                        );
-                    })
+                                        </td>
+                                        <td className="status-cell">
+                                            {unreadCount > 0 ? (
+                                                <span className="unread-indicator">{unreadCount}</span>
+                                            ) : (
+                                                <span className="read-indicator">Read</span>
+                                            )}
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
                 )}
             </div>
             

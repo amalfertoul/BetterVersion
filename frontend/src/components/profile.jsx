@@ -365,16 +365,16 @@ const Profile = () => {
                 <div className="profile-content">
                     <div className="profile-avatar">
                         <div className="avatar-container">
-                            {currentUser.profile_picture_url ? (
-                                <img
-                                    src={`http://127.0.0.1:8000${currentUser.profile_picture_url}?t=${new Date().getTime()}`}
-                                    alt="Profile"
-                                    key={`profile-${currentUser.profile_picture_url}-${new Date().getTime()}`}
-                                    onError={(e) => {
-                                        e.target.style.display = 'none';
+                        {currentUser.profile_picture_url ? (
+                            <img
+                                src={`http://127.0.0.1:8000${currentUser.profile_picture_url}?t=${new Date().getTime()}`}
+                                alt="Profile"
+                                key={`profile-${currentUser.profile_picture_url}-${new Date().getTime()}`}
+                                onError={(e) => {
+                                    e.target.style.display = 'none';
                                         e.target.parentElement.querySelector('.default-avatar').style.display = 'block';
-                                    }}
-                                />
+                                }}
+                            />
                             ) : (
                                 <div className="default-avatar">
                                     <img
