@@ -1,4 +1,6 @@
 /* Suggestions.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 .suggestions-container {
     background-color: var(--sidebar-color);
     border-radius: 16px;

@@ -1,21 +1,4 @@
-/* Explore.css */
-:root {
-  --primary-color: #6b46c1;
-  --primary-light: #8a63d2;
-  --primary-dark: #55349e;
-  --secondary-color: #f5f0ff;
-  --background-color: #f8f9fa;
-  --card-bg: #ffffff;
-  --text-color: #333;
-  --text-light: #6c757d;
-  --success-color: #28a745;
-  --error-color: #dc3545;
-  --warning-color: #ffc107;
-  --border-color: #e0e0e0;
-  --shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-  --shadow-hover: 0 12px 25px rgba(0, 0, 0, 0.15);
-  --transition: all 0.3s ease;
-}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 * {
   margin: 0;

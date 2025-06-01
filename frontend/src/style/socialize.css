@@ -1,45 +1,39 @@
 /* ../styles/socialize.css */
-:root {
-  --primary-color: #6b46c1;
-  --primary-light: #8a63d2;
-  --primary-dark: #55349e;
-  --background-color: #f8f9fa;
-  --text-light: #f5f0ff;
-  --text-gray: #a0aec0;
-  --transition: all 0.3s ease;
-
-}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 .socialize-container {
     width: 100%;
-    max-width: 1200px; /* or whatever maximum width you prefer */
+    max-width: 1200px;
     height: auto;
-    max-height: 80vh; /* prevents it from taking full viewport height */
+    max-height: 80vh;
     display: flex;
     flex-direction: column;
-    background-color: var(--background-color);
+    background-color: var(--card-color);
     padding: 20px;
     box-sizing: border-box;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow-md);
     margin: 20px auto;
     overflow: hidden;
+    color: var(--text-color);
+    transition: var(--tran-05);
 }
 
 .socialize-tabs {
     display: flex;
     justify-content: center;
-    background-color: white;
+    background-color: var(--card-color);
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-sm);
     margin-bottom: 20px;
     overflow: hidden;
-    border-bottom: 1px solid #e1e1e1;
+    border-bottom: 1px solid var(--border-color);
     position: sticky;
     top: 0;
     z-index: 10;
     min-height: 50px;
     flex-shrink: 0;
+    transition: var(--tran-05);
 }
 
 .socialize-tab {
@@ -47,22 +41,22 @@
     text-align: center;
     padding: 15px 0;
     font-weight: 600;
-    color: #767676;
+    color: var(--text-color-light);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: var(--tran-03);
     position: relative;
     font-size: clamp(14px, 2vw, 16px);
 }
 
 .socialize-tab:hover {
-    color: var(--primary-light);
-    background-color: rgba(107, 70, 193, 0.05);
+    color: var(--primary-color);
+    background-color: var(--primary-color-light);
 }
 
 .socialize-tab.active {
-    color: var(--text-light);
+    color: white;
     background-color: var(--primary-color);
-    font-weight: 600;}
+}
 
 .socialize-tab.active::after {
     content: '';
@@ -71,7 +65,7 @@
     left: 25%;
     width: 50%;
     height: 3px;
-    background: #55349e;
+    background: var(--primary-color-dark);
     border-radius: 3px 3px 0 0;
 }
 
@@ -80,12 +74,13 @@
     overflow-x: hidden;
     width: 100%;
     flex-grow: 1;
-    background-color: white;
+    background-color: var(--card-color);
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-sm);
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
+    transition: var(--tran-05);
 }
 
 .socialize-page {
@@ -102,8 +97,13 @@
     display: flex;
     align-items: center;
     padding: 12px;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--border-color);
     width: 100%;
+    transition: var(--tran-03);
+}
+
+.socialize-friend-item:hover {
+    background-color: var(--hover-color);
 }
 
 .socialize-friend-avatar {
@@ -118,16 +118,17 @@
     font-weight: 600;
     margin-bottom: 4px;
     font-size: clamp(14px, 3vw, 16px);
+    color: var(--text-color);
 }
 
 .socialize-friend-mutual {
-    color: #767676;
+    color: var(--text-color-lighter);
     font-size: clamp(12px, 2.5vw, 13px);
 }
 
 .socialize-follow-btn {
     margin-left: auto;
-    background: #90051a;
+    background: var(--primary-color);
     color: white;
     border: none;
     padding: 8px 16px;
@@ -135,16 +136,26 @@
     font-weight: 600;
     cursor: pointer;
     font-size: clamp(12px, 2.5vw, 14px);
+    transition: var(--tran-03);
+}
+
+.socialize-follow-btn:hover {
+    background: var(--primary-color-dark);
 }
 
 /* Responsive card styles */
 .socialize-card {
-    background: white;
+    background: var(--card-color);
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow-sm);
     margin-bottom: 15px;
     overflow: hidden;
     width: 100%;
+    transition: var(--tran-05);
+}
+
+.socialize-card:hover {
+    box-shadow: var(--shadow-md);
 }
 
 .socialize-card-img {
@@ -161,10 +172,11 @@
     font-weight: 600;
     margin-bottom: 8px;
     font-size: clamp(14px, 3vw, 16px);
+    color: var(--text-color);
 }
 
 .socialize-card-desc {
-    color: #767676;
+    color: var(--text-color-light);
     font-size: clamp(12px, 2.5vw, 14px);
 }
 
@@ -176,4 +188,18 @@
 .socialize-pages {
     -ms-overflow-style: none;
     scrollbar-width: none;
+}
+
+/* Dark mode adjustments */
+body.dark .socialize-tab {
+    color: var(--text-color-light);
+}
+
+body.dark .socialize-tab:hover {
+    color: var(--accent-color);
+    background-color: var(--hover-color);
+}
+
+body.dark .socialize-friend-item:hover {
+    background-color: var(--hover-color);
 }

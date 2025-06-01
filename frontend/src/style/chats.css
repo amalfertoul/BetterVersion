@@ -1,16 +1,5 @@
-/* CSS for iPhone-style chat list */
-:root {
-  --body-color: #f5f0ff;
-  --sidebar-color: #fff;
-  --primary-color: #6b46c1;
-  --primary-color-light: #f5f0ff;
-  --primary-color-light-2: #e6dcfa;
-  --toggle-color: #ddd;
-  --text-color: #707070;
-  --text-dark: #4a4a4a;
-  --border-color: #e0e0e0;
-  --unread-color: #6b46c1;
-}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 
 * {
   box-sizing: border-box;
