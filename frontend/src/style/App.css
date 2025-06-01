@@ -3,6 +3,8 @@
   min-height: 100vh;
   background-color: var(--body-color);
   transition: var(--tran-05);
+  overflow-x: hidden;
+  position: relative;
 }
 
 .main-content {
@@ -12,6 +14,8 @@
   transition: var(--tran-05);
   min-height: 100vh;
   width: calc(100% - 250px);
+  overflow-y: auto;
+  position: relative;
 }
 
 .sidebar.close ~ .main-content {

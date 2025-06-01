@@ -17,9 +17,10 @@
   box-sizing: border-box;
 }
 
-body {
+/* Remove the global body overflow hidden */
+/* body {
   overflow: hidden;
-}
+} */
 
 .chat-container {
   background-color: var(--chat-bg);
