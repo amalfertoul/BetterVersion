@@ -92,21 +92,41 @@ const Suggestions = () => {
                     {suggestionItems.map((user) => (
                         <div className="suggestion-card" key={user.id}>
                             <div className="user-info">
-                                <img
-                                    src={
-                                        user.profile_picture
-                                            ? "http://127.0.0.1:8000/storage/" + user.profile_picture
-                                            : 'http://127.0.0.1:8000/storage/pfp/defaultpfp.jpg'
-                                    }
-                                    alt={user.username}
+                                <div
                                     className="user-avatar"
                                     onClick={() => navigate(`/profile-friend/${user.id}`)}
-                                />
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    {user.profile_picture ? (
+                                        <img
+                                            src={`http://127.0.0.1:8000/storage/${user.profile_picture}`}
+                                            alt="Profile"
+                                            style={{ width: 50, height: 50, borderRadius: '50%', objectFit: 'cover' }}
+                                        />
+                                    ) : (
+                                        <span style={{
+                                            width: 50,
+                                            height: 50,
+                                            borderRadius: '50%',
+                                            background: '#3498db',
+                                            color: 'white',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontSize: 20,
+                                            fontWeight: 'bold'
+                                        }}>
+                                            {user.username?.charAt(0).toUpperCase() || user.username?.charAt(0).toUpperCase()}
+                                        </span>
+                                    )}
+                                </div>
                                 <div className="user-details">
-                                    <h3 onClick={() => navigate(`/profile-friend/${user.id}`)}>
+                                    <h3
+                                        style={{ cursor: 'pointer' }}
+                                        onClick={() => navigate(`/profile-friend/${user.id}`)}
+                                    >
                                         {user.fullname}
                                     </h3>
-                                    <p className="username">@{user.username}</p>
                                 </div>
                             </div>
                             <button 
