@@ -443,6 +443,34 @@
   margin-left: 8px;
 }
 
+/* Styliser les li de la liste d'ajout de vision board à une tâche */
+.available-vision-boards ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.available-vision-boards li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8f6fd;
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 4px rgba(107,70,193,0.05);
+  font-size: 15px;
+  transition: background 0.2s;
+}
+
+.available-vision-boards li:hover {
+  background: #ede7fa;
+}
+
+.available-vision-boards li button {
+  margin-left: 18px;
+}
+
 /* Animations */
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -571,4 +599,56 @@ button:not(.tab-item):hover {
   border-radius: 8px;
   font-size: 13px;
   font-weight: 500;
+}
+
+/* Boutons d'action pour les tâches et vision boards */
+.task-actions button,
+.available-vision-boards button,
+.attached-vision-boards button {
+  padding: 6px 16px;
+  margin-right: 8px;
+  border: none;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  background: #6b46c1;
+  color: #fff;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+  box-shadow: 0 1px 4px rgba(107,70,193,0.07);
+  outline: none;
+  display: inline-block;
+}
+
+.task-actions button:last-child,
+.available-vision-boards button:last-child,
+.attached-vision-boards button:last-child {
+  margin-right: 0;
+}
+
+.task-actions button:hover,
+.available-vision-boards button:hover,
+.attached-vision-boards button:hover {
+  background: #4f329a;
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 2px 8px rgba(107,70,193,0.13);
+}
+
+/* Bouton Delete en rouge */
+.task-actions button[style*="color: red"],
+.attached-vision-boards button[style*="color: red"] {
+  background: #f44336;
+  color: #fff !important;
+}
+.task-actions button[style*="color: red"]:hover,
+.attached-vision-boards button[style*="color: red"]:hover {
+  background: #c62828;
+}
+
+/* Bouton Add Vision Board à la tâche en vert */
+.available-vision-boards button {
+  background: #6b46c1;
+}
+.available-vision-boards button:hover {
+  background: #6b46c1;
 }
