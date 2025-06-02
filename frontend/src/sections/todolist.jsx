@@ -173,10 +173,7 @@ const TodoListPage = () => {
                     <div className="progress-container">
                         <div className="progress-label">Your Progress</div>
                         <div className="progress-bar">
-                            <div 
-                                className="progress-fill" 
-                                style={{ width: `${progress}%` }}
-                            ></div>
+                            <div className="progress-fill" style={{ '--progress': `${progress}%` }}></div>
                         </div>
                         <div className="progress-percent">{progress}% completed</div>
                     </div>

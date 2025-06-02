@@ -197,7 +197,6 @@ const Profile = () => {
         formData.append('user_id', currentUser.id);
         try {
             isUpdatingProfilePicture.current = true;
-            console.log('Sending profile picture update request...');
             const response = await axios.post(
                 `http://127.0.0.1:8000/api/users/${currentUser.id}/update-profile-picture`,
                 formData,
@@ -208,38 +207,24 @@ const Profile = () => {
                     },
                 }
             );
-            console.log('Profile picture update response:', response.data);
             if (response.status === 200) {
                 showSuccess('Profile picture updated successfully!');
-                
-                // Create the full URL for the new profile picture
                 const newProfilePictureUrl = `/storage/${response.data.path}`;
-                
-                // Update the user object with the new profile picture URL
                 const updatedUser = {
                     ...currentUser,
                     profile_picture_url: newProfilePictureUrl
                 };
-                
-                // Update Redux store immediately
                 dispatch(updateUserSuccess(updatedUser));
-                
-                // Preload the image
                 const img = new Image();
                 img.src = `http://127.0.0.1:8000${newProfilePictureUrl}`;
-                
-                // Only fetch users list after a short delay
                 setTimeout(() => {
                     dispatch(fetchUsers());
                     isUpdatingProfilePicture.current = false;
                 }, 1000);
-                
-                console.log('Updated user object:', updatedUser);
             } else {
                 throw new Error('Failed to upload');
             }
         } catch (err) {
-            console.error('Profile picture update error:', err);
             showError('Error updating profile picture.');
             isUpdatingProfilePicture.current = false;
         }
@@ -280,14 +265,27 @@ const Profile = () => {
         }
     };
 
+    // Edit handler: open the form and pre-fill values
     const handleEditVB = (vb) => {
         setEditingVB(vb.id);
         setVBName(vb.name);
         setVBVisibility(vb.visibility);
         setVBCategory(vb.category_id || '');
         setVBError('');
+        setShowVBForm(true); // Show the form when editing
     };
 
+    // Cancel handler: reset and close the form
+    const handleCancelVBEdit = () => {
+        setEditingVB(null);
+        setVBName('');
+        setVBVisibility(true);
+        setVBCategory('');
+        setVBError('');
+        setShowVBForm(false);
+    };
+
+    // Update handler
     const handleUpdateVB = async (e) => {
         e.preventDefault();
         if (!vbName.trim() || !vbCategory) {
@@ -308,6 +306,7 @@ const Profile = () => {
             setVBVisibility(true);
             setVBCategory('');
             setVBError('');
+            setShowVBForm(false);
             dispatch(fetchVisionBoards());
         } catch {
             setVBError('Failed to update vision board');
@@ -344,7 +343,6 @@ const Profile = () => {
                 ...formData
             })).unwrap();
             showSuccess('Profile updated successfully!');
-            // Refresh user data
             dispatch(fetchUsers());
         } catch (error) {
             showError(error.message || 'Failed to update profile');
@@ -363,28 +361,35 @@ const Profile = () => {
                 </div>
 
                 <div className="profile-content">
-                    <div className="profile-avatar">
-                        <div className="avatar-container">
+                    <div className="profile-avatar" style={{ marginBottom: 16 }}>
+                        {/* Show avatar if no profile picture, else show profile picture */}
                         {currentUser.profile_picture_url ? (
                             <img
                                 src={`http://127.0.0.1:8000${currentUser.profile_picture_url}?t=${new Date().getTime()}`}
                                 alt="Profile"
                                 key={`profile-${currentUser.profile_picture_url}-${new Date().getTime()}`}
+                                style={{ display: 'block' }}
                                 onError={(e) => {
                                     e.target.style.display = 'none';
-                                        e.target.parentElement.querySelector('.default-avatar').style.display = 'block';
+                                    e.target.parentElement.querySelector('.default-avatar').style.display = 'flex';
                                 }}
                             />
-                            ) : (
-                                <div className="default-avatar">
-                                    <img
-                                        src="http://127.0.0.1:8000/storage/pfp/defaultpfp.jpg"
-                                        alt="Default Profile"
-                                    />
-                                </div>
-                            )}
+                        ) : null}
+                        <div
+                            className="default-avatar"
+                            style={{
+                                display: currentUser.profile_picture_url ? 'none' : 'flex',
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: '100%',
+                                height: '100%',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                        >
+                            {currentUser.username?.charAt(0).toUpperCase() || 'U'}
                         </div>
-
                         <input
                             type="file"
                             id="pfp-upload"
@@ -392,9 +397,22 @@ const Profile = () => {
                             style={{ display: 'none' }}
                             onChange={handlePfpChange}
                         />
-                        <button className="change-pfp-btn" onClick={() => document.getElementById('pfp-upload').click()}>
-                            Change Profile Picture
-                        </button>
+                        {/* Move button below the avatar/photo */}
+                        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: 12 }}>
+                            <button
+                                className="change-pfp-btn"
+                                style={{
+                                    position: 'static',
+                                    borderRadius: 20,
+                                    padding: '7px 18px',
+                                    fontSize: '0.9rem',
+                                    margin: 0
+                                }}
+                                onClick={() => document.getElementById('pfp-upload').click()}
+                            >
+                                Change Profile Picture
+                            </button>
+                        </div>
                     </div>
 
                     <div className="profile-info">
@@ -415,7 +433,7 @@ const Profile = () => {
                                     <div className="progress-bar">
                                         <div
                                             className="progress-fill"
-                                            style={{ width: `${completedPercentage}%` }}
+                                            style={{ '--progress': `${completedPercentage}%` }}
                                         ></div>
                                     </div>
                                     <p>{completedPercentage.toFixed(1)}% Completed</p>
@@ -428,20 +446,20 @@ const Profile = () => {
                                     </p>
                                 </div>
 
-                                <div className="stat-item">
+                                <div className="stat-item" style={{ paddingBottom: 24 /* Add bottom padding */ }}>
                                     <h4>Tasks Overview</h4>
-                                    <div className="tasks-breakdown">
+                                    <div className="tasks-breakdown" style={{ marginTop: 12 }}>
                                         <div className="task-count">
                                             <span className="count">{totalTasks}</span>
                                             <span className="label">Total Tasks</span>
                                         </div>
                                         <div className="task-count completed">
                                             <span className="count">{completedTasks.length}</span>
-                                            <span className="label">Completed</span>
+                                            <span className="label"> Completed Tasks</span>
                                         </div>
                                         <div className="task-count incomplete">
                                             <span className="count">{incompletedTasks.length}</span>
-                                            <span className="label">Incomplete</span>
+                                            <span className="label"> Incomplete Tasks</span>
                                         </div>
                                     </div>
                                 </div>
@@ -453,7 +471,7 @@ const Profile = () => {
                     <div className="visionboard-section">
                         <div className="section-header">
                             <h3>My Vision Boards</h3>
-                            <button 
+                            <button
                                 className="add-vb-btn"
                                 onClick={() => {
                                     setShowVBForm(!showVBForm);
@@ -481,7 +499,10 @@ const Profile = () => {
                                 </div>
                                 <div>
                                     <label>Visibility</label>
-                                    <select value={vbVisibility} onChange={e => setVBVisibility(e.target.value === 'true')}>
+                                    <select
+                                        value={vbVisibility ? "true" : "false"}
+                                        onChange={e => setVBVisibility(e.target.value === "true")}
+                                    >
                                         <option value="true">Public</option>
                                         <option value="false">Private</option>
                                     </select>
@@ -496,6 +517,9 @@ const Profile = () => {
                                     </select>
                                 </div>
                                 <button type="submit">{editingVB ? 'Update' : 'Create'}</button>
+                                {(editingVB || showVBForm) && (
+                                    <button type="button" onClick={handleCancelVBEdit} style={{ marginLeft: 8 }}>Cancel</button>
+                                )}
                             </form>
                         )}
                         <div className="visionboard-list">
@@ -527,25 +551,36 @@ const Profile = () => {
                                                 </Link>
                                             </div>
                                             <p>Visibility: {vb.visibility ? 'Public' : 'Private'}</p>
-                                            <div className="vb-images-preview">
+                                            {/* Make the images preview div a fixed height to match stat cards */}
+                                            <div
+                                                className="vb-images-preview"
+                                                style={{
+                                                    minHeight: 140,
+                                                    alignItems: 'center',
+                                                    justifyItems: 'center',
+                                                    display: 'grid'
+                                                }}
+                                            >
                                                 {vbImages.map(img => (
                                                     <img
                                                         key={img.id}
                                                         src={`http://127.0.0.1:8000/storage/${img.url}`}
                                                         alt={img.description}
                                                         className="vb-preview-img"
+                                                        style={{ height: 120, width: 120, objectFit: 'cover' }}
                                                     />
                                                 ))}
                                                 {[...Array(placeholders)].map((_, idx) => (
                                                     <div
                                                         key={`placeholder-${idx}`}
                                                         className="vb-preview-placeholder"
+                                                        style={{ height: 120, width: 120 }}
                                                     />
                                                 ))}
                                             </div>
                                             <div>
                                                 <button onClick={() => handleEditVB(vb)}>Edit</button>
-                                                <button onClick={() => handleDeleteVB(vb.id)} style={{color:'red'}}>Delete</button>
+                                                <button onClick={() => handleDeleteVB(vb.id)} style={{ color: 'red' }}>Delete</button>
                                             </div>
                                         </div>
                                     );
@@ -558,7 +593,7 @@ const Profile = () => {
                     <div className="images-section">
                         <div className="section-header">
                             <h3>My Images</h3>
-                            <button 
+                            <button
                                 onClick={() => setShowUploadForm(!showUploadForm)}
                                 className="upload-btn"
                             >
@@ -602,50 +637,50 @@ const Profile = () => {
                                         <img src={`http://127.0.0.1:8000/storage/${img.url}`} alt={img.description} style={{ width: 120, borderRadius: 8 }} />
                                         {editingImage === img.id ? (
                                             <form
-                                              className="edit-image-form"
-                                              onSubmit={e => {
-                                                e.preventDefault();
-                                                handleUpdate(img.id);
-                                              }}
-                                              encType="multipart/form-data"
+                                                className="edit-image-form"
+                                                onSubmit={e => {
+                                                    e.preventDefault();
+                                                    handleUpdate(img.id);
+                                                }}
+                                                encType="multipart/form-data"
                                             >
-                                              <input
-                                                type="file"
-                                                accept="image/*"
-                                                onChange={handleFileChange}
-                                              />
-                                              <textarea
-                                                value={imageDescription}
-                                                onChange={e => setImageDescription(e.target.value)}
-                                                required
-                                              />
-                                              <select
-                                                value={selectedCategory}
-                                                onChange={e => setSelectedCategory(e.target.value)}
-                                                required
-                                              >
-                                                  <option value="">Select a category</option>
-                                                  {categories.map(cat => (
-                                                    <option key={cat.id} value={cat.id}>{cat.name}</option>
-                                                  ))}
-                                              </select>
-                                              <button type="submit">Save</button>
-                                              <button type="button" onClick={() => setEditingImage(null)}>Cancel</button>
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={handleFileChange}
+                                                />
+                                                <textarea
+                                                    value={imageDescription}
+                                                    onChange={e => setImageDescription(e.target.value)}
+                                                    required
+                                                />
+                                                <select
+                                                    value={selectedCategory}
+                                                    onChange={e => setSelectedCategory(e.target.value)}
+                                                    required
+                                                >
+                                                    <option value="">Select a category</option>
+                                                    {categories.map(cat => (
+                                                        <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                                    ))}
+                                                </select>
+                                                <button type="submit">Save</button>
+                                                <button type="button" onClick={() => setEditingImage(null)}>Cancel</button>
                                             </form>
                                         ) : (
                                             <>
-                                              <div style={{ fontSize: 13, margin: '8px 0' }}>{img.description}</div>
-                                              <button onClick={() => {
-                                                setEditingImage(img.id);
-                                                setImageDescription(img.description);
-                                                setSelectedCategory(img.category_id);
-                                                setSelectedFile(null);
-                                              }}>
-                                                Edit
-                                              </button>
-                                              <button onClick={() => handleDelete(img.id)} style={{ color: 'red', marginLeft: 8 }}>
-                                                Delete
-                                              </button>
+                                                <div style={{ fontSize: 13, margin: '8px 0' }}>{img.description}</div>
+                                                <button onClick={() => {
+                                                    setEditingImage(img.id);
+                                                    setImageDescription(img.description);
+                                                    setSelectedCategory(img.category_id);
+                                                    setSelectedFile(null);
+                                                }}>
+                                                    Edit
+                                                </button>
+                                                <button onClick={() => handleDelete(img.id)} style={{ color: 'red', marginLeft: 8 }}>
+                                                    Delete
+                                                </button>
                                             </>
                                         )}
                                     </div>
@@ -655,254 +690,6 @@ const Profile = () => {
                     </div>
                 </div>
             </div>
-
-            <style>{`
-                .profile-container {
-                    padding: 20px;
-                    max-width: 1200px;
-                    margin: 0 auto;
-                }
-                .profile-card {
-                    background: white;
-                    border-radius: 8px;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                    padding: 20px;
-                }
-                .profile-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 20px;
-                    padding-bottom: 10px;
-                    border-bottom: 1px solid #eee;
-                }
-                .profile-content {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 20px;
-                }
-                .profile-avatar {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    gap: 10px;
-                }
-                .avatar-container {
-                    width: 150px;
-                    height: 150px;
-                    position: relative;
-                    border-radius: 50%;
-                    overflow: hidden;
-                }
-                .profile-avatar img, .default-avatar {
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                    border-radius: 50%;
-                }
-                .default-avatar {
-                    display: block;
-                }
-                .change-pfp-btn {
-                    padding: 8px 16px;
-                    background-color: #2196F3;
-                    color: white;
-                    border: none;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    transition: background-color 0.3s;
-                }
-                .change-pfp-btn:hover {
-                    background-color: #0b7dda;
-                }
-                .performance-section {
-                    margin: 20px 0;
-                    padding: 20px;
-                    background: #f8f9fa;
-                    border-radius: 8px;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-                }
-                .performance-stats {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                    gap: 20px;
-                    margin-top: 15px;
-                }
-                .stat-item {
-                    background: white;
-                    padding: 20px;
-                    border-radius: 8px;
-                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-                }
-                .stat-item h4 {
-                    color: #333;
-                    margin-bottom: 15px;
-                    font-size: 1.1em;
-                }
-                .progress-bar {
-                    width: 100%;
-                    height: 20px;
-                    background: #e9ecef;
-                    border-radius: 10px;
-                    overflow: hidden;
-                    margin: 10px 0;
-                }
-                .progress-fill {
-                    height: 100%;
-                    background: linear-gradient(90deg, #4CAF50, #45a049);
-                    transition: width 0.3s ease;
-                }
-                .status {
-                    font-weight: bold;
-                    padding: 8px 12px;
-                    border-radius: 4px;
-                    display: inline-block;
-                    margin-bottom: 10px;
-                }
-                .status.excellent {
-                    background: #d4edda;
-                    color: #155724;
-                }
-                .status.good {
-                    background: #fff3cd;
-                    color: #856404;
-                }
-                .status.needs-improvement {
-                    background: #f8d7da;
-                    color: #721c24;
-                }
-                .tasks-breakdown {
-                    display: grid;
-                    grid-template-columns: repeat(3, 1fr);
-                    gap: 10px;
-                    text-align: center;
-                }
-                .task-count {
-                    padding: 10px;
-                    border-radius: 6px;
-                    background: #f8f9fa;
-                }
-                .task-count .count {
-                    display: block;
-                    font-size: 1.5em;
-                    font-weight: bold;
-                    color: #333;
-                }
-                .task-count .label {
-                    font-size: 0.9em;
-                    color: #666;
-                }
-                .task-count.completed {
-                    background: #d4edda;
-                }
-                .task-count.incomplete {
-                    background: #f8d7da;
-                }
-                .loading {
-                    text-align: center;
-                    padding: 20px;
-                    color: #666;
-                }
-                .visionboard-section, .images-section {
-                    margin: 20px 0;
-                    padding: 20px;
-                    background: #f8f9fa;
-                    border-radius: 8px;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-                }
-                .section-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 15px;
-                }
-                .add-vb-btn, .upload-btn {
-                    padding: 8px 16px;
-                    background-color: #4CAF50;
-                    color: white;
-                    border: none;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    transition: background-color 0.3s;
-                }
-                .add-vb-btn:hover, .upload-btn:hover {
-                    background-color: #45a049;
-                }
-                .visionboard-list, .user-images-list {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                    gap: 20px;
-                    margin-top: 15px;
-                }
-                .visionboard-card, .user-image-card {
-                    background: white;
-                    padding: 15px;
-                    border-radius: 8px;
-                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-                }
-                .vb-images-preview {
-                    display: flex;
-                    gap: 6px;
-                    margin: 10px 0 15px 0;
-                }
-                .vb-preview-img {
-                    width: 60px;
-                    height: 60px;
-                    object-fit: cover;
-                    border-radius: 6px;
-                    background: #f2f2f2;
-                    border: 1px solid #eee;
-                }
-                .vb-preview-placeholder {
-                    width: 60px;
-                    height: 60px;
-                    border-radius: 6px;
-                    background: #f7f7f7;
-                    border: 1px solid #eee;
-                    opacity: 0.7;
-                }
-                .vb-form, .upload-form, .edit-image-form {
-                    display: grid;
-                    grid-template-columns: 1fr;
-                    gap: 15px;
-                    margin-bottom: 20px;
-                }
-                .vb-form label, .upload-form label, .edit-image-form label {
-                    font-weight: bold;
-                    margin-bottom: 5px;
-                }
-                .vb-form input, .vb-form select,
-                .upload-form input, .upload-form textarea, .upload-form select,
-                .edit-image-form input, .edit-image-form textarea, .edit-image-form select {
-                    padding: 10px;
-                    border: 1px solid #ccc;
-                    border-radius: 4px;
-                    font-size: 1em;
-                }
-                .vb-form button, .upload-form button, .edit-image-form button {
-                    padding: 10px;
-                    background-color: #007bff;
-                    color: white;
-                    border: none;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    font-size: 1em;
-                    transition: background-color 0.3s;
-                }
-                .vb-form button:hover, .upload-form button:hover, .edit-image-form button:hover {
-                    background-color: #0056b3;
-                }
-                .error-message {
-                    color: red;
-                    font-size: 0.9em;
-                    margin-top: 10px;
-                }
-                .user-image-card img {
-                    max-width: 100%;
-                    height: auto;
-                    border-radius: 8px;
-                }
-            `}</style>
         </div>
     );
 };
