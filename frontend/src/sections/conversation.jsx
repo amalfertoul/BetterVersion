@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchMessages, sendMessage, deleteMessage } from '../slices/messageSlice';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -8,6 +8,7 @@ import '../style/conversation.css'; // Ensure you have the correct path to your 
 const RenderMessages = () => {
     const dispatch = useDispatch();
     const { userId } = useParams();
+    const navigate = useNavigate();
     const [newMessage, setNewMessage] = useState('');
     const [showDeleteButton, setShowDeleteButton] = useState(null);
     const [contactName, setContactName] = useState('Contact');
@@ -157,7 +158,12 @@ const RenderMessages = () => {
                 <button className="back-button" onClick={() => window.history.back()}>←</button>
                 
                 <div className="contact-info">
-                    <div className="contact-avatar">
+                    <div
+                        className="contact-avatar"
+                        style={{ cursor: "pointer" }}
+                        onClick={() => navigate(`/profile-friend/${userId}`)}
+                        title="Voir le profil"
+                    >
                         {contactProfilePic ? (
                             <img 
                                 src={`${contactProfilePic}?t=${new Date().getTime()}`}
