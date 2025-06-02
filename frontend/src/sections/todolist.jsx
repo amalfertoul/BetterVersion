@@ -56,9 +56,8 @@ const TodoListPage = () => {
 
     useEffect(() => {
         if (visionBoards && userId) {
-            const filtered = visionBoards.filter(
-                board => board.task_id === null && board.user_id === userId
-            );
+            // Affiche tous les vision boards de l'utilisateur
+            const filtered = visionBoards.filter(board => board.user_id === userId);
             setAvailableVisionBoards(filtered);
         }
     }, [visionBoards, userId]);
@@ -446,14 +445,17 @@ const TaskItem = ({
                     <h4>Available Vision Boards:</h4>
                     {availableVisionBoards.length > 0 ? (
                         <ul>
-                            {availableVisionBoards.map(board => (
-                                <li key={board.id}>
-                                    {board.name}
-                                    <button onClick={() => handleAddVisionBoardToTask(task.id, board.id)}>
-                                        Add to Task
-                                    </button>
-                                </li>
-                            ))}
+                            {availableVisionBoards
+                                // Filtrer les vision boards déjà attachés à cette tâche
+                                .filter(board => board.task_id !== task.id)
+                                .map(board => (
+                                    <li key={board.id}>
+                                        {board.name}
+                                        <button onClick={() => handleAddVisionBoardToTask(task.id, board.id)}>
+                                            Add to Task
+                                        </button>
+                                    </li>
+                                ))}
                         </ul>
                     ) : (
                         <p>No available vision boards. Create one first.</p>

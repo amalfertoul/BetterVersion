@@ -41,7 +41,6 @@ function App() {
             <Route path="/vision-board/:id" element={<VisionBoardDetail />} />
             <Route path="/profile-friend/:id" element={<ProfileFriends />} />
             <Route path="/SeeImg/:id" element={<SeeImg />} />
-            {/* Redirect to home if no other route matches */}
           </Routes>
         </main>
       </div>
